@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     encrypted_password: String,
     reset_password: String,
     role: { type: String, default: "USER" },
-    isRestricted: { type: Boolean, default: false },
+    isRestricted: { type: Boolean, default: true },
   },
   { collection: "users" }
 );
