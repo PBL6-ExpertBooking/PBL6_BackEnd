@@ -5,6 +5,7 @@ import ConfirmationToken from "./ConfirmationToken.js";
 import ExpertInfo from "./ExpertInfo.js";
 import JobRequest from "./JobRequest.js";
 import Major from "./Major.js";
+import RefreshToken from "./RefreshToken.js";
 import Review from "./Review.js";
 import User from "./User.js";
 
@@ -16,6 +17,7 @@ export {
   ExpertInfo,
   JobRequest,
   Major,
+  RefreshToken,
   Review,
   User,
 };

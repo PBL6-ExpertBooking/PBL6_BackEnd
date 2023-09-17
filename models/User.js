@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
     address: String,
     photo_url: String,
     DoB: Date,
-    email: String,
+    email: { type: String, required: true },
     username: String,
     encrypted_password: String,
     reset_password: String,
