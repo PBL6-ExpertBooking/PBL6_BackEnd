@@ -1,11 +1,14 @@
 import mongoose from "mongoose";
 
-const confirmationTokenSchema = new mongoose.Schema({
-  user_id: { type: mongoose.Schema.ObjectId, ref: "users" },
-  token: String,
-  confirm_at: Date,
-  confirmation_sent_at: Date,
-});
+const confirmationTokenSchema = new mongoose.Schema(
+  {
+    user_id: { type: mongoose.Schema.ObjectId, ref: "users" },
+    token: String,
+    confirm_at: Date,
+    confirmation_sent_at: Date,
+  },
+  { collection: "confirmation_token" }
+);
 
 const ConfirmationToken = mongoose.model(
   "ConfirmationToken",

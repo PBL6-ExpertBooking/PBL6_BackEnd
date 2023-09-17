@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
     username: String,
     encrypted_password: String,
     reset_password: String,
-    role: { type: String, default: "USER" },
+    role: { type: String, enum: ["USER", "EXPERT"], default: "USER" },
     isRestricted: { type: Boolean, default: true },
   },
   { collection: "users" }
