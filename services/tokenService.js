@@ -1,9 +1,10 @@
 import { sign, verify } from "../utils/jwtHelper.js";
-import { RefreshToken } from "../models/index.js";
+import { RefreshToken, User } from "../models/index.js";
 import httpStatus from "http-status";
 import ApiError from "../utils/APIError.js";
 import moment from "moment/moment.js";
 import { tokenTypes } from "../config/tokenTypes.js";
+import { fetchUserById } from "./userService.js";
 
 const generateToken = async (userId, loginTime, expires, type) => {
   const payload = {
@@ -93,7 +94,37 @@ const verifyRefreshToken = async (token) => {
     throw new ApiError(httpStatus.FORBIDDEN, "Invalid refresh token");
   }
 
+  if (moment().diff(tokenPayload.expires) <= 0) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Token expired");
+  }
+
   return tokenPayload;
+};
+
+const verifyAccessToken = async (token) => {
+  let tokenPayload = await verify(token, process.env.JWT_SECRET);
+  if (!tokenPayload || tokenPayload.type != tokenTypes.ACCESS) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Invalid access token");
+  }
+
+  const user = await fetchUserById(tokenPayload.userId);
+  if (!user) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Invalid access token");
+  }
+
+  let refreshTokenExists = await RefreshToken.exists({
+    user_id: user._id,
+    login_time: tokenPayload.login_time,
+  });
+  if (!refreshTokenExists) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Invalid access token");
+  }
+
+  if (moment().diff(tokenPayload.expires) <= 0) {
+    throw new ApiError(httpStatus.FORBIDDEN, "Token expired");
+  }
+
+  return user;
 };
 
 export {
@@ -101,4 +132,5 @@ export {
   generateAuthTokens,
   generateAccessTokenFromRefreshTokenPayload,
   verifyRefreshToken,
+  verifyAccessToken,
 };
