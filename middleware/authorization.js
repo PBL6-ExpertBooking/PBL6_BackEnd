@@ -2,13 +2,13 @@ import httpStatus from "http-status";
 import { verifyAccessToken } from "../services/tokenService";
 import ApiError from "../utils/APIError";
 
-const authenticate = async (req, res, next) => {
+const auth = async (req, res, next) => {
   try {
-    let accessToken = req.get("Authorization");
-    if (!accessToken || !accessToken.startsWith("Bearer ")) {
+    let authHeader = req.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid access token");
     }
-    accessToken = accessToken.split(" ")[1];
+    accessToken = authHeader.split(" ")[1];
     const user = await verifyAccessToken(accessToken);
 
     req.authData = user;
@@ -19,11 +19,14 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-const isExpert = async (req, res, next) => {
+const checkRole = (roles) => async (req, res, next) => {
   try {
     const { user } = req.authData;
-    if (user.role != "EXPERT") {
-      throw new ApiError(httpStatus.UNAUTHORIZED, "unauthorized");
+    if (!roles.includes(user.role)) {
+      throw new ApiError(
+        httpStatus.UNAUTHORIZED,
+        "Not have access to this route"
+      );
     }
 
     next();
@@ -32,4 +35,4 @@ const isExpert = async (req, res, next) => {
   }
 };
 
-export { authenticate, isExpert };
+export { auth, checkRole };
