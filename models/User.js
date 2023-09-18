@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { roles } from "../config/constant.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -13,7 +14,11 @@ const userSchema = new mongoose.Schema(
     username: String,
     encrypted_password: String,
     reset_password: String,
-    role: { type: String, enum: ["USER", "EXPERT"], default: "USER" },
+    role: {
+      type: String,
+      enum: [roles.USER, roles.EXPERT],
+      default: roles.USER,
+    },
     isRestricted: { type: Boolean, default: true },
   },
   { collection: "users" }

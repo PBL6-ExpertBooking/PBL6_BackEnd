@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import mongoose, { MongooseError } from "mongoose";
 import app from "./app.js";
+import logger from "./config/logger.js";
 
 dotenv.config();
 
@@ -9,9 +10,9 @@ const PORT = process.env.PORT || 3000;
 
 async function main() {
   await mongoose.connect(CONNECTION_URL);
-  console.log("Connected to MongoDB");
+  logger.info("Connected to MongoDB");
   app.listen(PORT, () => {
-    console.log(`Listening to port ${PORT}`);
+    logger.info(`Listening to port ${PORT}`);
   });
 }
 

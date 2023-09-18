@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import { verifyAccessToken } from "../services/tokenService";
-import ApiError from "../utils/APIError";
+import ApiError from "../utils/APIError.js";
 
 const auth = async (req, res, next) => {
   try {
@@ -11,7 +11,7 @@ const auth = async (req, res, next) => {
     accessToken = authHeader.split(" ")[1];
     const user = await verifyAccessToken(accessToken);
 
-    req.authData = user;
+    req.authData = { user };
 
     next();
   } catch (error) {

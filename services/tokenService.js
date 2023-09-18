@@ -3,14 +3,14 @@ import { RefreshToken, User } from "../models/index.js";
 import httpStatus from "http-status";
 import ApiError from "../utils/APIError.js";
 import moment from "moment/moment.js";
-import { tokenTypes } from "../config/tokenTypes.js";
+import { tokenTypes } from "../config/constant.js";
 import { fetchUserById } from "./userService.js";
 
-const generateToken = async (userId, loginTime, expires, type) => {
+const generateToken = async (userId, loginTime, exp, type) => {
   const payload = {
     userId,
     loginTime: new Date(loginTime.valueOf()),
-    expires: expires.unix(),
+    exp: exp.unix(),
     type,
   };
   let token = await sign(payload, process.env.JWT_SECRET);
@@ -94,10 +94,6 @@ const verifyRefreshToken = async (token) => {
     throw new ApiError(httpStatus.FORBIDDEN, "Invalid refresh token");
   }
 
-  if (moment().diff(tokenPayload.expires) <= 0) {
-    throw new ApiError(httpStatus.FORBIDDEN, "Token expired");
-  }
-
   return tokenPayload;
 };
 
@@ -118,10 +114,6 @@ const verifyAccessToken = async (token) => {
   });
   if (!refreshTokenExists) {
     throw new ApiError(httpStatus.FORBIDDEN, "Invalid access token");
-  }
-
-  if (moment().diff(tokenPayload.expires) <= 0) {
-    throw new ApiError(httpStatus.FORBIDDEN, "Token expired");
   }
 
   return user;
