@@ -9,6 +9,10 @@ import {
   generateAuthTokens,
   verifyRefreshToken,
 } from "../services/tokenService.js";
+import {
+  createConfirmationTokenAndSendMail,
+  enableUserByConfirmationToken,
+} from "../services/confirmationUserService.js";
 
 const register = async (req, res, next) => {
   try {
@@ -20,7 +24,8 @@ const register = async (req, res, next) => {
       username,
       password,
     });
-    const tokens = generateAuthTokens(newUser);
+    createConfirmationTokenAndSendMail(newUser._id);
+    const tokens = await generateAuthTokens(newUser);
     res.json({
       user: {
         _id: newUser._id,
@@ -78,4 +83,14 @@ const refreshToken = async (req, res, next) => {
   }
 };
 
-export default { register, login, logout, refreshToken };
+const activate = async (req, res, next) => {
+  try {
+    const token = req.params.token;
+    await enableUserByConfirmationToken(token);
+    res.json({ message: "Activated account" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { register, login, logout, refreshToken, activate };

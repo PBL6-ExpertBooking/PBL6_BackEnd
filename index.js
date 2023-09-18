@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import mongoose, { MongooseError } from "mongoose";
+import mongoose from "mongoose";
 import app from "./app.js";
 import logger from "./config/logger.js";
 
@@ -16,4 +16,4 @@ async function main() {
   });
 }
 
-main().catch((err) => console.log(err));
+main().catch((err) => logger.error(err));

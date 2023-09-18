@@ -1,5 +1,5 @@
 import express from "express";
-import controller from "../controller/authController.js";
+import controller from "../controllers/authController.js";
 
 const router = express.Router();
 
@@ -7,5 +7,6 @@ router.route("/register").post(controller.register);
 router.route("/login").post(controller.login);
 router.route("/logout").post(controller.logout);
 router.route("/refresh-token").post(controller.refreshToken);
+router.route("/activate/:token").get(controller.activate);
 
 export default router;

@@ -10,7 +10,10 @@ const createNewUser = async (user) => {
   if (await User.findOne({ username: user.username.toLowerCase() })) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Username already exists.");
   }
-  const encrypted_password = await bcrypt.hash(user.password, 10);
+  const encrypted_password = await bcrypt.hash(
+    user.password,
+    parseInt(process.env.BCRYPT_SALT)
+  );
   const newUser = await User.create({ ...user, encrypted_password });
   if (!newUser) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Server error");
@@ -20,6 +23,9 @@ const createNewUser = async (user) => {
 
 const fetchUserById = async (userId) => {
   const user = await User.findOne({ _id: userId });
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
   return user;
 };
 
@@ -55,10 +61,21 @@ const verifyUserFromTokenPayload = async ({ userId }) => {
   }
 };
 
+const enableUserById = async (userId) => {
+  const user = await User.findOneAndUpdate(
+    { _id: userId },
+    { isRestricted: false }
+  );
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+};
+
 export {
   createNewUser,
   fetchUserById,
   fetchUserByUsernameAndPassword,
   fetchUserByEmail,
   verifyUserFromTokenPayload,
+  enableUserById,
 };
