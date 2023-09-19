@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendMail = async (to, subject, text) => {
+const sendMail = async (to, subject, text, callback = null) => {
   const mailOptions = {
     from: "expertbooking@pbl.com",
     to,
@@ -23,6 +23,9 @@ const sendMail = async (to, subject, text) => {
       logger.error(error);
     } else {
       logger.info("Email sent: " + info.response);
+      if (callback) {
+        callback();
+      }
     }
   });
 };

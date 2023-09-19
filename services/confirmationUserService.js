@@ -11,15 +11,19 @@ const createConfirmationTokenAndSendMail = async (userId) => {
   const confirmationToken = await ConfirmationToken.create({
     user_id: userId,
     token: uuidv4(),
-    confirmation_sent_at: Date.now(),
   });
 
+  // send confirmation email async
   sendMail(
     user.email,
-    "Email confirmation",
-    `Click the link to confirm your email:
-  http://localhost:3000/v1/auth/activate/${confirmationToken.token}
-  `
+    "Confirmation",
+    `
+    Click the link to confirm your email:
+    http://localhost:3000/v1/auth/activate/${confirmationToken.token}
+    `,
+    async () => {
+      await confirmationToken.updateOne({ confirmation_sent_at: Date.now() });
+    }
   );
 };
 
