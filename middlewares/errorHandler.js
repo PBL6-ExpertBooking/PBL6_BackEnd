@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import { v4 as uuidv4 } from "uuid";
 import logger from "../config/logger.js";
 
-import ApiError from "../utils/APIError.js";
+import ApiError from "../utils/ApiError.js";
 
 const handler = (err, req, res, next) => {
   const response = {
