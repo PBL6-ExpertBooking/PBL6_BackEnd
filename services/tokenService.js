@@ -1,7 +1,7 @@
 import { sign, verify } from "../utils/jwtHelper.js";
 import { RefreshToken, User } from "../models/index.js";
 import httpStatus from "http-status";
-import ApiError from "../utils/APIError.js";
+import ApiError from "../utils/ApiError.js";
 import moment from "moment/moment.js";
 import { tokenTypes } from "../config/constant.js";
 import { fetchUserById } from "./userService.js";

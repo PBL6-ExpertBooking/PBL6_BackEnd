@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import { verifyAccessToken } from "../services/tokenService";
-import ApiError from "../utils/APIError.js";
+import ApiError from "../utils/ApiError.js";
 
 const auth = async (req, res, next) => {
   try {

@@ -1,6 +1,6 @@
 import { User } from "../models/index.js";
 import httpStatus from "http-status";
-import ApiError from "../utils/APIError.js";
+import ApiError from "../utils/ApiError.js";
 import bcrypt from "bcryptjs";
 
 const createNewUser = async (user) => {

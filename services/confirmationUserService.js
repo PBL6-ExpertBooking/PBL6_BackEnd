@@ -2,7 +2,7 @@ import { ConfirmationToken, User } from "../models/index.js";
 import { fetchUserById, enableUserById } from "./userService.js";
 import sendMail from "../utils/sendMail.js";
 import { v4 as uuidv4 } from "uuid";
-import ApiError from "../utils/APIError.js";
+import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
 
 const createConfirmationTokenAndSendMail = async (userId) => {
