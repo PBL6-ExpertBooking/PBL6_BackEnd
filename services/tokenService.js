@@ -9,7 +9,7 @@ import { fetchUserById } from "./userService.js";
 const generateToken = async (userId, loginTime, exp, type) => {
   const payload = {
     userId,
-    loginTime: new Date(loginTime.valueOf()),
+    loginTime: new Date(loginTime.valueOf()).toISOString(),
     exp: exp.unix(),
     type,
   };
@@ -21,7 +21,7 @@ const saveRefreshToken = async (userId, loginTime, token) => {
   await RefreshToken.findOneAndUpdate(
     { user_id: userId },
     {
-      login_time: new Date(loginTime.valueOf()),
+      login_time: new Date(loginTime.valueOf()).toISOString(),
       token: token,
     },
     {
@@ -110,7 +110,7 @@ const verifyAccessToken = async (token) => {
 
   let refreshTokenExists = await RefreshToken.exists({
     user_id: user._id,
-    login_time: tokenPayload.login_time,
+    login_time: tokenPayload.loginTime,
   });
   if (!refreshTokenExists) {
     throw new ApiError(httpStatus.FORBIDDEN, "Invalid access token");

@@ -1,5 +1,6 @@
 import { ConfirmationToken, User } from "../models/index.js";
-import { fetchUserById, enableUserById } from "./userService.js";
+import { fetchUserById } from "./userService.js";
+import { enableUserById } from "./authService.js";
 import sendMail from "../utils/sendMail.js";
 import { v4 as uuidv4 } from "uuid";
 import ApiError from "../utils/ApiError.js";

@@ -1,81 +1,49 @@
 import { User } from "../models/index.js";
-import httpStatus from "http-status";
-import ApiError from "../utils/ApiError.js";
 import bcrypt from "bcryptjs";
-
-const createNewUser = async (user) => {
-  if (await User.findOne({ email: user.email.toLowerCase() })) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Email already exists.");
-  }
-  if (await User.findOne({ username: user.username.toLowerCase() })) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Username already exists.");
-  }
-  const encrypted_password = await bcrypt.hash(
-    user.password,
-    parseInt(process.env.BCRYPT_SALT)
-  );
-  const newUser = await User.create({ ...user, encrypted_password });
-  if (!newUser) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Server error");
-  }
-  return newUser;
-};
+import ApiError from "../utils/ApiError.js";
+import httpStatus from "http-status";
 
 const fetchUserById = async (userId) => {
-  const user = await User.findOne({ _id: userId });
+  const user = await User.findOne({ _id: userId }).lean();
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
   return user;
 };
 
-const fetchUserByUsernameAndPassword = async ({ username, password }) => {
-  const user = await User.findOne({
-    username: username,
-  }).lean();
+const changePasswordByUserId = async ({
+  userId,
+  oldPassword,
+  newPassword,
+  confirmPassword,
+}) => {
+  if (newPassword !== confirmPassword) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Confirmation password not match"
+    );
+  }
+
+  const user = await User.findById(userId);
   if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid credentials");
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
 
-  let passwordMatches = await bcrypt.compare(password, user.encrypted_password);
-  if (!passwordMatches) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid credentials");
-  }
-  return user;
-};
-
-const fetchUserByEmail = async ({ email }) => {
-  const user = await User.findOne({
-    email: email.toLowerCase(),
-  }).lean();
-  if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid credentials");
-  }
-
-  return user;
-};
-
-const verifyUserFromTokenPayload = async ({ userId }) => {
-  if (!(await User.exists({ _id: userId }))) {
-    throw new ApiError(httpStatus.FORBIDDEN, "Invalid token");
-  }
-};
-
-const enableUserById = async (userId) => {
-  const user = await User.findOneAndUpdate(
-    { _id: userId },
-    { isRestricted: false }
+  let oldPasswordMatches = await bcrypt.compare(
+    oldPassword,
+    user.encrypted_password
   );
-  if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  if (!oldPasswordMatches) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid credentials");
   }
+
+  const encrypted_newPassword = await bcrypt.hash(
+    newPassword,
+    parseInt(process.env.BCRYPT_SALT)
+  );
+  await user.updateOne({ encrypted_password: encrypted_newPassword });
+
+  return user;
 };
 
-export {
-  createNewUser,
-  fetchUserById,
-  fetchUserByUsernameAndPassword,
-  fetchUserByEmail,
-  verifyUserFromTokenPayload,
-  enableUserById,
-};
+export { fetchUserById, changePasswordByUserId };

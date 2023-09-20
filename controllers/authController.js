@@ -2,7 +2,7 @@ import {
   createNewUser,
   fetchUserByUsernameAndPassword,
   verifyUserFromTokenPayload,
-} from "../services/userService.js";
+} from "../services/authService.js";
 import {
   clearRefreshToken,
   generateAccessTokenFromRefreshTokenPayload,

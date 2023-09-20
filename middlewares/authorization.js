@@ -1,14 +1,14 @@
 import httpStatus from "http-status";
-import { verifyAccessToken } from "../services/tokenService";
+import { verifyAccessToken } from "../services/tokenService.js";
 import ApiError from "../utils/ApiError.js";
 
 const auth = async (req, res, next) => {
   try {
-    let authHeader = req.get("Authorization");
+    const authHeader = req.get("Authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid access token");
     }
-    accessToken = authHeader.split(" ")[1];
+    const accessToken = authHeader.split(" ")[1];
     const user = await verifyAccessToken(accessToken);
 
     if (user.isRestricted) {

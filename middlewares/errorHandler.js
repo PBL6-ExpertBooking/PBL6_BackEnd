@@ -20,7 +20,7 @@ const converter = (err, req, res, next) => {
   let convertedError = err;
   if (!(err instanceof ApiError)) {
     let uuid = uuidv4();
-    logger.error({ uuid, ...err });
+    logger.error({ ...err });
     convertedError = new ApiError(
       err.statusCode || httpStatus.INTERNAL_SERVER_ERROR,
       httpStatus[500],
