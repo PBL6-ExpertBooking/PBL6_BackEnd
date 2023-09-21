@@ -47,15 +47,15 @@ const fetchUserByEmail = async ({ email }) => {
   return user;
 };
 
-const verifyUserFromTokenPayload = async ({ userId }) => {
-  if (!(await User.exists({ _id: userId }))) {
+const verifyUserFromTokenPayload = async ({ user_id }) => {
+  if (!(await User.exists({ _id: user_id }))) {
     throw new ApiError(httpStatus.FORBIDDEN, "Invalid token");
   }
 };
 
-const enableUserById = async (userId) => {
+const enableUserById = async (user_id) => {
   const user = await User.findOneAndUpdate(
-    { _id: userId },
+    { _id: user_id },
     { isRestricted: false }
   );
   if (!user) {
@@ -63,7 +63,7 @@ const enableUserById = async (userId) => {
   }
 };
 
-export {
+export default {
   createNewUser,
   fetchUserByUsernameAndPassword,
   fetchUserByEmail,

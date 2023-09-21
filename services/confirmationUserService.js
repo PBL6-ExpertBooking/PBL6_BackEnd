@@ -1,16 +1,16 @@
-import { ConfirmationToken, User } from "../models/index.js";
-import { fetchUserById } from "./userService.js";
-import { enableUserById } from "./authService.js";
+import { ConfirmationToken } from "../models/index.js";
+import userService from "./userService.js";
+import authService from "./authService.js";
 import sendMail from "../utils/sendMail.js";
 import { v4 as uuidv4 } from "uuid";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
 
-const createConfirmationTokenAndSendMail = async (userId) => {
-  const user = await fetchUserById(userId);
+const createConfirmationTokenAndSendMail = async (user_id) => {
+  const user = await userService.fetchUserById(user_id);
 
   const confirmationToken = await ConfirmationToken.create({
-    user_id: userId,
+    user_id: user_id,
     token: uuidv4(),
   });
 
@@ -33,8 +33,11 @@ const enableUserByConfirmationToken = async (token) => {
   if (!confirmationToken) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid confirmation token");
   }
-  await enableUserById(confirmationToken.user_id);
+  await authService.enableUserById(confirmationToken.user_id);
   await confirmationToken.updateOne({ confirm_at: Date.now() });
 };
 
-export { createConfirmationTokenAndSendMail, enableUserByConfirmationToken };
+export default {
+  createConfirmationTokenAndSendMail,
+  enableUserByConfirmationToken,
+};

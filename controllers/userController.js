@@ -1,14 +1,14 @@
-import { changePasswordByUserId } from "../services/userService.js";
+import userService from "../services/userService.js";
 
 const changePassword = async (req, res, next) => {
   try {
     const { user } = req.authData;
-    const { oldPassword, newPassword, confirmPassword } = req.body;
-    await changePasswordByUserId({
-      userId: user._id,
-      oldPassword,
-      newPassword,
-      confirmPassword,
+    const { current_password, new_password, confirm_password } = req.body;
+    await userService.changePasswordByUserId({
+      user_id: user._id,
+      current_password,
+      new_password,
+      confirm_password,
     });
     res.json({ message: "Changed password successfully" });
   } catch (error) {

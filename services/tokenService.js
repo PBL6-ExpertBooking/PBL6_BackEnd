@@ -1,15 +1,15 @@
 import { sign, verify } from "../utils/jwtHelper.js";
-import { RefreshToken, User } from "../models/index.js";
+import { RefreshToken } from "../models/index.js";
 import httpStatus from "http-status";
 import ApiError from "../utils/ApiError.js";
 import moment from "moment/moment.js";
 import { tokenTypes } from "../config/constant.js";
-import { fetchUserById } from "./userService.js";
+import userService from "./userService.js";
 
-const generateToken = async (userId, loginTime, exp, type) => {
+const generateToken = async (user_id, login_time, exp, type) => {
   const payload = {
-    userId,
-    loginTime: new Date(loginTime.valueOf()).toISOString(),
+    user_id,
+    login_time: new Date(login_time.valueOf()).toISOString(),
     exp: exp.unix(),
     type,
   };
@@ -17,11 +17,11 @@ const generateToken = async (userId, loginTime, exp, type) => {
   return token;
 };
 
-const saveRefreshToken = async (userId, loginTime, token) => {
+const saveRefreshToken = async (user_id, login_time, token) => {
   await RefreshToken.findOneAndUpdate(
-    { user_id: userId },
+    { user_id: user_id },
     {
-      login_time: new Date(loginTime.valueOf()).toISOString(),
+      login_time: new Date(login_time.valueOf()).toISOString(),
       token: token,
     },
     {
@@ -35,39 +35,39 @@ const clearRefreshToken = async (token) => {
 };
 
 const generateAuthTokens = async (user) => {
-  const loginTime = moment();
-  let accessTokenExpiresAt = loginTime
+  const login_time = moment();
+  let accessTokenExpiresAt = login_time
     .clone()
     .add(process.env.ACCESS_TOKEN_EXPIRATION_MINUTES, "minutes");
 
-  const accessToken = await generateToken(
+  const access_token = await generateToken(
     user._id,
-    loginTime,
+    login_time,
     accessTokenExpiresAt,
     tokenTypes.ACCESS
   );
 
-  let refreshTokenExpireAt = loginTime
+  let refreshTokenExpireAt = login_time
     .clone()
     .add(process.env.REFRESH_TOKEN_EXPIRATION_DAYS, "days");
 
-  const refreshToken = await generateToken(
+  const refresh_token = await generateToken(
     user._id,
-    loginTime,
+    login_time,
     refreshTokenExpireAt,
     tokenTypes.REFRESH
   );
 
-  await saveRefreshToken(user._id, loginTime, refreshToken);
+  await saveRefreshToken(user._id, login_time, refresh_token);
   return {
-    accessToken,
-    refreshToken,
+    access_token,
+    refresh_token,
   };
 };
 
 const generateAccessTokenFromRefreshTokenPayload = async ({
-  userId,
-  loginTime,
+  user_id,
+  login_time,
 }) => {
   const now = moment();
   let accessTokenExpiresAt = now
@@ -75,8 +75,8 @@ const generateAccessTokenFromRefreshTokenPayload = async ({
     .add(process.env.ACCESS_TOKEN_EXPIRATION_MINUTES, "minutes");
 
   const accessToken = await generateToken(
-    userId,
-    moment(loginTime),
+    user_id,
+    moment(login_time),
     accessTokenExpiresAt,
     tokenTypes.ACCESS
   );
@@ -103,14 +103,14 @@ const verifyAccessToken = async (token) => {
     throw new ApiError(httpStatus.FORBIDDEN, "Invalid access token");
   }
 
-  const user = await fetchUserById(tokenPayload.userId);
+  const user = await userService.fetchUserById(tokenPayload.user_id);
   if (!user) {
     throw new ApiError(httpStatus.FORBIDDEN, "Invalid access token");
   }
 
   let refreshTokenExists = await RefreshToken.exists({
     user_id: user._id,
-    login_time: tokenPayload.loginTime,
+    login_time: tokenPayload.login_time,
   });
   if (!refreshTokenExists) {
     throw new ApiError(httpStatus.FORBIDDEN, "Invalid access token");
@@ -119,7 +119,7 @@ const verifyAccessToken = async (token) => {
   return user;
 };
 
-export {
+export default {
   clearRefreshToken,
   generateAuthTokens,
   generateAccessTokenFromRefreshTokenPayload,

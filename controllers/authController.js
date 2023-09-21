@@ -1,31 +1,19 @@
-import {
-  createNewUser,
-  fetchUserByUsernameAndPassword,
-  verifyUserFromTokenPayload,
-} from "../services/authService.js";
-import {
-  clearRefreshToken,
-  generateAccessTokenFromRefreshTokenPayload,
-  generateAuthTokens,
-  verifyRefreshToken,
-} from "../services/tokenService.js";
-import {
-  createConfirmationTokenAndSendMail,
-  enableUserByConfirmationToken,
-} from "../services/confirmationUserService.js";
+import authService from "../services/authService.js";
+import tokenService from "../services/tokenService.js";
+import confirmationUserService from "../services/confirmationUserService.js";
 
 const register = async (req, res, next) => {
   try {
     const { first_name, last_name, email, username, password } = req.body;
-    const newUser = await createNewUser({
+    const newUser = await authService.createNewUser({
       first_name,
       last_name,
       email,
       username,
       password,
     });
-    createConfirmationTokenAndSendMail(newUser._id);
-    const tokens = await generateAuthTokens(newUser);
+    confirmationUserService.createConfirmationTokenAndSendMail(newUser._id);
+    const tokens = await tokenService.generateAuthTokens(newUser);
     res.json({
       user: {
         _id: newUser._id,
@@ -42,8 +30,11 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
-    const user = await fetchUserByUsernameAndPassword({ username, password });
-    const tokens = await generateAuthTokens(user);
+    const user = await authService.fetchUserByUsernameAndPassword({
+      username,
+      password,
+    });
+    const tokens = await tokenService.generateAuthTokens(user);
     res.json({
       user: {
         _id: user._id,
@@ -61,8 +52,8 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
-    await clearRefreshToken(refreshToken);
+    const { refresh_token } = req.body;
+    await tokenService.clearRefreshToken(refresh_token);
     res.json({});
   } catch (error) {
     next(error);
@@ -71,13 +62,12 @@ const logout = async (req, res, next) => {
 
 const refreshToken = async (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
-    const payload = await verifyRefreshToken(refreshToken);
-    await verifyUserFromTokenPayload(payload);
-    let newAccessToken = await generateAccessTokenFromRefreshTokenPayload(
-      payload
-    );
-    res.json({ accessToken: newAccessToken });
+    const { refresh_token } = req.body;
+    const payload = await tokenService.verifyRefreshToken(refresh_token);
+    await authService.verifyUserFromTokenPayload(payload);
+    let newAccessToken =
+      await tokenService.generateAccessTokenFromRefreshTokenPayload(payload);
+    res.json({ access_token: newAccessToken });
   } catch (error) {
     next(error);
   }
@@ -86,7 +76,7 @@ const refreshToken = async (req, res, next) => {
 const activate = async (req, res, next) => {
   try {
     const token = req.params.token;
-    await enableUserByConfirmationToken(token);
+    await authService.enableUserByConfirmationToken(token);
     res.json({ message: "Activated account" });
   } catch (error) {
     next(error);

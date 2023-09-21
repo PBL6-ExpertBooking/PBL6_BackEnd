@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
 
-const fetchUserById = async (userId) => {
-  const user = await User.findOne({ _id: userId }).lean();
+const fetchUserById = async (user_id) => {
+  const user = await User.findOne({ _id: user_id }).lean();
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
@@ -12,38 +12,38 @@ const fetchUserById = async (userId) => {
 };
 
 const changePasswordByUserId = async ({
-  userId,
-  oldPassword,
-  newPassword,
-  confirmPassword,
+  user_id,
+  current_password,
+  new_password,
+  confirm_password,
 }) => {
-  if (newPassword !== confirmPassword) {
+  if (new_password !== confirm_password) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
       "Confirmation password not match"
     );
   }
 
-  const user = await User.findById(userId);
+  const user = await User.findById(user_id);
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
 
-  let oldPasswordMatches = await bcrypt.compare(
-    oldPassword,
+  let current_passwordMatches = await bcrypt.compare(
+    current_password,
     user.encrypted_password
   );
-  if (!oldPasswordMatches) {
+  if (!current_passwordMatches) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid credentials");
   }
 
-  const encrypted_newPassword = await bcrypt.hash(
-    newPassword,
+  const encrypted_new_password = await bcrypt.hash(
+    new_password,
     parseInt(process.env.BCRYPT_SALT)
   );
-  await user.updateOne({ encrypted_password: encrypted_newPassword });
+  await user.updateOne({ encrypted_password: encrypted_new_password });
 
   return user;
 };
 
-export { fetchUserById, changePasswordByUserId };
+export default { fetchUserById, changePasswordByUserId };

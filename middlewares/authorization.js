@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import { verifyAccessToken } from "../services/tokenService.js";
+import tokenService from "../services/tokenService.js";
 import ApiError from "../utils/ApiError.js";
 
 const auth = async (req, res, next) => {
@@ -9,7 +9,7 @@ const auth = async (req, res, next) => {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid access token");
     }
     const accessToken = authHeader.split(" ")[1];
-    const user = await verifyAccessToken(accessToken);
+    const user = await tokenService.verifyAccessToken(accessToken);
 
     if (user.isRestricted) {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Restricted user");
