@@ -15,11 +15,7 @@ const register = async (req, res, next) => {
     confirmationUserService.createConfirmationTokenAndSendMail(newUser._id);
     const tokens = await tokenService.generateAuthTokens(newUser);
     res.json({
-      user: {
-        _id: newUser._id,
-        first_name: newUser.first_name,
-        last_name: newUser.last_name,
-      },
+      user: newUser,
       tokens,
     });
   } catch (error) {
@@ -36,13 +32,7 @@ const login = async (req, res, next) => {
     });
     const tokens = await tokenService.generateAuthTokens(user);
     res.json({
-      user: {
-        _id: user._id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        photo_url: user.photo_url,
-        role: user.role,
-      },
+      user,
       tokens,
     });
   } catch (error) {

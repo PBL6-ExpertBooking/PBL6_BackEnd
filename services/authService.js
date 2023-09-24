@@ -2,6 +2,7 @@ import { User } from "../models/index.js";
 import httpStatus from "http-status";
 import ApiError from "../utils/ApiError.js";
 import bcrypt from "bcryptjs";
+import { userMapper } from "./mapper/userMapper.js";
 
 const createNewUser = async (user) => {
   if (await User.findOne({ email: user.email.toLowerCase() })) {
@@ -18,7 +19,7 @@ const createNewUser = async (user) => {
   if (!newUser) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Server error");
   }
-  return newUser;
+  return userMapper(newUser);
 };
 
 const fetchUserByUsernameAndPassword = async ({ username, password }) => {
@@ -33,7 +34,7 @@ const fetchUserByUsernameAndPassword = async ({ username, password }) => {
   if (!passwordMatches) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid credentials");
   }
-  return user;
+  return userMapper(user);
 };
 
 const fetchUserByEmail = async ({ email }) => {
@@ -44,7 +45,7 @@ const fetchUserByEmail = async ({ email }) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid credentials");
   }
 
-  return user;
+  return userMapper(user);
 };
 
 const verifyUserFromTokenPayload = async ({ user_id }) => {
@@ -54,10 +55,7 @@ const verifyUserFromTokenPayload = async ({ user_id }) => {
 };
 
 const enableUserById = async (user_id) => {
-  const user = await User.findOneAndUpdate(
-    { _id: user_id },
-    { isRestricted: false }
-  );
+  const user = await User.findByIdAndUpdate(user_id, { isRestricted: false });
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }

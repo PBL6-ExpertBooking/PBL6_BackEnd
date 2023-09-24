@@ -2,8 +2,12 @@ import mongoose from "mongoose";
 
 const expertInfoSchema = new mongoose.Schema(
   {
-    user_id: { type: mongoose.Schema.ObjectId, ref: "users" },
-    major_id: { type: mongoose.Schema.ObjectId, ref: "majors" },
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: "users",
+      index: true,
+    },
+    major: { type: mongoose.Schema.ObjectId, ref: "majors" },
     description: String,
     certificates: [
       {

@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema(
   {
-    user_id: { type: mongoose.Schema.ObjectId, ref: "users" },
-    expert_id: { type: mongoose.Schema.ObjectId, ref: "users" },
+    user: { type: mongoose.Schema.ObjectId, ref: "users" },
+    expert: { type: mongoose.Schema.ObjectId, ref: "users" },
     time_booking: Date,
     payment_type: String,
     price: Number,

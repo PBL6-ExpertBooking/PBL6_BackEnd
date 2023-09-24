@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 import { roles } from "../config/constant.js";
 
 const userSchema = new mongoose.Schema(
@@ -9,6 +10,7 @@ const userSchema = new mongoose.Schema(
     phone: String,
     address: String,
     photo_url: String,
+    photo_public_id: String,
     DoB: Date,
     email: { type: String, required: true },
     username: String,
@@ -23,6 +25,8 @@ const userSchema = new mongoose.Schema(
   },
   { collection: "users" }
 );
+
+userSchema.plugin(mongoosePaginate);
 
 const User = mongoose.model("User", userSchema);
 
