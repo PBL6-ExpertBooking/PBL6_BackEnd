@@ -1,21 +1,17 @@
 export default {
   post: {
     tags: ["auth"],
-    operationId: "login",
+    operationId: "logout",
     parameters: [],
     requestBody: {
       content: {
         "application/json": {
           schema: {
-            $ref: "#/components/schemas/LoginRequest",
+            $ref: "#/components/schemas/RefreshToken",
           },
         },
       },
     },
-    responses: {
-      200: {
-        description: "login successfully",
-      },
-    },
+    responses: {},
   },
 };

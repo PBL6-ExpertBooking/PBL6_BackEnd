@@ -1,6 +1,9 @@
+import authSchemas from "./auth/schemas.js";
+
 export default {
   components: {
     schemas: {
+      ...authSchemas,
       user: {
         type: "object",
         properties: {
@@ -27,17 +30,6 @@ export default {
           },
           isRestriced: {
             type: "bool",
-          },
-        },
-      },
-      LoginPayload: {
-        type: "object",
-        properties: {
-          username: {
-            type: "string",
-          },
-          password: {
-            type: "string",
           },
         },
       },

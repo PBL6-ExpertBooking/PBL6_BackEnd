@@ -1,20 +1,20 @@
 export default {
   post: {
     tags: ["auth"],
-    operationId: "login",
+    operationId: "register",
     parameters: [],
     requestBody: {
       content: {
         "application/json": {
           schema: {
-            $ref: "#/components/schemas/LoginRequest",
+            $ref: "#/components/schemas/RegisterRequest",
           },
         },
       },
     },
     responses: {
       200: {
-        description: "login successfully",
+        description: "register successfully",
       },
     },
   },
