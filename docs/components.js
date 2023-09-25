@@ -2,6 +2,13 @@ import authSchemas from "./auth/schemas.js";
 
 export default {
   components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+      },
+    },
     schemas: {
       ...authSchemas,
       user: {
