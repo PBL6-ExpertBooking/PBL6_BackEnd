@@ -28,7 +28,7 @@ const changePassword = async (req, res, next) => {
 
 const getCurrentUserInfo = async (req, res, next) => {
   try {
-    return req.authData.user;
+    res.json({ user: req.authData.user });
   } catch (error) {
     next(error);
   }

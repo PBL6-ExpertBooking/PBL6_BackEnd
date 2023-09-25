@@ -13,5 +13,6 @@ export default {
         description: "activation token",
       },
     ],
+    responses: {},
   },
 };
