@@ -26,6 +26,14 @@ const changePassword = async (req, res, next) => {
   }
 };
 
+const getCurrentUserInfo = async (req, res, next) => {
+  try {
+    return req.authData.user;
+  } catch (error) {
+    next(error);
+  }
+};
+
 const updateUserInfo = async (req, res, next) => {
   try {
     const update_info = { ...req.body, file: req.file || undefined };
@@ -37,4 +45,9 @@ const updateUserInfo = async (req, res, next) => {
   }
 };
 
-export default { getUserById, changePassword, updateUserInfo };
+export default {
+  getUserById,
+  changePassword,
+  getCurrentUserInfo,
+  updateUserInfo,
+};
