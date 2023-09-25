@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import swaggerUI from "swagger-ui-express";
+import docs from "./docs/index.js";
 import routes from "./routes/index.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
@@ -15,6 +17,7 @@ app.use(cors());
 
 // api routes
 app.use("/v1", routes);
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(docs));
 
 app.use(errorHandler.converter);
 app.use(errorHandler.notFound);
