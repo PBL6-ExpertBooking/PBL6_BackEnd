@@ -6,6 +6,7 @@ import upload from "../middlewares/upload.js";
 const router = express.Router();
 
 router.get("/:id", controller.getUserById);
+router.get("/info", auth, controller.getCurrentUserInfo);
 router.post("/change-password", auth, controller.changePassword);
 router.post(
   "/update-info",
