@@ -9,7 +9,7 @@ export default {
       description: "Local server",
     },
     {
-      url: `https://pbl6-server.onrender.com:${process.env.PORT}/v1`,
+      url: `https://pbl6-server.onrender.com/v1`,
       description: "Hosting",
     },
   ],
