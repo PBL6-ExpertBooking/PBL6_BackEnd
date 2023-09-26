@@ -61,9 +61,9 @@ const updateUserInfo = async (user_id, update_info) => {
   if (update_info.file) {
     // upload image and retrieve photo_url
     const response = await imageService.uploadImage(update_info.file);
-    // delete old image
     if (user.photo_public_id) {
-      await imageService.deleteImageByPublicId(user.photo_public_id);
+      // delete old image async
+      imageService.deleteImageByPublicId(user.photo_public_id);
     }
     user.photo_url = response.url;
     user.photo_public_id = response.public_id;
