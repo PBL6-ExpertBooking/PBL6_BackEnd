@@ -10,6 +10,19 @@ const getUserById = async (req, res, next) => {
   }
 };
 
+const getUsersPagination = async (req, res, next) => {
+  try {
+    const { page, limit } = req.params;
+    const pagination = await userService.fetchUsersPagination(
+      page || 1,
+      limit || 10
+    );
+    res.json({ pagination });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const changePassword = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
@@ -47,6 +60,7 @@ const updateUserInfo = async (req, res, next) => {
 
 export default {
   getUserById,
+  getUsersPagination,
   changePassword,
   getCurrentUserInfo,
   updateUserInfo,

@@ -13,6 +13,23 @@ const fetchUserById = async (user_id) => {
   return userMapper(user);
 };
 
+const fetchUsersPagination = async (page = 1, limit = 10) => {
+  const pagination = await User.paginate(
+    {},
+    {
+      select:
+        "first_name last_name gender phone address photo_url DoB email username role isRestricted",
+      page,
+      limit,
+      lean: true,
+      customeLabels: {
+        docs: "users",
+      },
+    }
+  );
+  return pagination;
+};
+
 const changePasswordByUserId = async ({
   user_id,
   current_password,
@@ -25,27 +42,6 @@ const changePasswordByUserId = async ({
       "Confirmation password not match"
     );
   }
-
-  const user = await User.findById(user_id);
-  if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
-  }
-
-  let current_passwordMatches = await bcrypt.compare(
-    current_password,
-    user.encrypted_password
-  );
-  if (!current_passwordMatches) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid credentials");
-  }
-
-  const encrypted_new_password = await bcrypt.hash(
-    new_password,
-    parseInt(process.env.BCRYPT_SALT)
-  );
-  await user.updateOne({ encrypted_password: encrypted_new_password });
-
-  return userMapper(user);
 };
 
 const updateUserInfo = async (user_id, update_info) => {
@@ -73,4 +69,9 @@ const updateUserInfo = async (user_id, update_info) => {
   return userMapper(user);
 };
 
-export default { fetchUserById, changePasswordByUserId, updateUserInfo };
+export default {
+  fetchUserById,
+  fetchUsersPagination,
+  changePasswordByUserId,
+  updateUserInfo,
+};

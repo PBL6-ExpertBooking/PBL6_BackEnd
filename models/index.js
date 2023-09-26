@@ -1,4 +1,3 @@
-import Admin from "./Admin.js";
 import Booking from "./Booking.js";
 import Certificate from "./Certificate.js";
 import ConfirmationToken from "./ConfirmationToken.js";
@@ -10,7 +9,6 @@ import Review from "./Review.js";
 import User from "./User.js";
 
 export {
-  Admin,
   Booking,
   Certificate,
   ConfirmationToken,

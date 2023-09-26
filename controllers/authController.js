@@ -66,7 +66,7 @@ const refreshToken = async (req, res, next) => {
 const activate = async (req, res, next) => {
   try {
     const token = req.params.token;
-    await authService.enableUserByConfirmationToken(token);
+    await confirmationUserService.enableUserByConfirmationToken(token);
     res.json({ message: "Activated account" });
   } catch (error) {
     next(error);

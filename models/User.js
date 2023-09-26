@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
     reset_password: String,
     role: {
       type: String,
-      enum: [roles.USER, roles.EXPERT],
+      enum: [roles.USER, roles.EXPERT, roles.ADMIN],
       default: roles.USER,
     },
     isRestricted: { type: Boolean, default: true },
