@@ -4,6 +4,10 @@ import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
 import { userMapper } from "./mapper/userMapper.js";
 import imageService from "./imageService.js";
+import { roles } from "../config/constant.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const fetchUserById = async (user_id) => {
   const user = await User.findById(user_id).lean();
@@ -22,7 +26,7 @@ const fetchUsersPagination = async (page = 1, limit = 10) => {
       page,
       limit,
       lean: true,
-      customeLabels: {
+      customLabels: {
         docs: "users",
       },
     }
@@ -42,6 +46,27 @@ const changePasswordByUserId = async ({
       "Confirmation password not match"
     );
   }
+
+  const user = await User.findById(user_id);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+
+  let current_passwordMatches = await bcrypt.compare(
+    current_password,
+    user.encrypted_password
+  );
+  if (!current_passwordMatches) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid credentials");
+  }
+
+  const encrypted_new_password = await bcrypt.hash(
+    new_password,
+    parseInt(process.env.BCRYPT_SALT)
+  );
+  await user.updateOne({ encrypted_password: encrypted_new_password });
+
+  return userMapper(user);
 };
 
 const updateUserInfo = async (user_id, update_info) => {
@@ -69,9 +94,36 @@ const updateUserInfo = async (user_id, update_info) => {
   return userMapper(user);
 };
 
+const initAdmin = async () => {
+  let admin = await User.findOne({
+    username: process.env.ADMIN_USERNAME,
+    role: roles.ADMIN,
+  });
+  if (!admin) {
+    admin = await User.findOneAndUpdate(
+      { username: process.env.ADMIN_USERNAME },
+      {
+        email: process.env.ADMIN_EMAIL,
+        encrypted_password: await bcrypt.hash(
+          process.env.ADMIN_PASSWORD,
+          parseInt(process.env.BCRYPT_SALT)
+        ),
+        role: roles.ADMIN,
+        isRestricted: false,
+      },
+      {
+        upsert: true,
+      }
+    );
+  }
+
+  return admin;
+};
+
 export default {
   fetchUserById,
   fetchUsersPagination,
   changePasswordByUserId,
   updateUserInfo,
+  initAdmin,
 };

@@ -12,7 +12,7 @@ const getUserById = async (req, res, next) => {
 
 const getUsersPagination = async (req, res, next) => {
   try {
-    const { page, limit } = req.params;
+    const { page, limit } = req.query;
     const pagination = await userService.fetchUsersPagination(
       page || 1,
       limit || 10

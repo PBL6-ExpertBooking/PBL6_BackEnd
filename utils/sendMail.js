@@ -1,5 +1,8 @@
 import nodemailer from "nodemailer";
 import logger from "../config/logger.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
@@ -12,7 +15,7 @@ const transporter = nodemailer.createTransport({
 
 const sendMail = async (to, subject, text, callback = null) => {
   const mailOptions = {
-    from: "expertbooking@pbl.com",
+    from: process.env.ADMIN_EMAIL,
     to,
     subject,
     text,
