@@ -18,7 +18,7 @@ const expertInfoSchema = new mongoose.Schema(
     certificates: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "certificate",
+        ref: "Certificate",
       },
     ],
     isVerified: Boolean,
@@ -26,7 +26,7 @@ const expertInfoSchema = new mongoose.Schema(
     reviews: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "review",
+        ref: "Review",
       },
     ],
   },
