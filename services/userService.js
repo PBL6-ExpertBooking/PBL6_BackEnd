@@ -1,4 +1,4 @@
-import { User } from "../models/index.js";
+import { User, Major, ExpertInfo } from "../models/index.js";
 import bcrypt from "bcryptjs";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
@@ -120,10 +120,34 @@ const initAdmin = async () => {
   return admin;
 };
 
+const promoteToExpert = async ({ user_id, major_name, descriptions }) => {
+  let user = User.findById(user_id);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  const major = await Major.find({ name: major_name }).lean();
+  if (!major) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Major not found");
+  }
+  let expertInfo = await ExpertInfo.create({
+    user: user_id,
+    major: major._id,
+    descriptions: descriptions,
+    isVerified: false,
+  });
+  await user.updateOne({
+    role: roles.EXPERT,
+  });
+  await expertInfo.populate("user", "first_name last_name role");
+  await expertInfo.populate("major");
+  return expertInfo;
+};
+
 export default {
   fetchUserById,
   fetchUsersPagination,
   changePasswordByUserId,
   updateUserInfo,
   initAdmin,
+  promoteToExpert,
 };
