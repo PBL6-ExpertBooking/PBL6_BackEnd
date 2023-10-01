@@ -13,6 +13,16 @@ const getExpertsPagination = async (req, res, next) => {
   }
 };
 
+const getCurrentExpertInfo = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const expert = await expertService.fetchExpertByUserId(user_id);
+    res.json({ expert });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getExpertById = async (req, res, next) => {
   try {
     const expert_id = req.params.id;
@@ -33,8 +43,39 @@ const verifyExpertById = async (req, res, next) => {
   }
 };
 
+const addCertificate = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { name } = req.body;
+    const photo = req.file;
+    const certificate = await expertService.addCertificate({
+      user_id,
+      name,
+      photo,
+    });
+    res.json({ certificate });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getCertificatesByExpertId = async (req, res, next) => {
+  try {
+    const expert_id = req.params.expert_id;
+    const certificates = await expertService.fetchCertificatesByExpertId(
+      expert_id
+    );
+    res.json({ certificates });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getExpertsPagination,
   getExpertById,
   verifyExpertById,
+  addCertificate,
+  getCertificatesByExpertId,
+  getCurrentExpertInfo,
 };

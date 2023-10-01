@@ -4,6 +4,7 @@ const certificateSchema = new mongoose.Schema(
   {
     name: String,
     photo_url: String,
+    photo_public_id: String,
     status: String,
   },
   { collection: "certificate" }
