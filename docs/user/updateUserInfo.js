@@ -2,6 +2,7 @@ export default {
   put: {
     tags: ["user"],
     operationId: "updateUserInfo",
+    description: "update current user",
     security: [
       {
         bearerAuth: [],

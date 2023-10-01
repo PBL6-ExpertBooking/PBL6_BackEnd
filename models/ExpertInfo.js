@@ -1,18 +1,24 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const expertInfoSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.ObjectId,
-      ref: "users",
+      ref: "User",
       index: true,
     },
-    major: { type: mongoose.Schema.ObjectId, ref: "majors" },
-    description: String,
+    majors: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "Major",
+      },
+    ],
+    descriptions: String,
     certificates: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "certificate",
+        ref: "Certificate",
       },
     ],
     isVerified: Boolean,
@@ -20,12 +26,14 @@ const expertInfoSchema = new mongoose.Schema(
     reviews: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "review",
+        ref: "Review",
       },
     ],
   },
   { collection: "expert_info" }
 );
+
+expertInfoSchema.plugin(mongoosePaginate);
 
 const ExpertInfo = mongoose.model("ExpertInfo", expertInfoSchema);
 

@@ -3,7 +3,7 @@ import userService from "../services/userService.js";
 const getUserById = async (req, res, next) => {
   try {
     const user_id = req.params.id;
-    const user = userService.fetchUserById(user_id);
+    const user = await userService.fetchUserById(user_id);
     res.json({ user });
   } catch (error) {
     next(error);
@@ -58,10 +58,26 @@ const updateUserInfo = async (req, res, next) => {
   }
 };
 
+const promoteToExpert = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { major_names, descriptions } = req.body;
+    const expert = await userService.promoteToExpert({
+      user_id,
+      major_names,
+      descriptions,
+    });
+    res.json({ expert });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
   changePassword,
   getCurrentUserInfo,
   updateUserInfo,
+  promoteToExpert,
 };

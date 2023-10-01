@@ -6,5 +6,11 @@ export default {
     {
       name: "user",
     },
+    {
+      name: "expert",
+    },
+    {
+      name: "major",
+    },
   ],
 };
