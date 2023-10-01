@@ -5,10 +5,15 @@ const expertInfoSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.ObjectId,
-      ref: "users",
+      ref: "User",
       index: true,
     },
-    major: { type: mongoose.Schema.ObjectId, ref: "majors" },
+    majors: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "Major",
+      },
+    ],
     descriptions: String,
     certificates: [
       {

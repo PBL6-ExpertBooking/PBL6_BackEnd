@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import { ExpertInfo, Certificate } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 
-const fetchExpertPagination = async (page = 1, limit = 10) => {
+const fetchExpertsPagination = async (page = 1, limit = 10) => {
   const pagination = await ExpertInfo.paginate(
     {},
     {
@@ -13,13 +13,13 @@ const fetchExpertPagination = async (page = 1, limit = 10) => {
             "first_name last_name gender phone address photo_url DoB email username role isRestricted",
         },
         {
-          path: "major",
+          path: "majors",
         },
       ],
       page,
       limit,
       lean: true,
-      customeLabels: {
+      customLabels: {
         docs: "experts",
       },
     }
@@ -33,7 +33,7 @@ const fetchExpertById = async (expert_id) => {
       "user",
       "first_name last_name gender phone address photo_url DoB email username role isRestricted"
     )
-    .populate("major")
+    .populate("majors")
     .lean();
   if (!expert) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
@@ -51,7 +51,7 @@ const verifyExpertById = async (expert_id) => {
 };
 
 export default {
-  fetchExpertPagination,
+  fetchExpertsPagination,
   fetchExpertById,
   verifyExpertById,
 };

@@ -16,5 +16,11 @@ router.get("/info", auth, controller.getCurrentUserInfo);
 router.put("/info", auth, upload.single("photo"), controller.updateUserInfo);
 router.get("/info/:id", controller.getUserById);
 router.put("/change-password", auth, controller.changePassword);
+router.post(
+  "/promote-to-expert",
+  auth,
+  checkRole([roles.USER]),
+  controller.promoteToExpert
+);
 
 export default router;

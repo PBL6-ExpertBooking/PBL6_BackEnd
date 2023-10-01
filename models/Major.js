@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const majorSchema = new mongoose.Schema(
   {
-    name: { type: String, index: true },
+    name: { type: String, unique: true, index: true },
     descriptions: String,
   },
   { collection: "majors" }

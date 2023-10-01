@@ -4,6 +4,8 @@ import tags from "./tags.js";
 import components from "./components.js";
 import auth from "./auth/index.js";
 import user from "./user/index.js";
+import expert from "./expert/index.js";
+import major from "./major/index.js";
 
 export default {
   ...basicInfo,
@@ -13,5 +15,7 @@ export default {
   paths: {
     ...auth,
     ...user,
+    ...expert,
+    ...major,
   },
 };

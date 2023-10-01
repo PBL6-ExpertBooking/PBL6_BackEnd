@@ -5,12 +5,12 @@ const createMajor = async ({ name, descriptions }) => {
   return major;
 };
 
-const fetchAllMajor = async () => {
+const fetchAllMajors = async () => {
   const majors = await Major.find();
   return majors;
 };
 
 export default {
   createMajor,
-  fetchAllMajor,
+  fetchAllMajors,
 };
