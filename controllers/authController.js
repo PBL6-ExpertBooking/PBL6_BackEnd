@@ -1,6 +1,10 @@
 import authService from "../services/authService.js";
 import tokenService from "../services/tokenService.js";
 import confirmationUserService from "../services/confirmationUserService.js";
+import { OAuth2Client } from "google-auth-library";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const register = async (req, res, next) => {
   try {
@@ -73,4 +77,57 @@ const activate = async (req, res, next) => {
   }
 };
 
-export default { register, login, logout, refreshToken, activate };
+// Google auth
+
+const redirectUrl = `${process.env.DOMAIN_NAME}/v1/auth/google-user`;
+let redirectUrlAfterVerify = "";
+const oAuth2Client = new OAuth2Client(
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  redirectUrl
+);
+
+const googleUserLogin = async (req, res, next) => {
+  try {
+    redirectUrlAfterVerify = req.body.redirectUrl;
+    const authorizeUrl = oAuth2Client.generateAuthUrl({
+      access_type: "offline",
+      scope: "https://www.googleapis.com/auth/userinfo.profile email openid",
+      prompt: "consent",
+    });
+    res.json({ url: authorizeUrl });
+  } catch (error) {
+    next(error);
+  }
+};
+
+async function getUserData(access_token) {
+  const response = await fetch(
+    `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`
+  );
+  return await response.json();
+}
+
+const googleUserVerify = async (req, res, next) => {
+  try {
+    const code = req.query.code;
+    const r = await oAuth2Client.getToken(code);
+    const google_user = await getUserData(r.tokens.access_token);
+    const user = await authService.handleGoogleUser(google_user);
+    const tokens = await tokenService.generateAuthTokens(user);
+    res.json({ user, tokens });
+    // res.redirect(303, redirectUrlAfterVerify);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  register,
+  login,
+  logout,
+  refreshToken,
+  activate,
+  googleUserLogin,
+  googleUserVerify,
+};

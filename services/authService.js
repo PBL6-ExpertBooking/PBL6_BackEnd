@@ -61,10 +61,32 @@ const enableUserById = async (user_id) => {
   }
 };
 
+const handleGoogleUser = async (google_user) => {
+  const user = await User.findOne({ email: google_user.email }).lean();
+  if (user) {
+    if (!user.providers || !user.providers.includes("google")) {
+      // TODO: handle old user with new google auth
+
+      throw new ApiError(httpStatus.BAD_REQUEST, "Your email already exists");
+    }
+    return userMapper(user);
+  }
+  const newUser = await User.create({
+    first_name: google_user.given_name,
+    last_name: google_user.family_name,
+    photo_url: google_user.picture,
+    email: google_user.email,
+    isRestricted: false,
+    providers: ["google"],
+  });
+  return userMapper(newUser);
+};
+
 export default {
   createNewUser,
   fetchUserByUsernameAndPassword,
   fetchUserByEmail,
   verifyUserFromTokenPayload,
   enableUserById,
+  handleGoogleUser,
 };

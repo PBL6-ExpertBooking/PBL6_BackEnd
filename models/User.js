@@ -12,8 +12,8 @@ const userSchema = new mongoose.Schema(
     photo_url: String,
     photo_public_id: String,
     DoB: Date,
-    email: { type: String, required: true },
-    username: String,
+    email: { type: String, required: true, index: true },
+    username: { type: String, index: true },
     encrypted_password: String,
     reset_password: String,
     role: {
@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema(
       default: roles.USER,
     },
     isRestricted: { type: Boolean, default: true },
+    providers: { type: [String], default: [] },
   },
   { collection: "users" }
 );
