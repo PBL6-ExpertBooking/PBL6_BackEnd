@@ -5,10 +5,17 @@ export default {
     parameters: [],
     description: "google auth and store data in 'authData' cookie",
     requestBody: {
-      type: "object",
-      properties: {
-        redirectUrl: {
-          type: "string",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              redirectUrl: {
+                type: "string",
+                require: false,
+              },
+            },
+          },
         },
       },
     },
