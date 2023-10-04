@@ -3,6 +3,7 @@ export default {
     tags: ["auth"],
     operationId: "googleLogin",
     parameters: [],
+    description: "google auth and store data in 'authData' cookie",
     requestBody: {
       type: "object",
       properties: {

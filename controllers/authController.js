@@ -2,6 +2,7 @@ import authService from "../services/authService.js";
 import tokenService from "../services/tokenService.js";
 import confirmationUserService from "../services/confirmationUserService.js";
 import { OAuth2Client } from "google-auth-library";
+import axios from "axios";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -102,10 +103,10 @@ const googleUserLogin = async (req, res, next) => {
 };
 
 async function getUserData(access_token) {
-  const response = await fetch(
+  const response = await axios.get(
     `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`
   );
-  return await response.json();
+  return await response.data;
 }
 
 const googleUserVerify = async (req, res, next) => {
@@ -115,8 +116,9 @@ const googleUserVerify = async (req, res, next) => {
     const google_user = await getUserData(r.tokens.access_token);
     const user = await authService.handleGoogleUser(google_user);
     const tokens = await tokenService.generateAuthTokens(user);
-    res.cookie("access_token", tokens.access_token, { maxAge: 60000 });
-    res.cookie("refresh_token", tokens.refresh_token, { maxAge: 60000 });
+
+    // store authData in cookie
+    res.cookie("authData", JSON.stringify({ user, tokens }), { maxAge: 60000 });
     if (redirectUrlAfterVerify) {
       res.redirect(303, redirectUrlAfterVerify);
     } else {
