@@ -123,6 +123,7 @@ const googleUserVerify = async (req, res, next) => {
       res.json({ user, tokens });
     }
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
