@@ -3,6 +3,7 @@ import register from "./register.js";
 import logout from "./logout.js";
 import refreshToken from "./refreshToken.js";
 import activate from "./activate.js";
+import googleLogin from "./googleLogin.js";
 
 export default {
   "/auth/register": {
@@ -19,5 +20,8 @@ export default {
   },
   "/auth/activate/{token}": {
     ...activate,
+  },
+  "/auth/google": {
+    ...googleLogin,
   },
 };
