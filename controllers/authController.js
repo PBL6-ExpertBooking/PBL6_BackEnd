@@ -79,7 +79,7 @@ const activate = async (req, res, next) => {
 
 // Google auth
 
-const redirectUrl = `${process.env.DOMAIN_NAME}/v1/auth/google-user`;
+const redirectUrl = `${process.env.DOMAIN_NAME}/v1/auth/google`;
 let redirectUrlAfterVerify = "";
 const oAuth2Client = new OAuth2Client(
   process.env.CLIENT_ID,
@@ -115,8 +115,13 @@ const googleUserVerify = async (req, res, next) => {
     const google_user = await getUserData(r.tokens.access_token);
     const user = await authService.handleGoogleUser(google_user);
     const tokens = await tokenService.generateAuthTokens(user);
-    res.json({ user, tokens });
-    // res.redirect(303, redirectUrlAfterVerify);
+    res.cookie("access_token", tokens.access_token, { maxAge: 60000 });
+    res.cookie("refresh_token", tokens.refresh_token, { maxAge: 60000 });
+    if (redirectUrlAfterVerify) {
+      res.redirect(303, redirectUrlAfterVerify);
+    } else {
+      res.json({ user, tokens });
+    }
   } catch (error) {
     next(error);
   }

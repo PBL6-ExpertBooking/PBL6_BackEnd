@@ -21,7 +21,7 @@ export default {
   "/auth/activate/{token}": {
     ...activate,
   },
-  "/auth/google-user": {
+  "/auth/google": {
     ...googleLogin,
   },
 };
