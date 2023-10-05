@@ -21,7 +21,7 @@ export default {
                 type: "string",
               },
               gender: {
-                type: "string",
+                type: "boolean",
               },
               phone: {
                 type: "string",

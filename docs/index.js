@@ -6,6 +6,7 @@ import auth from "./auth/index.js";
 import user from "./user/index.js";
 import expert from "./expert/index.js";
 import major from "./major/index.js";
+import certificate from "./certificate/index.js";
 
 export default {
   ...basicInfo,
@@ -17,5 +18,6 @@ export default {
     ...user,
     ...expert,
     ...major,
+    ...certificate,
   },
 };

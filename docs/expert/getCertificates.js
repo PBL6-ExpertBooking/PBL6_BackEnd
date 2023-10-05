@@ -2,6 +2,7 @@ export default {
   get: {
     tags: ["expert"],
     operationId: "getCertificates",
+    decription: "get all certificates of current expert",
     security: [
       {
         bearerAuth: [],

@@ -43,22 +43,6 @@ const verifyExpertById = async (req, res, next) => {
   }
 };
 
-const addCertificate = async (req, res, next) => {
-  try {
-    const user_id = req.authData.user._id;
-    const { name } = req.body;
-    const photo = req.file;
-    const certificate = await expertService.addCertificate({
-      user_id,
-      name,
-      photo,
-    });
-    res.json({ certificate });
-  } catch (error) {
-    next(error);
-  }
-};
-
 const getCertificatesByExpertId = async (req, res, next) => {
   try {
     const expert_id = req.params.expert_id;
@@ -75,7 +59,6 @@ export default {
   getExpertsPagination,
   getExpertById,
   verifyExpertById,
-  addCertificate,
   getCertificatesByExpertId,
   getCurrentExpertInfo,
 };

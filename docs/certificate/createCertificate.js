@@ -1,7 +1,7 @@
 export default {
   post: {
-    tags: ["expert"],
-    operationId: "addCertificate",
+    tags: ["certificate"],
+    operationId: "createCertificate",
     description: "add certificate to current expert",
     security: [
       {
@@ -15,6 +15,12 @@ export default {
             type: "object",
             properties: {
               name: {
+                type: "string",
+              },
+              major_id: {
+                type: "string",
+              },
+              descriptions: {
                 type: "string",
               },
               photo: {

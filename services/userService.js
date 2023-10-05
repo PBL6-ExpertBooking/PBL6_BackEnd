@@ -89,7 +89,7 @@ const updateUserInfo = async (user_id, update_info) => {
     user.photo_url = response.url;
     user.photo_public_id = response.public_id;
   }
-  user.DoB = update_info.DoB || user.DoB;
+  user.DoB = update_info.DoB ? new Date(update_info.DoB) : user.DoB;
   await user.save();
   return userMapper(user);
 };
@@ -120,26 +120,19 @@ const initAdmin = async () => {
   return admin;
 };
 
-const promoteToExpert = async ({ user_id, major_names, descriptions }) => {
+const promoteToExpert = async ({ user_id, descriptions }) => {
   let user = User.findById(user_id);
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
-  const majors = await Major.find({ name: { $in: major_names } }).lean();
-  if (!majors) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Major not found");
-  }
   let expertInfo = await ExpertInfo.create({
     user: user_id,
-    majors: majors.map((major) => major._id),
     descriptions: descriptions,
-    isVerified: false,
   });
   await user.updateOne({
     role: roles.EXPERT,
   });
   await expertInfo.populate("user", "first_name last_name role");
-  await expertInfo.populate("majors");
   return expertInfo;
 };
 

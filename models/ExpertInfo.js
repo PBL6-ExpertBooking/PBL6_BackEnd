@@ -8,20 +8,14 @@ const expertInfoSchema = new mongoose.Schema(
       ref: "User",
       index: true,
     },
-    majors: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Major",
-      },
-    ],
     descriptions: String,
     certificates: [
       {
         type: mongoose.Schema.ObjectId,
+        unique: true,
         ref: "Certificate",
       },
     ],
-    isVerified: Boolean,
     average_rating: Number,
     reviews: [
       {
