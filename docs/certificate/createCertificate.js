@@ -2,7 +2,7 @@ export default {
   post: {
     tags: ["certificate"],
     operationId: "createCertificate",
-    description: "add certificate to current expert",
+    description: "add new certificate to current expert",
     security: [
       {
         bearerAuth: [],

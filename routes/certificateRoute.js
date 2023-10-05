@@ -13,5 +13,11 @@ router.post(
   upload.single("photo"),
   controller.createCertificate
 );
+router.delete(
+  "/:certificate_id",
+  auth,
+  checkRole([roles.EXPERT]),
+  controller.deleteCertificate
+);
 
 export default router;

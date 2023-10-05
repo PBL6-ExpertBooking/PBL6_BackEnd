@@ -18,4 +18,15 @@ const createCertificate = async (req, res, next) => {
   }
 };
 
-export default { createCertificate };
+const deleteCertificate = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const certificate_id = req.params.certificate_id;
+    await certificateService.deleteCertificateById(user_id, certificate_id);
+    res.json({ message: "Delete certificate successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { createCertificate, deleteCertificate };

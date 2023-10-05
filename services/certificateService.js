@@ -32,11 +32,37 @@ const createCertificate = async ({
   });
   await certificate.save();
 
+  // add new certificate to current expert's certificates
   expert.certificates.push(certificate);
   await expert.save();
+
   return certificate;
+};
+
+const deleteCertificateById = async (user_id, certificate_id) => {
+  const expert = await ExpertInfo.findOne({ user: user_id });
+  if (!expert) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
+  }
+  const certificate = await Certificate.findById(certificate_id);
+  if (!certificate) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Certificate not found");
+  }
+  if (!expert.certificates.includes(certificate._id)) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "This certificate doesn't belong to current expert"
+    );
+  }
+
+  // delete certificate from expert's certificates
+  expert.certificates.pull(certificate);
+  // delete certificate form database
+  await certificate.deleteOne();
+  await expert.save();
 };
 
 export default {
   createCertificate,
+  deleteCertificateById,
 };
