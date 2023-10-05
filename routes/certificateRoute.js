@@ -19,5 +19,11 @@ router.delete(
   checkRole([roles.EXPERT]),
   controller.deleteCertificate
 );
+router.put(
+  "/verify/:certificate_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.verifyCertificate
+);
 
 export default router;

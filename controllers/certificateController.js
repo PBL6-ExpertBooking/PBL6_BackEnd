@@ -29,4 +29,16 @@ const deleteCertificate = async (req, res, next) => {
   }
 };
 
-export default { createCertificate, deleteCertificate };
+const verifyCertificate = async (req, res, next) => {
+  try {
+    const certificate_id = req.params.certificate_id;
+    const certificate = await certificateService.verifyCertificateById(
+      certificate_id
+    );
+    res.json({ certificate });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { createCertificate, deleteCertificate, verifyCertificate };

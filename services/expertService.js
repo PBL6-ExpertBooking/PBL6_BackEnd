@@ -33,7 +33,12 @@ const fetchExpertById = async (expert_id) => {
       "user",
       "first_name last_name gender phone address photo_url DoB email username role isRestricted"
     )
-    .populate("certificates")
+    .populate({
+      path: "certificates",
+      populate: {
+        path: "major",
+      },
+    })
     .lean();
   if (!expert) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
@@ -47,34 +52,59 @@ const fetchExpertByUserId = async (user_id) => {
       "user",
       "first_name last_name gender phone address photo_url DoB email username role isRestricted"
     )
-    .populate("certificates")
+    .populate({
+      path: "certificates",
+      populate: {
+        path: "major",
+      },
+    })
     .lean();
   if (!expert) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
   }
-  return expert;
-};
-
-const verifyExpertById = async (expert_id) => {
-  let expert = await ExpertInfo.findById(expert_id);
-  if (!expert) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
-  }
-  await expert.updateOne({ isVerified: true });
   return expert;
 };
 
 const fetchCertificatesByExpertId = async (expert_id) => {
-  const expert = await ExpertInfo.findById(expert_id)
-    .populate("certificates")
+  const expert = await ExpertInfo.findById(expert_id, {
+    select: "certificates",
+  })
+    .populate({
+      path: "certificates",
+      populate: {
+        path: "major",
+      },
+    })
     .lean();
   return expert.certificates;
+};
+
+const fetchUnverifiedCertificatesByExpertId = async (expert_id) => {
+  const expert = await ExpertInfo.findById(expert_id)
+    .populate({ path: "certificates", match: { isVerified: false } })
+    .lean();
+  return expert.certificates;
+};
+
+const fetchVerifiedMajorsByExpertId = async (expert_id) => {
+  const expert = await ExpertInfo.findById(expert_id, {
+    select: "certificates",
+  }).populate({
+    path: "certificates",
+    populate: {
+      path: "major",
+    },
+    match: { isVerified: true },
+  });
+  const majors = expert.certificates.map((certificate) => certificate.major);
+  return majors;
 };
 
 export default {
   fetchExpertsPagination,
   fetchExpertById,
-  verifyExpertById,
   fetchCertificatesByExpertId,
   fetchExpertByUserId,
+  fetchUnverifiedCertificatesByExpertId,
+  fetchVerifiedMajorsByExpertId,
 };

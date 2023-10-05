@@ -18,5 +18,6 @@ router.get(
   auth,
   controller.getCertificatesByExpertId
 );
+router.get("/majors/:expert_id", auth, controller.getVerifiedMajorsByExpertId);
 
 export default router;

@@ -57,12 +57,29 @@ const deleteCertificateById = async (user_id, certificate_id) => {
 
   // delete certificate from expert's certificates
   expert.certificates.pull(certificate);
-  // delete certificate form database
+  // delete photo
+  await imageService.deleteImageByPublicId(certificate.public_id);
+  // delete certificate from database
   await certificate.deleteOne();
   await expert.save();
+};
+
+const verifyCertificateById = async (certificate_id) => {
+  const certificate = await Certificate.findByIdAndUpdate(
+    certificate_id,
+    {
+      isVerified: true,
+    },
+    { new: true }
+  );
+  if (!certificate) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Certificate not found");
+  }
+  return certificate;
 };
 
 export default {
   createCertificate,
   deleteCertificateById,
+  verifyCertificateById,
 };
