@@ -61,10 +61,9 @@ const updateUserInfo = async (req, res, next) => {
 const promoteToExpert = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { major_names, descriptions } = req.body;
+    const { descriptions } = req.body;
     const expert = await userService.promoteToExpert({
       user_id,
-      major_names,
       descriptions,
     });
     res.json({ expert });

@@ -12,7 +12,7 @@ const auth = async (req, res, next) => {
     const user = await tokenService.verifyAccessToken(accessToken);
 
     if (user.isRestricted) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, "Restricted user");
+      throw new ApiError(httpStatus.NOT_ACCEPTABLE, "Restricted user");
     }
 
     req.authData = { user };

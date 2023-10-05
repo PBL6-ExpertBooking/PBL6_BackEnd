@@ -14,13 +14,6 @@ export default {
           schema: {
             type: "object",
             properties: {
-              major_names: {
-                type: "array",
-                items: {
-                  type: "string",
-                },
-                require: true,
-              },
               descriptions: {
                 type: "string",
                 require: true,
