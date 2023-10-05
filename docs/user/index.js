@@ -4,6 +4,8 @@ import changePassword from "./changePassword.js";
 import getAllUsers from "./getAllUsers.js";
 import promoteToExpert from "./promoteToExpert.js";
 import getUserInfoById from "./getUserInfoById.js";
+import enableUser from "./enableUser.js";
+import disableUser from "./disableUser.js";
 
 export default {
   "/user/all": {
@@ -21,5 +23,11 @@ export default {
   },
   "/user/promote-to-expert": {
     ...promoteToExpert,
+  },
+  "/user/enable/{userId}": {
+    ...enableUser,
+  },
+  "/user/disable/{userId}": {
+    ...disableUser,
   },
 };

@@ -136,6 +136,30 @@ const promoteToExpert = async ({ user_id, descriptions }) => {
   return expertInfo;
 };
 
+const enableUserById = async (user_id) => {
+  const user = await User.findByIdAndUpdate(
+    user_id,
+    { isRestricted: false },
+    { new: true }
+  );
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  return userMapper(user);
+};
+
+const disableUserById = async (user_id) => {
+  const user = await User.findByIdAndUpdate(
+    user_id,
+    { isRestricted: true },
+    { new: true }
+  );
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  return userMapper(user);
+};
+
 export default {
   fetchUserById,
   fetchUsersPagination,
@@ -143,4 +167,6 @@ export default {
   updateUserInfo,
   initAdmin,
   promoteToExpert,
+  enableUserById,
+  disableUserById,
 };

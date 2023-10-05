@@ -73,6 +73,26 @@ const promoteToExpert = async (req, res, next) => {
   }
 };
 
+const enableUser = async (req, res, next) => {
+  try {
+    const user_id = req.params.user_id;
+    const user = await userService.enableUserById(user_id);
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const disableUser = async (req, res, next) => {
+  try {
+    const user_id = req.params.user_id;
+    const user = await userService.disableUserById(user_id);
+    res.json({ user });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
@@ -80,4 +100,6 @@ export default {
   getCurrentUserInfo,
   updateUserInfo,
   promoteToExpert,
+  enableUser,
+  disableUser,
 };

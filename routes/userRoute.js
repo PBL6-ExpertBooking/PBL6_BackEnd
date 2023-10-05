@@ -22,5 +22,17 @@ router.post(
   checkRole([roles.USER]),
   controller.promoteToExpert
 );
+router.put(
+  "/enable/:user_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.enableUser
+);
+router.put(
+  "/disable/:user_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.disableUser
+);
 
 export default router;
