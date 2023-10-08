@@ -11,6 +11,7 @@ export const userMapper = ({
   username,
   role,
   isRestricted,
+  isConfirmed,
 }) => ({
   _id,
   first_name,
@@ -24,4 +25,5 @@ export const userMapper = ({
   username,
   role,
   isRestricted,
+  isConfirmed,
 });
