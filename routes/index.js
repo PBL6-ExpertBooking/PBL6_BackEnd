@@ -8,9 +8,9 @@ import certificateRoute from "./certificateRoute.js";
 const router = express.Router();
 
 router.use("/auth", authRoute);
-router.use("/user", userRoute);
-router.use("/expert", exportRoute);
-router.use("/major", majorRoute);
-router.use("/certificate", certificateRoute);
+router.use("/users", userRoute);
+router.use("/experts", exportRoute);
+router.use("/majors", majorRoute);
+router.use("/certificates", certificateRoute);
 
 export default router;

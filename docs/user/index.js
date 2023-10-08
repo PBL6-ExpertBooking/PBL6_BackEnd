@@ -9,27 +9,27 @@ import disableUser from "./disableUser.js";
 import updateUserInfoById from "./updateUserInfoById.js";
 
 export default {
-  "/user/all": {
+  "/users": {
     ...getAllUsers,
   },
-  "/user/info": {
+  "/users/current": {
     ...getCurrentUserInfo,
     ...updateUserInfo,
   },
-  "/user/info/{userId}": {
+  "/users/{userId}": {
     ...getUserInfoById,
     ...updateUserInfoById,
   },
-  "/user/change-password": {
+  "/users/password": {
     ...changePassword,
   },
-  "/user/promote-to-expert": {
+  "/users/promote-to-expert": {
     ...promoteToExpert,
   },
-  "/user/enable/{userId}": {
+  "/users/enable/{userId}": {
     ...enableUser,
   },
-  "/user/disable/{userId}": {
+  "/users/disable/{userId}": {
     ...disableUser,
   },
 };

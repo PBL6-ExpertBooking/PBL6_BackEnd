@@ -6,23 +6,10 @@ import upload from "../middlewares/upload.js";
 
 const router = express.Router();
 
-router.get(
-  "/all",
-  auth,
-  checkRole([roles.ADMIN]),
-  controller.getUsersPagination
-);
-router.get("/info", auth, controller.getCurrentUserInfo);
-router.put("/info", auth, upload.single("photo"), controller.updateUserInfo);
-router.get("/info/:id", controller.getUserById);
-router.put(
-  "/info/:id",
-  auth,
-  checkRole([roles.ADMIN]),
-  upload.single("photo"),
-  controller.updateUserInfoById
-);
-router.put("/change-password", auth, controller.changePassword);
+router.get("", auth, checkRole([roles.ADMIN]), controller.getUsersPagination);
+router.get("/current", auth, controller.getCurrentUserInfo);
+router.put("/current", auth, upload.single("photo"), controller.updateUserInfo);
+router.put("/password", auth, controller.changePassword);
 router.post(
   "/promote-to-expert",
   auth,
@@ -40,6 +27,14 @@ router.put(
   auth,
   checkRole([roles.ADMIN]),
   controller.disableUser
+);
+router.get("/:id", controller.getUserById);
+router.put(
+  "/:id",
+  auth,
+  checkRole([roles.ADMIN]),
+  upload.single("photo"),
+  controller.updateUserInfoById
 );
 
 export default router;
