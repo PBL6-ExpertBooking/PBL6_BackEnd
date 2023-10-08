@@ -5,19 +5,19 @@ import controller from "../controllers/expertController.js";
 
 const router = express.Router();
 
-router.get("/all", auth, controller.getExpertsPagination);
+router.get("", auth, controller.getExpertsPagination);
 router.get(
-  "/info",
+  "/current",
   auth,
   checkRole([roles.EXPERT]),
   controller.getCurrentExpertInfo
 );
-router.get("/info/:id", auth, controller.getExpertById);
+router.get("/:id", auth, controller.getExpertById);
 router.get(
-  "/certificates/:expert_id",
+  "/:expert_id/certificates",
   auth,
   controller.getCertificatesByExpertId
 );
-router.get("/majors/:expert_id", auth, controller.getVerifiedMajorsByExpertId);
+router.get("/:expert_id/majors", auth, controller.getVerifiedMajorsByExpertId);
 
 export default router;

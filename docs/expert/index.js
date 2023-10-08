@@ -5,19 +5,19 @@ import getCurrentExpertInfo from "./getCurrentExpertInfo.js";
 import getMajorsByExpertId from "./getMajorsByExpertId.js";
 
 export default {
-  "/expert/all": {
+  "/experts": {
     ...getAllExperts,
   },
-  "/expert/info": {
+  "/experts/current": {
     ...getCurrentExpertInfo,
   },
-  "/expert/info/{expertId}": {
+  "/experts/{expertId}": {
     ...getExpertInfoById,
   },
-  "/expert/certificates/{expertId}": {
+  "/experts/{expertId}/certificates": {
     ...getCertificates,
   },
-  "/expert/majors/{expertId}": {
+  "/experts/{expertId}/majors": {
     ...getMajorsByExpertId,
   },
 };

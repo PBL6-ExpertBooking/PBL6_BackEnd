@@ -16,20 +16,20 @@ export default {
     ...getCurrentUserInfo,
     ...updateUserInfo,
   },
+  "/users/current/password": {
+    ...changePassword,
+  },
+  "/users/current/promote-to-expert": {
+    ...promoteToExpert,
+  },
   "/users/{userId}": {
     ...getUserInfoById,
     ...updateUserInfoById,
   },
-  "/users/password": {
-    ...changePassword,
-  },
-  "/users/promote-to-expert": {
-    ...promoteToExpert,
-  },
-  "/users/enable/{userId}": {
+  "/users/{userId}/enable": {
     ...enableUser,
   },
-  "/users/disable/{userId}": {
+  "/users/{userId}/disable": {
     ...disableUser,
   },
 };

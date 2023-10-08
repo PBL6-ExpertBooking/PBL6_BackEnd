@@ -3,13 +3,13 @@ import deleteCertificate from "./deleteCertificate.js";
 import verifyCertificate from "./verifyCertificate.js";
 
 export default {
-  "/certificate": {
+  "/certificates": {
     ...createCertificate,
   },
-  "/certificate/{certificateId}": {
+  "/certificates/{certificateId}": {
     ...deleteCertificate,
   },
-  "/certificate/verify/{certificateId}": {
+  "/certificates/{certificateId}/verify": {
     ...verifyCertificate,
   },
 };

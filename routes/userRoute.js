@@ -9,24 +9,12 @@ const router = express.Router();
 router.get("", auth, checkRole([roles.ADMIN]), controller.getUsersPagination);
 router.get("/current", auth, controller.getCurrentUserInfo);
 router.put("/current", auth, upload.single("photo"), controller.updateUserInfo);
-router.put("/password", auth, controller.changePassword);
+router.put("/current/password", auth, controller.changePassword);
 router.post(
-  "/promote-to-expert",
+  "/current/promote-to-expert",
   auth,
   checkRole([roles.USER]),
   controller.promoteToExpert
-);
-router.put(
-  "/enable/:user_id",
-  auth,
-  checkRole([roles.ADMIN]),
-  controller.enableUser
-);
-router.put(
-  "/disable/:user_id",
-  auth,
-  checkRole([roles.ADMIN]),
-  controller.disableUser
 );
 router.get("/:id", controller.getUserById);
 router.put(
@@ -35,6 +23,18 @@ router.put(
   checkRole([roles.ADMIN]),
   upload.single("photo"),
   controller.updateUserInfoById
+);
+router.put(
+  "/:user_id/enable",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.enableUser
+);
+router.put(
+  "/:user_id/disable",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.disableUser
 );
 
 export default router;

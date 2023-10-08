@@ -20,7 +20,7 @@ router.delete(
   controller.deleteCertificate
 );
 router.put(
-  "/verify/:certificate_id",
+  "/:certificate_id/verify",
   auth,
   checkRole([roles.ADMIN]),
   controller.verifyCertificate
