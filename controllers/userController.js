@@ -58,6 +58,17 @@ const updateUserInfo = async (req, res, next) => {
   }
 };
 
+const updateUserInfoById = async (req, res, next) => {
+  try {
+    const user_id = req.params.id;
+    const update_info = { ...req.body, file: req.file || undefined };
+    const updated_user = await userService.updateUserInfo(user_id, update_info);
+    res.json({ user: updated_user });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const promoteToExpert = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
@@ -101,4 +112,5 @@ export default {
   promoteToExpert,
   enableUser,
   disableUser,
+  updateUserInfoById,
 };

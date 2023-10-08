@@ -6,6 +6,7 @@ import promoteToExpert from "./promoteToExpert.js";
 import getUserInfoById from "./getUserInfoById.js";
 import enableUser from "./enableUser.js";
 import disableUser from "./disableUser.js";
+import updateUserInfoById from "./updateUserInfoById.js";
 
 export default {
   "/user/all": {
@@ -17,6 +18,7 @@ export default {
   },
   "/user/info/{userId}": {
     ...getUserInfoById,
+    ...updateUserInfoById,
   },
   "/user/change-password": {
     ...changePassword,

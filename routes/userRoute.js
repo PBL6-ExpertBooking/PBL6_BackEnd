@@ -15,6 +15,13 @@ router.get(
 router.get("/info", auth, controller.getCurrentUserInfo);
 router.put("/info", auth, upload.single("photo"), controller.updateUserInfo);
 router.get("/info/:id", controller.getUserById);
+router.put(
+  "/info/:id",
+  auth,
+  checkRole([roles.ADMIN]),
+  upload.single("photo"),
+  controller.updateUserInfoById
+);
 router.put("/change-password", auth, controller.changePassword);
 router.post(
   "/promote-to-expert",
