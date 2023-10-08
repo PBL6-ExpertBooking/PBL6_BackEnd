@@ -22,7 +22,7 @@ const fetchUsersPagination = async (page = 1, limit = 10) => {
     {},
     {
       select:
-        "first_name last_name gender phone address photo_url DoB email username role isRestricted",
+        "first_name last_name gender phone address photo_url DoB email username role isRestricted isConfirmed",
       page,
       limit,
       lean: true,
@@ -110,6 +110,7 @@ const initAdmin = async () => {
         ),
         role: roles.ADMIN,
         isRestricted: false,
+        isConfirmed: true,
       },
       {
         upsert: true,
@@ -160,6 +161,18 @@ const disableUserById = async (user_id) => {
   return userMapper(user);
 };
 
+const confirmUserById = async (user_id) => {
+  const user = await User.findByIdAndUpdate(
+    user_id,
+    { isConfirmed: true },
+    { new: true }
+  );
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  return userMapper(user);
+};
+
 export default {
   fetchUserById,
   fetchUsersPagination,
@@ -169,4 +182,5 @@ export default {
   promoteToExpert,
   enableUserById,
   disableUserById,
+  confirmUserById,
 };

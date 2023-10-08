@@ -33,7 +33,8 @@ const enableUserByConfirmationToken = async (token) => {
   if (!confirmationToken) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid confirmation token");
   }
-  await authService.enableUserById(confirmationToken.user_id);
+  await userService.enableUserById(confirmationToken.user_id);
+  await userService.confirmUserById(confirmationToken.user_id);
   await confirmationToken.updateOne({ confirm_at: Date.now() });
 };
 

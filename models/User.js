@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema(
       default: roles.USER,
     },
     isRestricted: { type: Boolean, default: true },
+    isConfirmed: { type: Boolean, default: false },
     providers: { type: [String], default: [] },
   },
   { collection: "users" }
