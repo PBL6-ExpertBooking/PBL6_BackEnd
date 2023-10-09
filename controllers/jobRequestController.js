@@ -20,7 +20,7 @@ const createJobRequest = async (req, res, next) => {
 const getJobRequestsPagination = async (req, res, next) => {
   try {
     const { page, limit } = req.query;
-    const pagination = jobRequestService.fetchJobRequestsPagination(
+    const pagination = await jobRequestService.fetchJobRequestsPagination(
       page || 1,
       limit || 10
     );
