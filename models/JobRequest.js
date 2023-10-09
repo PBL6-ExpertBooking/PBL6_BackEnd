@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const jobRequestSchema = new mongoose.Schema(
   {
@@ -10,6 +11,8 @@ const jobRequestSchema = new mongoose.Schema(
   },
   { collection: "job_request" }
 );
+
+jobRequestSchema.plugin(mongoosePaginate);
 
 const JobRequest = mongoose.model("JobRequest", jobRequestSchema);
 

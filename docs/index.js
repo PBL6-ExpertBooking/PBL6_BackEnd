@@ -7,6 +7,7 @@ import user from "./user/index.js";
 import expert from "./expert/index.js";
 import major from "./major/index.js";
 import certificate from "./certificate/index.js";
+import jobRequest from "./jobRequest/index.js";
 
 export default {
   ...basicInfo,
@@ -19,5 +20,6 @@ export default {
     ...expert,
     ...major,
     ...certificate,
+    ...jobRequest,
   },
 };

@@ -1,7 +1,7 @@
 export default {
-  put: {
-    tags: ["certificate"],
-    operationId: "verifyCertificate",
+  get: {
+    tags: ["job_request"],
+    operationId: "getJobRequestById",
     security: [
       {
         bearerAuth: [],
@@ -9,7 +9,7 @@ export default {
     ],
     parameters: [
       {
-        name: "certificate_id",
+        name: "job_request_id",
         in: "path",
         schema: {
           type: "string",

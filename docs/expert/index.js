@@ -11,13 +11,13 @@ export default {
   "/experts/current": {
     ...getCurrentExpertInfo,
   },
-  "/experts/{expertId}": {
+  "/experts/{expert_id}": {
     ...getExpertInfoById,
   },
-  "/experts/{expertId}/certificates": {
+  "/experts/{expert_id}/certificates": {
     ...getCertificates,
   },
-  "/experts/{expertId}/majors": {
+  "/experts/{expert_id}/majors": {
     ...getMajorsByExpertId,
   },
 };

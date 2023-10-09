@@ -10,7 +10,7 @@ export default {
     ],
     parameters: [
       {
-        name: "certificateId",
+        name: "certificate_id",
         in: "path",
         schema: {
           type: "string",

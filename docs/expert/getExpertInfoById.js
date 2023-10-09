@@ -9,7 +9,7 @@ export default {
     ],
     parameters: [
       {
-        name: "expertId",
+        name: "expert_id",
         in: "path",
         schema: {
           type: "string",

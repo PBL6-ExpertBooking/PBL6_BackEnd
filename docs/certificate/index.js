@@ -6,10 +6,10 @@ export default {
   "/certificates": {
     ...createCertificate,
   },
-  "/certificates/{certificateId}": {
+  "/certificates/{certificate_id}": {
     ...deleteCertificate,
   },
-  "/certificates/{certificateId}/verify": {
+  "/certificates/{certificate_id}/verify": {
     ...verifyCertificate,
   },
 };

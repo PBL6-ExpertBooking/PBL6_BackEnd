@@ -10,7 +10,7 @@ const fetchExpertsPagination = async (page = 1, limit = 10) => {
         {
           path: "user",
           select:
-            "first_name last_name gender phone address photo_url DoB email username role isRestricted",
+            "first_name last_name gender phone address photo_url DoB email username role isRestricted isConfirmed",
         },
         {
           path: "certificates",

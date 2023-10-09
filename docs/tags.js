@@ -12,5 +12,8 @@ export default {
     {
       name: "major",
     },
+    {
+      name: "job_request",
+    },
   ],
 };

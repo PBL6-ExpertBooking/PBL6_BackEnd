@@ -4,7 +4,7 @@ export default {
     operationId: "getUserInfoById",
     parameters: [
       {
-        name: "userId",
+        name: "user_id",
         in: "path",
         schema: {
           type: "string",

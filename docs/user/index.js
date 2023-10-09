@@ -22,14 +22,14 @@ export default {
   "/users/current/promote-to-expert": {
     ...promoteToExpert,
   },
-  "/users/{userId}": {
+  "/users/{user_id}": {
     ...getUserInfoById,
     ...updateUserInfoById,
   },
-  "/users/{userId}/enable": {
+  "/users/{user_id}/enable": {
     ...enableUser,
   },
-  "/users/{userId}/disable": {
+  "/users/{user_id}/disable": {
     ...disableUser,
   },
 };
