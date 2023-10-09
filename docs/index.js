@@ -8,6 +8,7 @@ import expert from "./expert/index.js";
 import major from "./major/index.js";
 import certificate from "./certificate/index.js";
 import jobRequest from "./jobRequest/index.js";
+import booking from "./booking/index.js";
 
 export default {
   ...basicInfo,
@@ -21,5 +22,6 @@ export default {
     ...major,
     ...certificate,
     ...jobRequest,
+    ...booking,
   },
 };

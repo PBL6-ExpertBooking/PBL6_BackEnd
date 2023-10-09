@@ -9,4 +9,10 @@ const tokenTypes = {
   REFRESH: "refresh",
 };
 
-export { roles, tokenTypes };
+const booking_status = {
+  PROCESSING: "PROCESSING",
+  CANCELED: "CANCELED",
+  DONE: "DONE",
+};
+
+export { roles, tokenTypes, booking_status };

@@ -1,16 +1,20 @@
 import mongoose from "mongoose";
+import { booking_status } from "../config/constant.js";
 
 const bookingSchema = new mongoose.Schema(
   {
-    user: { type: mongoose.Schema.ObjectId, ref: "User" },
-    expert: { type: mongoose.Schema.ObjectId, ref: "User" },
+    expert: { type: mongoose.Schema.ObjectId, ref: "ExpertInfo" },
+    job_request: { type: mongoose.Schema.ObjectId, ref: "JobRequest" },
     time_booking: Date,
     payment_type: String,
     price: Number,
-    status: { type: String, enum: ["PROCESSING", "CANCELED", "DONE"] },
+    status: { type: String, enum: Object.values(booking_status) },
     time_of_payment: Date,
   },
-  { collection: "booking" }
+  {
+    collection: "booking",
+    timestamps: true,
+  }
 );
 
 const Booking = mongoose.model("Booking", bookingSchema);

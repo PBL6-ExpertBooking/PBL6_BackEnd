@@ -9,7 +9,10 @@ const jobRequestSchema = new mongoose.Schema(
     address: String,
     budget: Number,
   },
-  { collection: "job_request" }
+  {
+    collection: "job_request",
+    timestamps: true,
+  }
 );
 
 jobRequestSchema.plugin(mongoosePaginate);

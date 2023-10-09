@@ -7,7 +7,10 @@ const reviewSchema = new mongoose.Schema(
     comment: String,
     status: Number,
   },
-  { collection: "review" }
+  {
+    collection: "review",
+    timestamps: true,
+  }
 );
 
 const Review = mongoose.model("Review", reviewSchema);

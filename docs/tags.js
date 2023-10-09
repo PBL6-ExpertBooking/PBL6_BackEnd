@@ -15,5 +15,8 @@ export default {
     {
       name: "job_request",
     },
+    {
+      name: "booking",
+    },
   ],
 };
