@@ -12,7 +12,10 @@ const auth = async (req, res, next) => {
     const user = await tokenService.verifyAccessToken(accessToken);
 
     if (!user.isConfirmed) {
-      throw new ApiError(httpStatus.NOT_ACCEPTABLE, "User is not confirmed");
+      throw new ApiError(
+        httpStatus.NOT_ACCEPTABLE,
+        "Your email is not confirmed"
+      );
     }
 
     if (user.isRestricted) {

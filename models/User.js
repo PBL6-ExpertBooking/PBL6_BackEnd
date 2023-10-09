@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
       enum: [roles.USER, roles.EXPERT, roles.ADMIN],
       default: roles.USER,
     },
-    isRestricted: { type: Boolean, default: true },
+    isRestricted: { type: Boolean, default: false },
     isConfirmed: { type: Boolean, default: false },
     providers: { type: [String], default: [] },
   },
