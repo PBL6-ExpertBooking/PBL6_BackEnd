@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 import { booking_status } from "../config/constant.js";
 
 const bookingSchema = new mongoose.Schema(
@@ -16,6 +17,8 @@ const bookingSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+bookingSchema.plugin(mongoosePaginate);
 
 const Booking = mongoose.model("Booking", bookingSchema);
 

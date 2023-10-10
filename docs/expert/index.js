@@ -3,7 +3,8 @@ import getExpertInfoById from "./getExpertInfoById.js";
 import getCertificates from "./getCertificates.js";
 import getCurrentExpertInfo from "./getCurrentExpertInfo.js";
 import getMajorsByExpertId from "./getMajorsByExpertId.js";
-import getReviews from "./getReviews.js";
+import getReviewsByExpertId from "./getReviewsByExpertId.js";
+import getBookingsByExpertId from "./getBookingsByExpertId.js";
 
 export default {
   "/experts": {
@@ -21,7 +22,10 @@ export default {
   "/experts/{expert_id}/majors": {
     ...getMajorsByExpertId,
   },
+  "/experts/{expert_id}/bookings": {
+    ...getBookingsByExpertId,
+  },
   "/experts/{expert_id}/reviews": {
-    ...getReviews,
+    ...getReviewsByExpertId,
   },
 };

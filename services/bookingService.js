@@ -49,6 +49,45 @@ const createBooking = async ({ user_id, job_request_id }) => {
   return booking;
 };
 
+const fetchBookingsByExpertId = async (expert_id, page = 1, limit = 10) => {
+  const pagination = await Booking.paginate(
+    { expert: expert_id },
+    {
+      populate: [
+        {
+          path: "expert",
+          populate: [
+            {
+              path: "user",
+              select: "first_name last_name",
+            },
+          ],
+        },
+        {
+          path: "job_request",
+          populate: [
+            {
+              path: "user",
+              select: "first_name, last_name",
+            },
+            {
+              path: "major",
+            },
+          ],
+        },
+      ],
+      page,
+      limit,
+      lean: true,
+      customLabels: {
+        docs: "bookings",
+      },
+    }
+  );
+  return pagination;
+};
+
 export default {
   createBooking,
+  fetchBookingsByExpertId,
 };
