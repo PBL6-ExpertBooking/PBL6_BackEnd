@@ -1,10 +1,12 @@
 import { ConfirmationToken } from "../models/index.js";
 import userService from "./userService.js";
-import authService from "./authService.js";
 import sendMail from "../utils/sendMail.js";
 import { v4 as uuidv4 } from "uuid";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const createConfirmationTokenAndSendMail = async (user_id) => {
   const user = await userService.fetchUserById(user_id);
@@ -15,17 +17,17 @@ const createConfirmationTokenAndSendMail = async (user_id) => {
   });
 
   // send confirmation email async
-  sendMail(
-    user.email,
-    "Confirmation",
-    `
-    Click the link to confirm your email:
-    http://localhost:3000/v1/auth/activate/${confirmationToken.token}
-    `,
-    async () => {
+  sendMail({
+    template: "activationEmail",
+    templateVars: {
+      activationUrl: `${process.env.DOMAIN_NAME}/v1/auth/activate/${confirmationToken.token}`,
+    },
+    to: user.email,
+    subject: "Email confirmation",
+    callback: async () => {
       await confirmationToken.updateOne({ confirmation_sent_at: Date.now() });
-    }
-  );
+    },
+  });
 };
 
 const enableUserByConfirmationToken = async (token) => {
