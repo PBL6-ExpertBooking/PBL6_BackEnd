@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import app from "./app.js";
 import logger from "./config/logger.js";
 import userService from "./services/userService.js";
+import generateData from "./utils/generateData.js";
 
 dotenv.config();
 
@@ -16,6 +17,9 @@ async function main() {
 
   // init first admin
   const admin = await userService.initAdmin();
+
+  // generate users
+  // await generateData.generateUsers(2, 50);
 
   app.listen(PORT, () => {
     logger.info(`Listening to port ${PORT}`);
