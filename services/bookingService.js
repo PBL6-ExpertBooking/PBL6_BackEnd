@@ -68,7 +68,7 @@ const fetchBookingsByExpertId = async (expert_id, page = 1, limit = 10) => {
           populate: [
             {
               path: "user",
-              select: "first_name, last_name",
+              select: "first_name last_name",
             },
             {
               path: "major",
