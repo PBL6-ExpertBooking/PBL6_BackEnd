@@ -16,13 +16,8 @@ const expertInfoSchema = new mongoose.Schema(
         ref: "Certificate",
       },
     ],
-    average_rating: Number,
-    reviews: [
-      {
-        type: mongoose.Schema.ObjectId,
-        ref: "Review",
-      },
-    ],
+    average_rating: { type: Number, min: 0, max: 5, default: 0 },
+    rating_count: { type: Number, default: 0 },
   },
   { collection: "expert_info" }
 );

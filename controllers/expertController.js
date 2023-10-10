@@ -1,4 +1,5 @@
 import expertService from "../services/expertService.js";
+import reviewService from "../services/reviewService.js";
 
 const getExpertsPagination = async (req, res, next) => {
   try {
@@ -65,6 +66,21 @@ const getVerifiedMajorsByExpertId = async (req, res, next) => {
   }
 };
 
+const getReviewsByExpertId = async (req, res, next) => {
+  try {
+    const expert_id = req.params.expert_id;
+    const { page, limit } = req.query;
+    const pagination = await reviewService.fetchReviewsPaginationByExpertId(
+      expert_id,
+      page || 1,
+      limit || 10
+    );
+    res.json({ pagination });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getExpertsPagination,
   getExpertById,
@@ -72,4 +88,5 @@ export default {
   getCertificatesByExpertId,
   getCurrentExpertInfo,
   getVerifiedMajorsByExpertId,
+  getReviewsByExpertId,
 };
