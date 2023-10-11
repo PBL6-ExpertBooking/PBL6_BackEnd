@@ -36,10 +36,15 @@ const login = async (req, res, next) => {
       password,
     });
     const tokens = await tokenService.generateAuthTokens(user);
-    res.json({
-      user,
-      tokens,
+    res.cookie("access_token", tokens.access_token, {
+      httpOnly: true,
+      maxAge: process.env.ACCESS_TOKEN_EXPIRATION_MINUTES * 60 * 1000,
     });
+    res.cookie("refresh_token", tokens.refresh_token, {
+      httpOnly: true,
+      maxAge: process.env.REFRESH_TOKEN_EXPIRATION_DAYS * 24 * 60 * 60 * 1000,
+    });
+    res.json({ user });
   } catch (error) {
     next(error);
   }
@@ -47,9 +52,11 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   try {
-    const { refresh_token } = req.body;
+    const { refresh_token } = req.cookies;
     await tokenService.clearRefreshToken(refresh_token);
-    res.json({});
+    res.clearCookie("access_token");
+    res.clearCookie("refresh_token");
+    res.end();
   } catch (error) {
     next(error);
   }
@@ -118,7 +125,14 @@ const googleUserVerify = async (req, res, next) => {
     const tokens = await tokenService.generateAuthTokens(user);
 
     // store authData in cookie
-    res.cookie("authData", JSON.stringify({ user, tokens }), { maxAge: 60000 });
+    res.cookie("access_token", tokens.access_token, {
+      httpOnly: true,
+      maxAge: process.env.ACCESS_TOKEN_EXPIRATION_MINUTES * 60 * 1000,
+    });
+    res.cookie("refresh_token", tokens.refresh_token, {
+      httpOnly: true,
+      maxAge: process.env.REFRESH_TOKEN_EXPIRATION_DAYS * 24 * 60 * 60 * 1000,
+    });
     if (redirectUrlAfterVerify) {
       res.redirect(303, redirectUrlAfterVerify);
     } else {
