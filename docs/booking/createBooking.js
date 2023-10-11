@@ -23,10 +23,6 @@ export default {
         },
       },
     },
-    responses: {
-      200: {
-        description: "register successfully",
-      },
-    },
+    responses: {},
   },
 };
