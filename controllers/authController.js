@@ -35,10 +35,13 @@ const login = async (req, res, next) => {
       username,
       password,
     });
-    const tokens = await tokenService.generateAuthTokens(user);
-    res.json({
-      user,
-      tokens,
+    req.session.regenerate((error) => {
+      if (error) next(error);
+      req.session.user_id = user._id;
+      req.session.save((error) => {
+        if (error) next(error);
+        res.json({ user });
+      });
     });
   } catch (error) {
     next(error);
@@ -47,9 +50,14 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   try {
-    const { refresh_token } = req.body;
-    await tokenService.clearRefreshToken(refresh_token);
-    res.json({});
+    req.session.user_id = null;
+    req.session.save((error) => {
+      if (error) next(error);
+      req.session.regenerate((error) => {
+        if (error) next(error);
+        res.json({ message: "log out" });
+      });
+    });
   } catch (error) {
     next(error);
   }

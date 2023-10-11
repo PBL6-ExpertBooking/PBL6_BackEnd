@@ -1,15 +1,18 @@
 import httpStatus from "http-status";
 import tokenService from "../services/tokenService.js";
 import ApiError from "../utils/ApiError.js";
+import userService from "../services/userService.js";
 
 const auth = async (req, res, next) => {
   try {
-    const authHeader = req.get("Authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid access token");
-    }
-    const accessToken = authHeader.split(" ")[1];
-    const user = await tokenService.verifyAccessToken(accessToken);
+    // const authHeader = req.get("Authorization");
+    // if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    //   throw new ApiError(httpStatus.UNAUTHORIZED, "Invalid access token");
+    // }
+    // const accessToken = authHeader.split(" ")[1];
+    // const user = await tokenService.verifyAccessToken(accessToken);
+
+    const user = await userService.fetchUserById(req.session.user_id);
 
     if (!user.isConfirmed) {
       throw new ApiError(
