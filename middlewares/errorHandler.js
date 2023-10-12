@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import logger from "../config/logger.js";
 
 import ApiError from "../utils/ApiError.js";
+import { ValidationError } from "yup";
 
 const handler = (err, req, res, next) => {
   const response = {
@@ -18,7 +19,13 @@ const handler = (err, req, res, next) => {
 
 const converter = (err, req, res, next) => {
   let convertedError = err;
-  if (!(err instanceof ApiError)) {
+  if (err instanceof ValidationError) {
+    convertedError = new ApiError(
+      httpStatus.BAD_REQUEST,
+      err?.errors?.join(", ") || "Validations have failed",
+      "Validation Error"
+    );
+  } else if (!(err instanceof ApiError)) {
     let uuid = uuidv4();
     logger.error(err);
     convertedError = new ApiError(
