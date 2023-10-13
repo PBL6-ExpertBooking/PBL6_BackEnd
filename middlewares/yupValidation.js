@@ -5,6 +5,7 @@ const validate = (schema) => async (req, res, next) => {
       query: req.query,
       params: req.params,
     });
+    next();
   } catch (error) {
     next(error);
   }
