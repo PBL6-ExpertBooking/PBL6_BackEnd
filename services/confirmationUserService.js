@@ -20,7 +20,7 @@ const createConfirmationTokenAndSendMail = async (user_id) => {
   sendMail({
     template: "activationEmail",
     templateVars: {
-      activationUrl: `${process.env.DOMAIN_NAME}/v1/auth/activate/${confirmationToken.token}`,
+      activationUrl: `${process.env.EMAIL_CONFIRMATION_URL}/${confirmationToken.token}`,
     },
     to: user.email,
     subject: "Email confirmation",
