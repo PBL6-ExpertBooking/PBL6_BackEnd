@@ -7,7 +7,10 @@ const jobRequestSchema = new mongoose.Schema(
     major: { type: mongoose.Schema.ObjectId, ref: "Major" },
     descriptions: String,
     address: String,
-    budget: Number,
+    budget: {
+      min: Number,
+      max: Number,
+    },
   },
   {
     collection: "job_request",

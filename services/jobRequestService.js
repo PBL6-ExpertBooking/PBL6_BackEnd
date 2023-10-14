@@ -7,8 +7,12 @@ const createJobRequest = async ({
   major_id,
   descriptions,
   address,
-  budget,
+  budget_min,
+  budget_max,
 }) => {
+  if (budget_min > budget_max) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid budget");
+  }
   if (!(await User.exists({ _id: user_id }))) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
@@ -22,7 +26,10 @@ const createJobRequest = async ({
     major: major_id,
     descriptions,
     address,
-    budget,
+    budget: {
+      min: budget_min,
+      max: budget_max,
+    },
   });
   return jobRequest;
 };

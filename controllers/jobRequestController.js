@@ -3,13 +3,15 @@ import jobRequestService from "../services/jobRequestService.js";
 const createJobRequest = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { major_id, descriptions, address, budget } = req.body;
+    const { major_id, descriptions, address, budget_min, budget_max } =
+      req.body;
     const job_request = jobRequestService.createJobRequest({
       user_id,
       major_id,
       descriptions,
       address,
-      budget,
+      budget_min,
+      budget_max,
     });
     res.json({ job_request });
   } catch (error) {

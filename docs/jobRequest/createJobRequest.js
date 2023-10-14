@@ -25,7 +25,11 @@ export default {
               address: {
                 type: "string",
               },
-              budget: {
+              budget_min: {
+                type: "number",
+                require: true,
+              },
+              budget_max: {
                 type: "number",
                 require: true,
               },
