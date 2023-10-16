@@ -18,7 +18,8 @@ const booking_status = {
 const transaction_types = {
   DEPOSIT: "DEPOSIT",
   WITHDRAWAL: "WITHDRAWAL",
-  TRANSFER: "TRANSFER",
+  PAYMENT: "PAYMENT",
+  RECEIPT: "RECEIPT",
 };
 
 const transaction_status = {
