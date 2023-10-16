@@ -81,7 +81,7 @@ const createPayment = async ({ user_id, booking_id, amount }) => {
   const transaction = await createTransaction({
     user_id: user_id,
     amount: amount,
-    transaction_type: transaction_types.TRANSFER,
+    transaction_type: transaction_types.PAYMENT,
     booking_id: booking._id,
     second_user_id: booking.expert.user.toString(),
   });
@@ -103,11 +103,11 @@ const transactionHandler = async (transaction_id, bankHandler) => {
     //
   }
   if (transaction.transaction_type === transaction_types.PAYMENT) {
-    await handleTransfer(transaction);
+    await handlePayment(transaction);
   }
 };
 
-const handleTransfer = async (transaction) => {
+const handlePayment = async (transaction) => {
   const user = await User.findById(transaction.user);
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
