@@ -8,22 +8,21 @@ import { OAuth2Client } from "google-auth-library";
 
 dotenv.config();
 
+// const transporter = nodemailer.createTransport({
+//   host: "sandbox.smtp.mailtrap.io",
+//   port: 2525,
+//   auth: {
+//     user: "c745e632f73896",
+//     pass: "52bf3b025bdb33",
+//   },
+// });
+
 const transporter = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
+  service: "gmail",
   auth: {
-    user: "c745e632f73896",
-    pass: "52bf3b025bdb33",
+    user: process.env.GOOGLE_MAILER_EMAIL,
+    pass: process.env.GOOGLE_MAILER_PASSWORD,
   },
-});
-
-const oAuth2Client = new OAuth2Client(
-  process.env.CLIENT_ID,
-  process.env.CLIENT_SECRET
-);
-
-oAuth2Client.setCredentials({
-  refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
 });
 
 const sendMail = async ({
@@ -33,22 +32,6 @@ const sendMail = async ({
   subject,
   callback = null,
 }) => {
-  // const accessTokenObject = await oAuth2Client.getAccessToken();
-  // const access_token = accessTokenObject?.token;
-
-  // const transporter = nodemailer.createTransport({
-  //   service: "gmail",
-  //   host: "smtp.gmail.com",
-  //   auth: {
-  //     type: "OAuth2",
-  //     user: process.env.ADMIN_EMAIL,
-  //     clientId: process.env.CLIENT_ID,
-  //     clientSecret: process.env.CLIENT_SECRET,
-  //     refresh_token: process.env.GOOGLE_MAILER_REFRESH_TOKEN,
-  //     accessToken: access_token,
-  //   },
-  // });
-
   const templatePath = `templates/${template}.html`; // đường dẫn tới template
   const mailOptions = {
     from: process.env.ADMIN_EMAIL,
