@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema(
     isRestricted: { type: Boolean, default: false },
     isConfirmed: { type: Boolean, default: false },
     providers: { type: [String], default: [] },
+    balance: { type: Number, min: 0, default: 0 },
   },
   { collection: "users" }
 );

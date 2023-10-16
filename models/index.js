@@ -7,6 +7,7 @@ import Major from "./Major.js";
 import RefreshToken from "./RefreshToken.js";
 import Review from "./Review.js";
 import User from "./User.js";
+import Transaction from "./Transaction.js";
 
 export {
   Booking,
@@ -18,4 +19,5 @@ export {
   RefreshToken,
   Review,
   User,
+  Transaction,
 };

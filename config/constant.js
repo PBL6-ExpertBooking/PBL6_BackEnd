@@ -15,4 +15,22 @@ const booking_status = {
   DONE: "DONE",
 };
 
-export { roles, tokenTypes, booking_status };
+const transaction_types = {
+  DEPOSIT: "DEPOSIT",
+  WITHDRAWAL: "WITHDRAWAL",
+  TRANSFER: "TRANSFER",
+};
+
+const transaction_status = {
+  PROCESSING: "PROCESSING",
+  CANCELED: "CANCELED",
+  DONE: "DONE",
+};
+
+export {
+  roles,
+  tokenTypes,
+  booking_status,
+  transaction_status,
+  transaction_types,
+};
