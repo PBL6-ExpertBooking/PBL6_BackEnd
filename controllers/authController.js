@@ -78,6 +78,16 @@ const activate = async (req, res, next) => {
   }
 };
 
+const resetPassword = async (req, res, next) => {
+  try {
+    const { username, email } = req.body;
+    await authService.resetPassword({ username, email });
+    res.json({ message: "Email sent" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Google auth
 
 const redirectUrl = `${process.env.DOMAIN_NAME}/v1/auth/google`;
@@ -136,6 +146,7 @@ export default {
   logout,
   refreshToken,
   activate,
+  resetPassword,
   googleUserLogin,
   googleUserVerify,
 };

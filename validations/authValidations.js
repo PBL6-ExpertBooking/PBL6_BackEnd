@@ -41,6 +41,13 @@ const schemas = {
       token: yup.string().required(),
     }),
   }),
+
+  resetPasswordSchema: yup.object({
+    body: yup.object({
+      username: yup.string().required(),
+      email: yup.string().email().required(),
+    }),
+  }),
 };
 
 export default schemas;

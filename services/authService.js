@@ -3,6 +3,8 @@ import httpStatus from "http-status";
 import ApiError from "../utils/ApiError.js";
 import bcrypt from "bcryptjs";
 import { userMapper } from "./mapper/userMapper.js";
+import crypto from "crypto";
+import sendMail from "../utils/sendMail.js";
 
 const createNewUser = async (user) => {
   if (await User.findOne({ email: user.email.toLowerCase() })) {
@@ -54,11 +56,29 @@ const verifyUserFromTokenPayload = async ({ user_id }) => {
   }
 };
 
-const enableUserById = async (user_id) => {
-  const user = await User.findByIdAndUpdate(user_id, { isRestricted: false });
+const resetPassword = async ({ username, email }) => {
+  const user = await User.findOne({ username: username, email: email });
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
+
+  const reset_password = crypto.randomBytes(4).toString("hex");
+  const encrypted_reset_password = await bcrypt.hash(
+    reset_password,
+    parseInt(process.env.BCRYPT_SALT)
+  );
+  user.encrypted_password = encrypted_reset_password;
+  user.reset_password = reset_password;
+  await user.save();
+
+  sendMail({
+    template: "resetPasswordEmail",
+    templateVars: {
+      resetPassword: reset_password,
+    },
+    to: user.email,
+    subject: "Reset password",
+  });
 };
 
 const handleGoogleUser = async (google_user) => {
@@ -87,6 +107,6 @@ export default {
   fetchUserByUsernameAndPassword,
   fetchUserByEmail,
   verifyUserFromTokenPayload,
-  enableUserById,
+  resetPassword,
   handleGoogleUser,
 };

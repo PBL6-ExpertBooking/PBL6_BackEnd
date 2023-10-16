@@ -4,6 +4,7 @@ import logout from "./logout.js";
 import refreshToken from "./refreshToken.js";
 import activate from "./activate.js";
 import googleLogin from "./googleLogin.js";
+import resetPassword from "./resetPassword.js";
 
 export default {
   "/auth/register": {
@@ -23,5 +24,8 @@ export default {
   },
   "/auth/google": {
     ...googleLogin,
+  },
+  "/auth/reset-password": {
+    ...resetPassword,
   },
 };
