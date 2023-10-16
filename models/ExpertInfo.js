@@ -9,13 +9,16 @@ const expertInfoSchema = new mongoose.Schema(
       index: true,
     },
     descriptions: String,
-    certificates: [
-      {
-        type: mongoose.Schema.ObjectId,
-        unique: true,
-        ref: "Certificate",
-      },
-    ],
+    certificates: {
+      type: [
+        {
+          type: mongoose.Schema.ObjectId,
+          unique: true,
+          ref: "Certificate",
+        },
+      ],
+      default: [],
+    },
     average_rating: { type: Number, min: 0, max: 5, default: 0 },
     rating_count: { type: Number, default: 0 },
   },
