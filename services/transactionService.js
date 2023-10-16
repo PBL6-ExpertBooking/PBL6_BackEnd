@@ -8,6 +8,7 @@ const createTransaction = async ({
   amount,
   transaction_type,
   booking_id,
+  second_user_id,
 }) => {
   const user = await User.findById(user_id).lean();
   if (!user) {
@@ -30,7 +31,8 @@ const createTransaction = async ({
   };
 
   if (transaction_type === transaction_types.PAYMENT) {
-    obj.second_user = obj.booking = booking_id;
+    obj.booking = booking_id;
+    obj.second_user = second_user_id;
   }
 
   const transaction = await Transaction.create(obj);
