@@ -1,13 +1,22 @@
 export default {
-  post: {
+  put: {
     tags: ["major"],
-    operationId: "createMajor",
+    operationId: "updateMajor",
     security: [
       {
         bearerAuth: [],
       },
     ],
-    parameters: [],
+    parameters: [
+      {
+        name: "major_id",
+        in: "path",
+        schema: {
+          type: "string",
+        },
+        require: true,
+      },
+    ],
     requestBody: {
       content: {
         "application/json": {
@@ -16,11 +25,9 @@ export default {
             properties: {
               name: {
                 type: "string",
-                require: true,
               },
               descriptions: {
                 type: "string",
-                require: true,
               },
             },
           },

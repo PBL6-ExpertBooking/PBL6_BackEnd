@@ -13,10 +13,10 @@ const createJobRequest = async ({
   if (budget_min > budget_max) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid budget");
   }
-  if (!(await User.exists({ _id: user_id }))) {
+  if (!(await User.findById(user_id))) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
-  if (!(await Major.exists({ _id: major_id }))) {
+  if (!(await Major.findById(major_id))) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Major not found");
   }
   // TODO: check user's balance

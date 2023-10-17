@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import MongooseDelete from "mongoose-delete";
 
 const majorSchema = new mongoose.Schema(
   {
@@ -7,6 +8,8 @@ const majorSchema = new mongoose.Schema(
   },
   { collection: "majors" }
 );
+
+majorSchema.plugin(MongooseDelete, { overrideMethods: "all" });
 
 const Major = mongoose.model("Major", majorSchema);
 
