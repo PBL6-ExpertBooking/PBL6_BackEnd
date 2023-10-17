@@ -8,7 +8,7 @@ const createTransaction = async ({
   amount,
   transaction_type,
   booking_id,
-  second_user_id,
+  expert_user_id,
 }) => {
   const user = await User.findById(user_id).lean();
   if (!user) {
@@ -19,7 +19,11 @@ const createTransaction = async ({
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid amount");
   }
 
-  if (amount < user.balance) {
+  if (
+    (transaction_type === transaction_types.WITHDRAWAL ||
+      transaction_type === transaction_types.PAYMENT) &&
+    amount < user.balance
+  ) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Insufficient balance");
   }
 
@@ -32,7 +36,7 @@ const createTransaction = async ({
 
   if (transaction_type === transaction_types.PAYMENT) {
     obj.booking = booking_id;
-    obj.second_user = second_user_id;
+    obj.expert = expert_user_id;
   }
 
   const transaction = await Transaction.create(obj);
@@ -83,7 +87,7 @@ const createPayment = async ({ user_id, booking_id, amount }) => {
     amount: amount,
     transaction_type: transaction_types.PAYMENT,
     booking_id: booking._id,
-    second_user_id: booking.expert.user.toString(),
+    expert_user_id: booking.expert.user.toString(),
   });
 
   return transaction;
@@ -94,17 +98,68 @@ const transactionHandler = async (transaction_id, bankHandler) => {
   if (!transaction) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Transaction not found");
   }
-  if (
-    transaction.transaction_type === transaction_types.DEPOSIT ||
-    transaction.transaction_type === transaction_types.WITHDRAWAL
-  ) {
-    //
-    //await bankHandler(transaction);
-    //
+  if (transaction.transaction_status === transaction_status.DONE) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Transaction was done");
   }
-  if (transaction.transaction_type === transaction_types.PAYMENT) {
-    await handlePayment(transaction);
+  if (transaction.transaction_status === transaction_status.CANCELED) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Transaction was canceled");
   }
+
+  switch (transaction.transaction_type) {
+    case transaction_types.DEPOSIT: {
+      await handleDeposit(transaction);
+      break;
+    }
+    case transaction_types.WITHDRAWAL: {
+      await handleWithdrawal(transaction);
+      break;
+    }
+    case transaction_types.PAYMENT: {
+      await handlePayment(transaction);
+      break;
+    }
+  }
+};
+
+const handleDeposit = async (transaction) => {
+  const user = await User.findById(transaction.user);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  try {
+    // call bank handler
+    await user.updateOne({
+      balance: user.balance + transaction.amount,
+    });
+    await Transaction.updateOne(
+      { _id: transaction._id },
+      {
+        transaction_status: transaction_status.DONE,
+      }
+    );
+  } catch (error) {}
+};
+
+const handleWithdrawal = async (transaction) => {
+  const user = await User.findById(transaction.user);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  if (transaction.amount < user.balance) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Insufficient balance");
+  }
+  try {
+    // call bank handler
+    await user.updateOne({
+      balance: user.balance - transaction.amount,
+    });
+    await Transaction.updateOne(
+      { _id: transaction._id },
+      {
+        transaction_status: transaction_status.DONE,
+      }
+    );
+  } catch (error) {}
 };
 
 const handlePayment = async (transaction) => {
@@ -113,9 +168,9 @@ const handlePayment = async (transaction) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
 
-  const second_user = await User.findById(transaction.second_user);
-  if (!second_user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  const expert = await User.findById(transaction.expert);
+  if (!expert) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
   }
 
   if (transaction.amount < user.balance) {
@@ -125,23 +180,20 @@ const handlePayment = async (transaction) => {
   // calculate commission here
   commission = (transaction.amount * 0) / 100;
   user.balance = user.balance - transaction.amount;
-  second_user.balance = second_user.balance + transaction.amount - commission;
+  expert.balance = second_user.balance + transaction.amount - commission;
   //
 
-  await Transaction.create({
-    user: second_user,
-    second_user: user,
-    booking: transaction.booking,
-    amount: transaction.amount - commission,
-    transaction_type: transaction_types.RECEIPT,
-    transaction_status: transaction_status.DONE,
-  });
   await Transaction.updateOne(
     { _id: transaction._id },
     { transaction_status: transaction_status.DONE }
   );
   await user.save();
-  await second_user.save();
+  await expert.save();
+};
+
+const fetchTransactionsByUserId = async (user_id) => {
+  const transactions = await Transaction.find({ user: user_id });
+  return transactions;
 };
 
 export default {
@@ -149,4 +201,5 @@ export default {
   createWithdrawal,
   createPayment,
   transactionHandler,
+  fetchTransactionsByUserId,
 };
