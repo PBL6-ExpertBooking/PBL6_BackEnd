@@ -96,7 +96,19 @@ const fetchVerifiedMajorsByExpertId = async (expert_id) => {
     },
     match: { isVerified: true },
   });
-  const majors = expert.certificates.map((certificate) => certificate.major);
+
+  if (!expert) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
+  }
+
+  const majors = [
+    ...new Map(
+      expert.certificates.map((certificate) => [
+        certificate.major._id,
+        certificate.major,
+      ])
+    ).values(),
+  ];
   return majors;
 };
 
