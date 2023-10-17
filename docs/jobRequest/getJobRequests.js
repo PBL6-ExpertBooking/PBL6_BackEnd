@@ -23,6 +23,13 @@ export default {
         },
         description: "The number of job requests in one page",
       },
+      {
+        name: "major_id",
+        in: "query",
+        schema: {
+          type: "string",
+        },
+      },
     ],
     responses: {},
   },

@@ -21,10 +21,11 @@ const createJobRequest = async (req, res, next) => {
 
 const getJobRequestsPagination = async (req, res, next) => {
   try {
-    const { page, limit } = req.query;
+    const { page, limit, major_id } = req.query;
     const pagination = await jobRequestService.fetchJobRequestsPagination(
       page || 1,
-      limit || 10
+      limit || 10,
+      major_id
     );
     res.json({ pagination });
   } catch (error) {

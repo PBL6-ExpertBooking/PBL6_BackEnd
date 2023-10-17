@@ -19,7 +19,6 @@ const transaction_types = {
   DEPOSIT: "DEPOSIT",
   WITHDRAWAL: "WITHDRAWAL",
   PAYMENT: "PAYMENT",
-  RECEIPT: "RECEIPT",
 };
 
 const transaction_status = {

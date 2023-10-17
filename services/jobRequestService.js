@@ -34,28 +34,31 @@ const createJobRequest = async ({
   return jobRequest;
 };
 
-const fetchJobRequestsPagination = async (page = 1, limit = 10) => {
-  const pagination = await JobRequest.paginate(
-    {},
-    {
-      populate: [
-        {
-          path: "user",
-          select:
-            "first_name last_name gender phone address photo_url DoB email username role isRestricted isConfirmed",
-        },
-        {
-          path: "major",
-        },
-      ],
-      page,
-      limit,
-      lean: true,
-      customLabels: {
-        docs: "job_requests",
+const fetchJobRequestsPagination = async (
+  page = 1,
+  limit = 10,
+  major_id = null
+) => {
+  let query = {};
+  if (major_id) query.major = major_id;
+  const pagination = await JobRequest.paginate(query, {
+    populate: [
+      {
+        path: "user",
+        select:
+          "first_name last_name gender phone address photo_url DoB email username role isRestricted isConfirmed",
       },
-    }
-  );
+      {
+        path: "major",
+      },
+    ],
+    page,
+    limit,
+    lean: true,
+    customLabels: {
+      docs: "job_requests",
+    },
+  });
   return pagination;
 };
 

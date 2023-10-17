@@ -4,7 +4,7 @@ import { transaction_types, transaction_status } from "../config/constant.js";
 const transactionSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.ObjectId, ref: "User", index: true },
-    second_user: { type: mongoose.Schema.ObjectId, ref: "User" },
+    expert: { type: mongoose.Schema.ObjectId, ref: "User", index: true },
     booking: { type: mongoose.Schema.ObjectId, ref: "Booking" },
     amount: { type: Number, min: 0 },
     transaction_type: {
