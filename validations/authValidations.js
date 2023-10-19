@@ -12,7 +12,7 @@ const schemas = {
         .required()
         .matches(
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-          "password must contain 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character"
+          "Password must contain 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character"
         ),
     }),
   }),
