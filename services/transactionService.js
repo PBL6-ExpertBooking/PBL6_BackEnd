@@ -1,7 +1,13 @@
 import { Transaction, User, Booking } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
-import { transaction_status, transaction_types } from "../config/constant";
+import { transaction_status, transaction_types } from "../config/constant.js";
+import querystring from "qs";
+import crypto from "crypto";
+import moment from "moment";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const createTransaction = async ({
   user_id,
@@ -93,7 +99,7 @@ const createPayment = async ({ user_id, booking_id, amount }) => {
   return transaction;
 };
 
-const transactionHandler = async (transaction_id, bankHandler) => {
+const transactionHandler = async (transaction_id) => {
   const transaction = await Transaction.findById(transaction_id).lean();
   if (!transaction) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Transaction not found");
@@ -126,18 +132,15 @@ const handleDeposit = async (transaction) => {
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
-  try {
-    // call bank handler
-    await user.updateOne({
-      balance: user.balance + transaction.amount,
-    });
-    await Transaction.updateOne(
-      { _id: transaction._id },
-      {
-        transaction_status: transaction_status.DONE,
-      }
-    );
-  } catch (error) {}
+  await user.updateOne({
+    balance: user.balance + transaction.amount,
+  });
+  await Transaction.updateOne(
+    { _id: transaction._id },
+    {
+      transaction_status: transaction_status.DONE,
+    }
+  );
 };
 
 const handleWithdrawal = async (transaction) => {
@@ -196,10 +199,116 @@ const fetchTransactionsByUserId = async (user_id) => {
   return transactions;
 };
 
+const generatePaymentUrl = ({
+  ipAddr,
+  transaction_id,
+  amount,
+  bankCode = null,
+  language = null,
+}) => {
+  process.env.TZ = "Asia/Ho_Chi_Minh";
+  let date = new Date();
+  let createDate = moment(date).format("YYYYMMDDHHmmss");
+
+  let tmnCode = process.env.vnp_TmnCode;
+  let secretKey = process.env.vnp_HashSecret;
+  let vnpUrl = process.env.vnp_Url;
+  let returnUrl = process.env.vnp_ReturnUrl;
+
+  let locale = language;
+  if (locale === null || locale === "") {
+    locale = "vn";
+  }
+  let currCode = "VND";
+  let vnp_Params = {};
+  vnp_Params["vnp_Version"] = "2.1.0";
+  vnp_Params["vnp_Command"] = "pay";
+  vnp_Params["vnp_TmnCode"] = tmnCode;
+  vnp_Params["vnp_Locale"] = locale;
+  vnp_Params["vnp_CurrCode"] = currCode;
+  vnp_Params["vnp_TxnRef"] = transaction_id;
+  vnp_Params["vnp_OrderInfo"] = "Thanh toan cho ma GD:" + transaction_id;
+  vnp_Params["vnp_OrderType"] = "other";
+  vnp_Params["vnp_Amount"] = amount * 100;
+  vnp_Params["vnp_ReturnUrl"] = returnUrl;
+  vnp_Params["vnp_IpAddr"] = ipAddr;
+  vnp_Params["vnp_CreateDate"] = createDate;
+  if (bankCode !== null && bankCode !== "") {
+    vnp_Params["vnp_BankCode"] = bankCode;
+  }
+
+  vnp_Params = sortObject(vnp_Params);
+
+  let signData = querystring.stringify(vnp_Params, { encode: false });
+  let hmac = crypto.createHmac("sha512", secretKey);
+  let signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+  vnp_Params["vnp_SecureHash"] = signed;
+  vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
+
+  return vnpUrl;
+};
+
+const handleVnpayReturn = async (req) => {
+  let vnp_Params = req.query;
+  let secureHash = vnp_Params["vnp_SecureHash"];
+
+  delete vnp_Params["vnp_SecureHash"];
+  delete vnp_Params["vnp_SecureHashType"];
+
+  vnp_Params = sortObject(vnp_Params);
+
+  let tmnCode = process.env.vnp_TmnCode;
+  let secretKey = process.env.vnp_HashSecret;
+
+  let signData = querystring.stringify(vnp_Params, { encode: false });
+  let hmac = crypto.createHmac("sha512", secretKey);
+  let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+
+  if (secureHash === signed) {
+    //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
+    let transaction_id = vnp_Params["vnp_TxnRef"];
+    let amount = vnp_Params["vnp_Amount"] / 100;
+    let transaction = await Transaction.findById(transaction_id).lean();
+    if (!transaction) {
+      return { message: "Transaction not found" };
+    }
+    if (amount != transaction.amount) {
+      return { message: "Amount not match" };
+    }
+    if (!(transaction.transaction_status == transaction_status.PROCESSING)) {
+      return { message: "Transaction was done or canceled" };
+    }
+    // test
+    await handleDeposit(transaction);
+    //
+    return { message: "Transaction successful" };
+  }
+
+  return { message: "Error" };
+};
+
+const sortObject = (obj) => {
+  let sorted = {};
+  let str = [];
+  let key;
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      str.push(encodeURIComponent(key));
+    }
+  }
+  str.sort();
+  for (key = 0; key < str.length; key++) {
+    sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+  }
+  return sorted;
+};
+
 export default {
   createDeposit,
   createWithdrawal,
   createPayment,
   transactionHandler,
   fetchTransactionsByUserId,
+  generatePaymentUrl,
+  handleVnpayReturn,
 };
