@@ -33,6 +33,14 @@ const vnpayReturn = async (req, res, next) => {
   }
 };
 
+const vnpayIpn = async (req, res, next) => {
+  try {
+    await transactionService.vnpayIpn(req, res);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getCurrentUserTransactions = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
@@ -49,4 +57,5 @@ export default {
   createDeposit,
   getCurrentUserTransactions,
   vnpayReturn,
+  vnpayIpn,
 };
