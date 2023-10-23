@@ -103,6 +103,16 @@ const disableUser = async (req, res, next) => {
   }
 };
 
+const deleteUser = async (req, res, next) => {
+  try {
+    const user_id = req.params.user_id;
+    await userService.deleteUserById(user_id);
+    res.json({ message: "Delete user successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
@@ -113,4 +123,5 @@ export default {
   enableUser,
   disableUser,
   updateUserInfoById,
+  deleteUser,
 };

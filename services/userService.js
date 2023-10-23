@@ -20,7 +20,7 @@ const fetchUserById = async (user_id) => {
 
 const fetchUsersPagination = async (page = 1, limit = 10) => {
   const pagination = await User.paginate(
-    {},
+    { deleted: false },
     {
       select:
         "first_name last_name gender phone address photo_url DoB email username role isRestricted isConfirmed",
@@ -174,6 +174,17 @@ const confirmUserById = async (user_id) => {
   return userMapper(user);
 };
 
+const deleteUserById = async (user_id) => {
+  const user = await User.findById(user_id);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  if (user.role === roles.ADMIN) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Can't delete an admin");
+  }
+  await user.delete();
+};
+
 export default {
   fetchUserById,
   fetchUsersPagination,
@@ -184,4 +195,5 @@ export default {
   enableUserById,
   disableUserById,
   confirmUserById,
+  deleteUserById,
 };

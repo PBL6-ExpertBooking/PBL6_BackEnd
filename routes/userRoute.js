@@ -42,6 +42,12 @@ router.put(
   upload.single("photo"),
   controller.updateUserInfoById
 );
+router.delete(
+  "/:user_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.deleteUser
+);
 router.put(
   "/:user_id/enable",
   auth,

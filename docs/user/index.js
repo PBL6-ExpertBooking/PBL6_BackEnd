@@ -7,6 +7,7 @@ import getUserInfoById from "./getUserInfoById.js";
 import enableUser from "./enableUser.js";
 import disableUser from "./disableUser.js";
 import updateUserInfoById from "./updateUserInfoById.js";
+import deleteUser from "./deleteUser.js";
 
 export default {
   "/users": {
@@ -25,6 +26,7 @@ export default {
   "/users/{user_id}": {
     ...getUserInfoById,
     ...updateUserInfoById,
+    ...deleteUser,
   },
   "/users/{user_id}/enable": {
     ...enableUser,

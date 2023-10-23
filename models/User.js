@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
+import MongooseDelete from "mongoose-delete";
 import { roles } from "../config/constant.js";
 
 const userSchema = new mongoose.Schema(
@@ -25,11 +26,13 @@ const userSchema = new mongoose.Schema(
     isConfirmed: { type: Boolean, default: false },
     providers: { type: [String], default: [] },
     balance: { type: Number, min: 0, default: 0 },
+    lastLoginTime: { type: Date, default: () => Date.now() },
   },
   { collection: "users" }
 );
 
 userSchema.plugin(mongoosePaginate);
+userSchema.plugin(MongooseDelete, { overrideMethods: "all" });
 
 const User = mongoose.model("User", userSchema);
 

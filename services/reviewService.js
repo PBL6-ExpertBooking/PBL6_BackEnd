@@ -3,7 +3,7 @@ import { Review, User, Booking, ExpertInfo } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 
 const createReview = async ({ user_id, booking_id, rating, comment }) => {
-  if (!(await User.exists(user_id))) {
+  if (!(await User.findById(user_id))) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
   const booking = await Booking.findById(booking_id)
