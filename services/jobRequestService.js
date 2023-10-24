@@ -5,6 +5,7 @@ import ApiError from "../utils/ApiError.js";
 const createJobRequest = async ({
   user_id,
   major_id,
+  title,
   descriptions,
   address,
   budget_min,
@@ -24,6 +25,7 @@ const createJobRequest = async ({
   const jobRequest = await JobRequest.create({
     user: user_id,
     major: major_id,
+    title,
     descriptions,
     address,
     budget: {
@@ -45,8 +47,7 @@ const fetchJobRequestsPagination = async (
     populate: [
       {
         path: "user",
-        select:
-          "first_name last_name gender phone address photo_url DoB email username role isRestricted isConfirmed",
+        select: "first_name last_name photo_url",
       },
       {
         path: "major",
@@ -66,8 +67,7 @@ const fetchJobRequestById = async (job_request_id) => {
   const jobRequest = await JobRequest.findById(job_request_id).populate([
     {
       path: "user",
-      select:
-        "first_name last_name gender phone address photo_url DoB email username role isRestricted isConfirmed",
+      select: "first_name last_name photo_url",
     },
     {
       path: "major",
