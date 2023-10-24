@@ -20,17 +20,25 @@ const createReview = async ({ user_id, booking_id, rating, comment }) => {
   }
   // TODO: check booking status
 
-  const expert = await ExpertInfo.findById(booking.expert);
-  if (!expert) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
-  }
-
   if (await Review.exists({ user: user_id, booking: booking_id })) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
       "You already reviewed this booking"
     );
   }
+
+  // update expert's rating
+  const expert = await ExpertInfo.findById(booking.expert);
+  if (!expert) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
+  }
+  // calculate average_rating
+  const total_rating = expert.average_rating * expert.rating_count + rating;
+  const average_rating = total_rating / (expert.rating_count + 1);
+
+  expert.rating_count = expert.rating_count + 1;
+  expert.average_rating = average_rating;
+  await expert.save();
 
   const review = await Review.create({
     user: user_id,
@@ -39,14 +47,6 @@ const createReview = async ({ user_id, booking_id, rating, comment }) => {
     rating: rating,
     comment: comment,
   });
-
-  // calculate average_rating
-  const total_rating = expert.average_rating * expert.rating_count + rating;
-  const average_rating = total_rating / (expert.rating_count + 1);
-
-  expert.rating_count = expert.rating_count + 1;
-  expert.average_rating = average_rating;
-  await expert.save();
   return review;
 };
 
