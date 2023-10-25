@@ -6,6 +6,7 @@ import querystring from "qs";
 import crypto from "crypto";
 import moment from "moment";
 import dotenv from "dotenv";
+import { startSession } from "mongoose";
 
 dotenv.config();
 
@@ -159,32 +160,49 @@ const handleWithdrawal = async (transaction) => {
 };
 
 const handlePayment = async (transaction) => {
-  const user = await User.findById(transaction.user);
-  if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  const session = await startSession();
+  try {
+    // start transaction
+    session.startTransaction();
+    const user = await User.findByIdAndUpdate(
+      transaction.user,
+      {
+        $inc: { balance: -transaction.amount },
+      },
+      {
+        session,
+        new: true,
+      }
+    );
+
+    if (!user) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+    }
+    if (user.balance < 0) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Insufficient balance");
+    }
+
+    const expert = await User.findByIdAndUpdate(
+      transaction.user,
+      {
+        $inc: { balance: transaction.amount },
+      },
+      {
+        session,
+        new: true,
+      }
+    );
+    if (!expert) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
+    }
+
+    await session.commitTransaction();
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  const expert = await User.findById(transaction.expert);
-  if (!expert) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
-  }
-
-  if (transaction.amount < user.balance) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Insufficient balance");
-  }
-
-  // calculate commission here
-  commission = (transaction.amount * 0) / 100;
-  user.balance = user.balance - transaction.amount;
-  expert.balance = second_user.balance + transaction.amount - commission;
-  //
-
-  await Transaction.updateOne(
-    { _id: transaction._id },
-    { transaction_status: transaction_status.DONE }
-  );
-  await user.save();
-  await expert.save();
 };
 
 const fetchTransactionsByUserId = async (user_id) => {
@@ -261,7 +279,7 @@ const handleVnpayReturn = async (req) => {
     //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
     let transaction_id = vnp_Params["vnp_TxnRef"];
     let amount = vnp_Params["vnp_Amount"] / 100;
-    const transaction = await Transaction.findById(transaction_id).lean();
+    const transaction = await Transaction.findById(transaction_id);
     if (!transaction) {
       return { message: "Transaction not found" };
     }
