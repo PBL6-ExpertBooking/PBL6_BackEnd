@@ -5,7 +5,6 @@ const certificateSchema = new mongoose.Schema(
     name: String,
     major: {
       type: mongoose.Schema.ObjectId,
-      unique: true,
       ref: "Major",
     },
     descriptions: String,

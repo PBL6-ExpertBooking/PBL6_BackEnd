@@ -35,6 +35,7 @@ const login = async (req, res, next) => {
       username,
       password,
     });
+    await authService.updateLastLoginTime(user._id);
     const tokens = await tokenService.generateAuthTokens(user);
     res.json({
       user,

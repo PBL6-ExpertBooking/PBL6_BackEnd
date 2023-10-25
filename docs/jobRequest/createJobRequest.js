@@ -18,6 +18,10 @@ export default {
                 type: "string",
                 require: true,
               },
+              title: {
+                type: "string",
+                require: true,
+              },
               descriptions: {
                 type: "string",
                 require: true,

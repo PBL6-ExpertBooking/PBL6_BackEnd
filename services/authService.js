@@ -51,7 +51,7 @@ const fetchUserByEmail = async ({ email }) => {
 };
 
 const verifyUserFromTokenPayload = async ({ user_id }) => {
-  if (!(await User.exists({ _id: user_id }))) {
+  if (!(await User.findById(user_id))) {
     throw new ApiError(httpStatus.FORBIDDEN, "Invalid token");
   }
 };
@@ -102,6 +102,15 @@ const handleGoogleUser = async (google_user) => {
   return userMapper(newUser);
 };
 
+const updateLastLoginTime = async (user_id) => {
+  await User.updateOne(
+    { _id: user_id },
+    {
+      lastLoginTime: Date.now(),
+    }
+  );
+};
+
 export default {
   createNewUser,
   fetchUserByUsernameAndPassword,
@@ -109,4 +118,5 @@ export default {
   verifyUserFromTokenPayload,
   resetPassword,
   handleGoogleUser,
+  updateLastLoginTime,
 };

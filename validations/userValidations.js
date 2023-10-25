@@ -46,8 +46,20 @@ const schemas = {
   changePasswordSchema: yup.object({
     body: yup.object({
       current_password: yup.string().required(),
-      new_password: yup.string().required(),
-      confirm_password: yup.string().required(),
+      new_password: yup
+        .string()
+        .required()
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+          "Password must contain 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character"
+        ),
+      confirm_password: yup
+        .string()
+        .required()
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+          "Password must contain 8 characters, 1 uppercase, 1 lowercase, 1 number and 1 special character"
+        ),
     }),
   }),
 };

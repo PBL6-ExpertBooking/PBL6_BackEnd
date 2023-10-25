@@ -5,6 +5,7 @@ const jobRequestSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.ObjectId, ref: "User" },
     major: { type: mongoose.Schema.ObjectId, ref: "Major" },
+    title: String,
     descriptions: String,
     address: String,
     budget: {

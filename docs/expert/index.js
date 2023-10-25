@@ -5,10 +5,14 @@ import getCurrentExpertInfo from "./getCurrentExpertInfo.js";
 import getMajorsByExpertId from "./getMajorsByExpertId.js";
 import getReviewsByExpertId from "./getReviewsByExpertId.js";
 import getBookingsByExpertId from "./getBookingsByExpertId.js";
+import getUnverifiedExpert from "./getUnverifiedExpert.js";
 
 export default {
   "/experts": {
     ...getAllExperts,
+  },
+  "/experts/unverified": {
+    ...getUnverifiedExpert,
   },
   "/experts/current": {
     ...getCurrentExpertInfo,
