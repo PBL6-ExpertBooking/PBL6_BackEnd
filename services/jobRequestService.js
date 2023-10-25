@@ -79,8 +79,37 @@ const fetchJobRequestById = async (job_request_id) => {
   return jobRequest;
 };
 
+const fetchJobRequestsPaginationByUserId = async (
+  user_id,
+  page = 1,
+  limit = 10,
+  major_id = null
+) => {
+  let query = { user: user_id };
+  if (major_id) query.major = major_id;
+  const pagination = await JobRequest.paginate(query, {
+    populate: [
+      {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+      {
+        path: "major",
+      },
+    ],
+    page,
+    limit,
+    lean: true,
+    customLabels: {
+      docs: "job_requests",
+    },
+  });
+  return pagination;
+};
+
 export default {
   createJobRequest,
   fetchJobRequestsPagination,
   fetchJobRequestById,
+  fetchJobRequestsPaginationByUserId,
 };

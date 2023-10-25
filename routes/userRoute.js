@@ -32,6 +32,11 @@ router.post(
   checkRole([roles.USER]),
   controller.promoteToExpert
 );
+router.get(
+  "/current/job_requests",
+  auth,
+  controller.getJobRequestsPaginationOfCurrentUser
+);
 router.get("/:id", controller.getUserById);
 router.put(
   "/:id",
@@ -59,6 +64,11 @@ router.put(
   auth,
   checkRole([roles.ADMIN]),
   controller.disableUser
+);
+router.get(
+  "/:user_id/job_requests",
+  auth,
+  controller.getJobRequestsPaginationByUserId
 );
 
 export default router;

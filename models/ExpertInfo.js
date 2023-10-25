@@ -7,6 +7,7 @@ const expertInfoSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "User",
       index: true,
+      unique: true,
     },
     descriptions: String,
     certificates: {

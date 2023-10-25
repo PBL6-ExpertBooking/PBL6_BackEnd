@@ -1,4 +1,5 @@
 import userService from "../services/userService.js";
+import jobRequestService from "../services/jobRequestService.js";
 
 const getUserById = async (req, res, next) => {
   try {
@@ -113,6 +114,40 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+const getJobRequestsPaginationOfCurrentUser = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { page, limit, major_id } = req.query;
+    const pagination =
+      await jobRequestService.fetchJobRequestsPaginationByUserId(
+        user_id,
+        page || 1,
+        limit || 10,
+        major_id
+      );
+    res.json({ pagination });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getJobRequestsPaginationByUserId = async (req, res, next) => {
+  try {
+    const { user_id } = req.params;
+    const { page, limit, major_id } = req.query;
+    const pagination =
+      await jobRequestService.fetchJobRequestsPaginationByUserId(
+        user_id,
+        page || 1,
+        limit || 10,
+        major_id
+      );
+    res.json({ pagination });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
@@ -124,4 +159,6 @@ export default {
   disableUser,
   updateUserInfoById,
   deleteUser,
+  getJobRequestsPaginationOfCurrentUser,
+  getJobRequestsPaginationByUserId,
 };

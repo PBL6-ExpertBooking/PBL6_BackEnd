@@ -8,6 +8,8 @@ import enableUser from "./enableUser.js";
 import disableUser from "./disableUser.js";
 import updateUserInfoById from "./updateUserInfoById.js";
 import deleteUser from "./deleteUser.js";
+import getCurrentUserJobRequests from "./getCurrentUserJobRequests.js";
+import getJobRequestsByUserId from "./getJobRequestsByUserId.js";
 
 export default {
   "/users": {
@@ -19,6 +21,9 @@ export default {
   },
   "/users/current/password": {
     ...changePassword,
+  },
+  "/users/current/job_requests": {
+    ...getCurrentUserJobRequests,
   },
   "/users/current/promote-to-expert": {
     ...promoteToExpert,
@@ -33,5 +38,8 @@ export default {
   },
   "/users/{user_id}/disable": {
     ...disableUser,
+  },
+  "/users/{user_id}/job_requests": {
+    ...getJobRequestsByUserId,
   },
 };
