@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import { ExpertInfo, Certificate } from "../models/index.js";
+import { ExpertInfo, Certificate, User } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 
 const fetchExpertsPagination = async (page = 1, limit = 10) => {
@@ -112,6 +112,67 @@ const fetchVerifiedMajorsByExpertId = async (expert_id) => {
   return majors;
 };
 
+const fetchExpertsHavingUnverifiedCert = async (page = 1, limit = 10) => {
+  const aggregate = ExpertInfo.aggregate([
+    {
+      $lookup: {
+        from: Certificate.collection.name,
+        localField: "certificates",
+        foreignField: "_id",
+        as: "certificates",
+      },
+    },
+    {
+      $unwind: "$certificates",
+    },
+    {
+      $match: { "certificates.isVerified": false },
+    },
+    {
+      $group: {
+        _id: "$_id",
+        user: { $first: "$user" },
+        descriptions: { $first: "$descriptions" },
+        average_rating: { $first: "$average_rating" },
+        rating_count: { $first: "$rating_count" },
+        certificates: { $push: "$certificates" },
+      },
+    },
+    {
+      $lookup: {
+        from: User.collection.name,
+        localField: "user",
+        foreignField: "_id",
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              first_name: 1,
+              last_name: 1,
+              gender: 1,
+              phone: 1,
+              address: 1,
+              photo_url: 1,
+              DoB: 1,
+              email: 1,
+            },
+          },
+        ],
+        as: "user",
+      },
+    },
+  ]);
+  const pagination = await ExpertInfo.aggregatePaginate(aggregate, {
+    page,
+    limit,
+    lean: true,
+    customLabels: {
+      docs: "experts",
+    },
+  });
+  return pagination;
+};
+
 export default {
   fetchExpertsPagination,
   fetchExpertById,
@@ -119,4 +180,5 @@ export default {
   fetchExpertByUserId,
   fetchUnverifiedCertificatesByExpertId,
   fetchVerifiedMajorsByExpertId,
+  fetchExpertsHavingUnverifiedCert,
 };

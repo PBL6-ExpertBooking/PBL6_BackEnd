@@ -97,6 +97,19 @@ const getBookingsByExpertId = async (req, res, next) => {
   }
 };
 
+const getExpertsHavingUnverifiedCert = async (req, res, next) => {
+  try {
+    const { page, limit } = req.query;
+    const pagination = await expertService.fetchExpertsHavingUnverifiedCert(
+      page || 1,
+      limit || 10
+    );
+    res.json({ pagination });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getExpertsPagination,
   getExpertById,
@@ -106,4 +119,5 @@ export default {
   getVerifiedMajorsByExpertId,
   getReviewsByExpertId,
   getBookingsByExpertId,
+  getExpertsHavingUnverifiedCert,
 };

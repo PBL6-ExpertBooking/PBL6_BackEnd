@@ -7,6 +7,12 @@ const router = express.Router();
 
 router.get("", auth, controller.getExpertsPagination);
 router.get(
+  "/unverified",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.getExpertsHavingUnverifiedCert
+);
+router.get(
   "/current",
   auth,
   checkRole([roles.EXPERT]),

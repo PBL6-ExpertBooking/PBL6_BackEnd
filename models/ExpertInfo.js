@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const expertInfoSchema = new mongoose.Schema(
   {
@@ -14,7 +15,6 @@ const expertInfoSchema = new mongoose.Schema(
       type: [
         {
           type: mongoose.Schema.ObjectId,
-          unique: true,
           ref: "Certificate",
         },
       ],
@@ -27,6 +27,7 @@ const expertInfoSchema = new mongoose.Schema(
 );
 
 expertInfoSchema.plugin(mongoosePaginate);
+expertInfoSchema.plugin(aggregatePaginate);
 
 const ExpertInfo = mongoose.model("ExpertInfo", expertInfoSchema);
 
