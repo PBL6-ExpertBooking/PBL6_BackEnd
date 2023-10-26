@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
+import { job_request_status } from "../config/constant.js";
 
 const jobRequestSchema = new mongoose.Schema(
   {
@@ -11,6 +12,11 @@ const jobRequestSchema = new mongoose.Schema(
     budget: {
       min: Number,
       max: Number,
+    },
+    status: {
+      type: String,
+      enum: Object.values(job_request_status),
+      default: job_request_status.PENDING,
     },
   },
   {

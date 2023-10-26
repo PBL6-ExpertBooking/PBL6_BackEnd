@@ -1,5 +1,6 @@
 import httpStatus from "http-status";
 import { JobRequest, Major, User } from "../models/index.js";
+import { job_request_status } from "../config/constant.js";
 import ApiError from "../utils/ApiError.js";
 
 const createJobRequest = async ({
@@ -32,6 +33,7 @@ const createJobRequest = async ({
       min: budget_min,
       max: budget_max,
     },
+    status: job_request_status.PENDING,
   });
   return jobRequest;
 };

@@ -1,3 +1,4 @@
+import bookingService from "../services/bookingService.js";
 import jobRequestService from "../services/jobRequestService.js";
 
 const createJobRequest = async (req, res, next) => {
@@ -46,8 +47,21 @@ const getJobRequestById = async (req, res, next) => {
   }
 };
 
+const getBookingsByJobRequest = async (req, res, next) => {
+  try {
+    const { job_request_id } = req.params;
+    const bookings = await bookingService.fetchBookingsByJobRequestId(
+      job_request_id
+    );
+    res.json({ bookings });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createJobRequest,
   getJobRequestsPagination,
   getJobRequestById,
+  getBookingsByJobRequest,
 };

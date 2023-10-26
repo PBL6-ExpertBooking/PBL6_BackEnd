@@ -1,9 +1,9 @@
 import httpStatus from "http-status";
 import { Booking, ExpertInfo, JobRequest } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
-import { booking_status } from "../config/constant.js";
+import { booking_status, job_request_status } from "../config/constant.js";
 
-const createBooking = async ({ user_id, job_request_id }) => {
+const createBooking = async ({ user_id, job_request_id, price }) => {
   const expert = await ExpertInfo.findOne({ user: user_id })
     .populate({
       path: "certificates",
@@ -18,6 +18,18 @@ const createBooking = async ({ user_id, job_request_id }) => {
   if (!job_request) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Job request not found");
   }
+  if (job_request.status === job_request_status.PROCESSING) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "This job is being processed");
+  }
+  // check duplicate
+  if (
+    await Booking.exists({ job_request: job_request_id, expert: expert._id })
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You already created booking for this job request"
+    );
+  }
   // check expert majors
   const expert_majors = expert.certificates.map((certificate) =>
     certificate.major.toString()
@@ -28,23 +40,13 @@ const createBooking = async ({ user_id, job_request_id }) => {
       "You don't have the major for this job request"
     );
   }
-  //check booking's existence
-  const isDuplicate = await Booking.exists({
-    job_request: job_request_id,
-    status: booking_status.PROCESSING,
-  });
-  if (isDuplicate) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      "This job request is already taken"
-    );
-  }
 
   const booking = await Booking.create({
     expert: expert._id,
     job_request: job_request_id,
     time_booking: new Date(),
-    status: booking_status.PROCESSING,
+    price: price,
+    status: booking_status.PENDING,
   });
   return booking;
 };
@@ -87,7 +89,63 @@ const fetchBookingsByExpertId = async (expert_id, page = 1, limit = 10) => {
   return pagination;
 };
 
+const fetchBookingsByJobRequestId = async (job_request_id) => {
+  const bookings = await Booking.find({ job_request: job_request_id }).populate(
+    [
+      {
+        path: "expert",
+        populate: [
+          {
+            path: "user",
+            select: "first_name last_name",
+          },
+        ],
+      },
+      {
+        path: "job_request",
+        populate: [
+          {
+            path: "user",
+            select: "first_name last_name",
+          },
+          {
+            path: "major",
+          },
+        ],
+      },
+    ]
+  );
+  return bookings;
+};
+
+const acceptBooking = async ({ user_id, booking_id }) => {
+  const booking = await Booking.findById(booking_id);
+  if (!booking) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Booking not found");
+  }
+  if (booking.status !== booking_status.PENDING) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Booking not pending");
+  }
+  const job_request = await JobRequest.findById(booking.job_request);
+  if (!job_request) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Job request not found");
+  }
+  if (job_request.status !== job_request_status.PENDING) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Job request not pending");
+  }
+  if (job_request.user.toString() !== user_id.toString()) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Not authorized");
+  }
+  job_request.status = job_request_status.PROCESSING;
+  await job_request.save();
+  booking.status = booking_status.PROCESSING;
+  await booking.save();
+  return booking;
+};
+
 export default {
   createBooking,
   fetchBookingsByExpertId,
+  fetchBookingsByJobRequestId,
+  acceptBooking,
 };

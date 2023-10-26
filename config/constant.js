@@ -9,7 +9,15 @@ const tokenTypes = {
   REFRESH: "refresh",
 };
 
+const job_request_status = {
+  PENDING: "PENDING",
+  PROCESSING: "PROCESSING",
+  CANCELED: "CANCELED",
+  DONE: "DONE",
+};
+
 const booking_status = {
+  PENDING: "PENDING",
   PROCESSING: "PROCESSING",
   CANCELED: "CANCELED",
   DONE: "DONE",
@@ -33,4 +41,5 @@ export {
   booking_status,
   transaction_status,
   transaction_types,
+  job_request_status,
 };

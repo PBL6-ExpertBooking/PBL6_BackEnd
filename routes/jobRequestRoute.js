@@ -8,5 +8,10 @@ const router = express.Router();
 router.get("", auth, controller.getJobRequestsPagination);
 router.post("", auth, checkRole([roles.USER]), controller.createJobRequest);
 router.get("/:job_request_id", auth, controller.getJobRequestById);
+router.get(
+  "/:job_request_id/bookings",
+  auth,
+  controller.getBookingsByJobRequest
+);
 
 export default router;

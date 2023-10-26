@@ -9,7 +9,11 @@ const bookingSchema = new mongoose.Schema(
     time_booking: Date,
     payment_type: String,
     price: Number,
-    status: { type: String, enum: Object.values(booking_status) },
+    status: {
+      type: String,
+      enum: Object.values(booking_status),
+      default: booking_status.PENDING,
+    },
     time_of_payment: Date,
   },
   {

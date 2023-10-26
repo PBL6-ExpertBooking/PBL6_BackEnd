@@ -3,9 +3,6 @@ import { Review, User, Booking, ExpertInfo } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 
 const createReview = async ({ user_id, booking_id, rating, comment }) => {
-  if (!(await User.findById(user_id))) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
-  }
   const booking = await Booking.findById(booking_id)
     .populate("job_request")
     .lean();
@@ -32,13 +29,12 @@ const createReview = async ({ user_id, booking_id, rating, comment }) => {
   if (!expert) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
   }
-  // calculate average_rating
-  const total_rating = expert.average_rating * expert.rating_count + rating;
-  const average_rating = total_rating / (expert.rating_count + 1);
-
-  expert.rating_count = expert.rating_count + 1;
-  expert.average_rating = average_rating;
-  await expert.save();
+  await expert.updateOne({
+    rating_count: expert.rating_count + 1,
+    average_rating:
+      (expert.average_rating * expert.rating_count + rating) /
+      (expert.rating_count + 1),
+  });
 
   const review = await Review.create({
     user: user_id,
@@ -61,7 +57,7 @@ const fetchReviewsPaginationByExpertId = async (
       populate: [
         {
           path: "user",
-          select: "first_name last_name",
+          select: "first_name last_name photo_url",
         },
       ],
       page,

@@ -18,6 +18,10 @@ export default {
                 type: "string",
                 require: true,
               },
+              price: {
+                type: "number",
+                require: true,
+              },
             },
           },
         },
