@@ -1,27 +1,19 @@
 import httpStatus from "http-status";
-import { Review, User, Booking, ExpertInfo } from "../models/index.js";
+import { Review, User, ExpertInfo, JobRequest } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 
-const createReview = async ({ user_id, booking_id, rating, comment }) => {
-  const booking = await Booking.findById(booking_id)
-    .populate("job_request")
-    .lean();
-  if (!booking) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Booking not found");
+const createReview = async ({ user_id, job_request_id, rating, comment }) => {
+  const job_request = await job_request.findById(job_request_id).lean();
+  if (!job_request) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Job not found");
   }
-  if (booking.job_request.user.toString() !== user_id.toString()) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      "You are not the user who requested this job"
-    );
+  if (job_request.user.toString() !== user_id.toString()) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You are not the owner");
   }
   // TODO: check booking status
 
-  if (await Review.exists({ user: user_id, booking: booking_id })) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      "You already reviewed this booking"
-    );
+  if (await Review.exists({ user: user_id, job_request: job_request_id })) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You already reviewed this job");
   }
 
   // update expert's rating
@@ -39,7 +31,7 @@ const createReview = async ({ user_id, booking_id, rating, comment }) => {
   const review = await Review.create({
     user: user_id,
     expert: expert._id,
-    booking: booking_id,
+    job_request: job_request_id,
     rating: rating,
     comment: comment,
   });

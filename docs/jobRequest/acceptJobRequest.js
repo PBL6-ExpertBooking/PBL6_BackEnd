@@ -1,7 +1,7 @@
 export default {
-  get: {
+  post: {
     tags: ["job_request"],
-    operationId: "getBookingsByJobRequest",
+    operationId: "acceptJobRequest",
     security: [
       {
         bearerAuth: [],

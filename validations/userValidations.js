@@ -24,22 +24,6 @@ const schemas = {
           /(84|0[3|5|7|8|9])+([0-9]{8})\b/,
           "not a valid Vietnam phone number"
         ),
-      address: yup
-        .string()
-        .nullable()
-        .transform((curr, orig) => (orig === "" ? null : curr)),
-      //   DoB: yup
-      //     .date()
-      //     .nullable()
-      //     .transform((curr, orig) => (orig === "" ? null : curr))
-      //     .transform(function (value, originalValue) {
-      //       if (!value || this.isType(value)) {
-      //         return value;
-      //       }
-      //       const result = parse(originalValue, "dd.MM.yyyy", new Date());
-      //       return result;
-      //     })
-      //     .typeError("please enter a valid date"),
     }),
   }),
 

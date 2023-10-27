@@ -1,7 +1,7 @@
 import createJobRequest from "./createJobRequest.js";
 import getJobRequests from "./getJobRequests.js";
 import getJobRequestById from "./getJobRequestById.js";
-import getBookingsByJobRequest from "./getBookingsByJobRequest.js";
+import acceptJobRequest from "./acceptJobRequest.js";
 
 export default {
   "/job_requests": {
@@ -11,7 +11,7 @@ export default {
   "/job_requests/{job_request_id}": {
     ...getJobRequestById,
   },
-  "/job_requests/{job_request_id}/bookings": {
-    ...getBookingsByJobRequest,
+  "/job_requests/{job_request_id}/accept": {
+    ...acceptJobRequest,
   },
 };

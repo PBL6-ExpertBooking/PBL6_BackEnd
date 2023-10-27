@@ -17,7 +17,6 @@ const job_request_status = {
 };
 
 const booking_status = {
-  PENDING: "PENDING",
   PROCESSING: "PROCESSING",
   CANCELED: "CANCELED",
   DONE: "DONE",

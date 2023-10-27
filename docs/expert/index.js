@@ -4,7 +4,6 @@ import getCertificates from "./getCertificates.js";
 import getCurrentExpertInfo from "./getCurrentExpertInfo.js";
 import getMajorsByExpertId from "./getMajorsByExpertId.js";
 import getReviewsByExpertId from "./getReviewsByExpertId.js";
-import getBookingsByExpertId from "./getBookingsByExpertId.js";
 import getUnverifiedExpert from "./getUnverifiedExpert.js";
 
 export default {
@@ -25,9 +24,6 @@ export default {
   },
   "/experts/{expert_id}/majors": {
     ...getMajorsByExpertId,
-  },
-  "/experts/{expert_id}/bookings": {
-    ...getBookingsByExpertId,
   },
   "/experts/{expert_id}/reviews": {
     ...getReviewsByExpertId,

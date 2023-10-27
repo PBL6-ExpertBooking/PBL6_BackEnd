@@ -1,6 +1,5 @@
 import expertService from "../services/expertService.js";
 import reviewService from "../services/reviewService.js";
-import bookingService from "../services/bookingService.js";
 
 const getExpertsPagination = async (req, res, next) => {
   try {
@@ -82,21 +81,6 @@ const getReviewsByExpertId = async (req, res, next) => {
   }
 };
 
-const getBookingsByExpertId = async (req, res, next) => {
-  try {
-    const expert_id = req.params.expert_id;
-    const { page, limit } = req.query;
-    const pagination = await bookingService.fetchBookingsByExpertId(
-      expert_id,
-      page || 1,
-      limit || 10
-    );
-    res.json({ pagination });
-  } catch (error) {
-    next(error);
-  }
-};
-
 const getExpertsHavingUnverifiedCert = async (req, res, next) => {
   try {
     const { page, limit } = req.query;
@@ -118,6 +102,5 @@ export default {
   getCurrentExpertInfo,
   getVerifiedMajorsByExpertId,
   getReviewsByExpertId,
-  getBookingsByExpertId,
   getExpertsHavingUnverifiedCert,
 };

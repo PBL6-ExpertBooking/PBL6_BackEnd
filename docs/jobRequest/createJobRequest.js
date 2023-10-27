@@ -27,13 +27,9 @@ export default {
                 require: true,
               },
               address: {
-                type: "string",
+                $ref: "#/components/schemas/address",
               },
-              budget_min: {
-                type: "number",
-                require: true,
-              },
-              budget_max: {
+              price: {
                 type: "number",
                 require: true,
               },

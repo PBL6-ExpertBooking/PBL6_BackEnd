@@ -1,4 +1,3 @@
-import Booking from "./Booking.js";
 import Certificate from "./Certificate.js";
 import ConfirmationToken from "./ConfirmationToken.js";
 import ExpertInfo from "./ExpertInfo.js";
@@ -10,7 +9,6 @@ import User from "./User.js";
 import Transaction from "./Transaction.js";
 
 export {
-  Booking,
   Certificate,
   ConfirmationToken,
   ExpertInfo,

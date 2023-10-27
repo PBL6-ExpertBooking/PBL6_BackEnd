@@ -9,7 +9,21 @@ const userSchema = new mongoose.Schema(
     last_name: String,
     gender: Boolean,
     phone: String,
-    address: String,
+    address: {
+      city: {
+        name: String,
+        code: Number,
+      },
+      district: {
+        name: String,
+        code: Number,
+      },
+      ward: {
+        name: String,
+        code: Number,
+      },
+      other_detail: String,
+    },
     photo_url: String,
     photo_public_id: String,
     DoB: Date,
