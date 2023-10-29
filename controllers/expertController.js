@@ -1,12 +1,15 @@
 import expertService from "../services/expertService.js";
 import reviewService from "../services/reviewService.js";
+import { roles } from "../config/constant.js";
 
 const getExpertsPagination = async (req, res, next) => {
   try {
     const { page, limit } = req.query;
+    const isAdmin = req.authData.user.role === roles.ADMIN;
     const pagination = await expertService.fetchExpertsPagination(
       page || 1,
-      limit || 10
+      limit || 10,
+      isAdmin
     );
     res.json({ pagination });
   } catch (error) {
@@ -27,7 +30,8 @@ const getCurrentExpertInfo = async (req, res, next) => {
 const getExpertById = async (req, res, next) => {
   try {
     const expert_id = req.params.id;
-    const expert = await expertService.fetchExpertById(expert_id);
+    const isAdmin = req.authData.user.role === roles.ADMIN;
+    const expert = await expertService.fetchExpertById(expert_id, isAdmin);
     res.json({ expert });
   } catch (error) {
     next(error);
