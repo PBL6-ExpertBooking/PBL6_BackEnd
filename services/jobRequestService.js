@@ -67,6 +67,13 @@ const fetchJobRequestById = async (job_request_id) => {
     {
       path: "major",
     },
+    {
+      path: "expert",
+      populate: {
+        path: "user",
+        select: "first_name last_name gender photo_url phone address DoB email",
+      },
+    },
   ]);
   if (!jobRequest) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Job request not found");
@@ -121,10 +128,42 @@ const acceptJobRequestByExpert = async ({ user_id, job_request_id }) => {
   return job_request;
 };
 
+const updateJobRequest = async ({
+  user_id,
+  job_request_id,
+  major_id,
+  title,
+  descriptions,
+  address,
+  price,
+}) => {
+  const job_request = await JobRequest.findById(job_request_id);
+  if (!job_request) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Job request not found");
+  }
+  if (job_request.user.toString() !== user_id.toString()) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You are not the owner");
+  }
+  if (job_request.status !== job_request_status.PENDING) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Can't modify this job request");
+  }
+  if (major_id && !(await Major.findById(major_id))) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Major not found");
+  }
+  job_request.major = major_id || job_request.major;
+  job_request.title = title || job_request.title;
+  job_request.descriptions = descriptions || job_request.descriptions;
+  job_request.address = address || job_request.address;
+  job_request.price = price || job_request.price;
+  await job_request.save();
+  return job_request;
+};
+
 export default {
   createJobRequest,
   fetchJobRequestsPagination,
   fetchJobRequestById,
   fetchJobRequestsPaginationByUserId,
   acceptJobRequestByExpert,
+  updateJobRequest,
 };

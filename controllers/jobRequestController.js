@@ -58,9 +58,30 @@ const acceptJobRequest = async (req, res, next) => {
   }
 };
 
+const updateJobRequest = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { job_request_id } = req.params;
+    const { major_id, title, descriptions, address, price } = req.body;
+    const job_request = await jobRequestService.updateJobRequest({
+      user_id,
+      job_request_id,
+      major_id,
+      title,
+      descriptions,
+      address,
+      price,
+    });
+    res.json({ job_request });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createJobRequest,
   getJobRequestsPagination,
   getJobRequestById,
   acceptJobRequest,
+  updateJobRequest,
 };

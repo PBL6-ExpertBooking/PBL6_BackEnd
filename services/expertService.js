@@ -2,11 +2,26 @@ import httpStatus from "http-status";
 import { ExpertInfo, Certificate, User } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 
-const fetchExpertsPagination = async (page = 1, limit = 10, isFull = false) => {
+const fetchExpertsPagination = async ({
+  page = 1,
+  limit = 10,
+  isFull = false,
+}) => {
   let select = "first_name last_name gender photo_url";
   if (isFull) {
     select += "phone address DoB email username role isRestricted isConfirmed";
   }
+
+  // let query = {};
+  // if (search && search !== "") {
+  //   query.$expr = {
+  //     $regexMatch: {
+  //       input: { $concat: ["$user.first_name", " ", "$user.last_name"] },
+  //       regex: /Expert Update/,
+  //       options: "i",
+  //     },
+  //   };
+  // }
   const pagination = await ExpertInfo.paginate(
     {},
     {

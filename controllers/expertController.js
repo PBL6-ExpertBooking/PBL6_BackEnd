@@ -6,11 +6,11 @@ const getExpertsPagination = async (req, res, next) => {
   try {
     const { page, limit } = req.query;
     const isAdmin = req.authData.user.role === roles.ADMIN;
-    const pagination = await expertService.fetchExpertsPagination(
-      page || 1,
-      limit || 10,
-      isAdmin
-    );
+    const pagination = await expertService.fetchExpertsPagination({
+      page: page || 1,
+      limit: limit || 10,
+      isFull: isAdmin,
+    });
     res.json({ pagination });
   } catch (error) {
     next(error);
