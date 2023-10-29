@@ -1,6 +1,7 @@
 import httpStatus from "http-status";
 import { ExpertInfo, JobRequest, Major, User } from "../models/index.js";
 import { job_request_status } from "../config/constant.js";
+import recommendedExpertsService from "./recommendedExpertsService.js";
 import ApiError from "../utils/ApiError.js";
 
 const createJobRequest = async ({
@@ -28,6 +29,9 @@ const createJobRequest = async ({
     price,
     status: job_request_status.PENDING,
   });
+
+  recommendedExpertsService.createRecommendedExperts(jobRequest._id);
+
   return jobRequest;
 };
 

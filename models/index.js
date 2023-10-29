@@ -7,6 +7,7 @@ import RefreshToken from "./RefreshToken.js";
 import Review from "./Review.js";
 import User from "./User.js";
 import Transaction from "./Transaction.js";
+import RecommendedExperts from "./RecommendedExperts.js";
 
 export {
   Certificate,
@@ -18,4 +19,5 @@ export {
   Review,
   User,
   Transaction,
+  RecommendedExperts,
 };
