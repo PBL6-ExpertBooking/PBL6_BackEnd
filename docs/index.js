@@ -9,6 +9,7 @@ import major from "./major/index.js";
 import certificate from "./certificate/index.js";
 import jobRequest from "./jobRequest/index.js";
 import review from "./review/index.js";
+import transaction from "./transaction/index.js";
 
 export default {
   ...basicInfo,
@@ -23,5 +24,6 @@ export default {
     ...certificate,
     ...jobRequest,
     ...review,
+    ...transaction,
   },
 };

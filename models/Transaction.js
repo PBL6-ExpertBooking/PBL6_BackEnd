@@ -5,7 +5,7 @@ const transactionSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.ObjectId, ref: "User", index: true },
     expert: { type: mongoose.Schema.ObjectId, ref: "User", index: true },
-    booking: { type: mongoose.Schema.ObjectId, ref: "Booking" },
+    job_request: { type: mongoose.Schema.ObjectId, ref: "JobRequest" },
     amount: { type: Number, min: 0 },
     transaction_type: {
       type: String,
