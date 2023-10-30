@@ -27,7 +27,7 @@ export default {
                 type: "string",
               },
               address: {
-                type: "string",
+                $ref: "#/components/schemas/address",
               },
               DoB: {
                 type: "string",

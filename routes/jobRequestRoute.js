@@ -8,5 +8,17 @@ const router = express.Router();
 router.get("", auth, controller.getJobRequestsPagination);
 router.post("", auth, checkRole([roles.USER]), controller.createJobRequest);
 router.get("/:job_request_id", auth, controller.getJobRequestById);
+router.put(
+  "/:job_request_id",
+  auth,
+  checkRole([roles.USER]),
+  controller.updateJobRequest
+);
+router.post(
+  "/:job_request_id/accept",
+  auth,
+  checkRole([roles.EXPERT]),
+  controller.acceptJobRequest
+);
 
 export default router;

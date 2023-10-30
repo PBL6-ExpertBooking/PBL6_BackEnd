@@ -2,18 +2,33 @@ import httpStatus from "http-status";
 import { ExpertInfo, Certificate, User } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 
-const fetchExpertsPagination = async (page = 1, limit = 10) => {
+const fetchExpertsPagination = async ({
+  page = 1,
+  limit = 10,
+  isFull = false,
+}) => {
+  let select = "first_name last_name gender photo_url";
+  if (isFull) {
+    select += "phone address DoB email username role isRestricted isConfirmed";
+  }
+
+  // let query = {};
+  // if (search && search !== "") {
+  //   query.$expr = {
+  //     $regexMatch: {
+  //       input: { $concat: ["$user.first_name", " ", "$user.last_name"] },
+  //       regex: /Expert Update/,
+  //       options: "i",
+  //     },
+  //   };
+  // }
   const pagination = await ExpertInfo.paginate(
     {},
     {
       populate: [
         {
           path: "user",
-          select:
-            "first_name last_name gender phone address photo_url DoB email username role isRestricted isConfirmed",
-        },
-        {
-          path: "certificates",
+          select: select,
         },
       ],
       page,
@@ -27,12 +42,13 @@ const fetchExpertsPagination = async (page = 1, limit = 10) => {
   return pagination;
 };
 
-const fetchExpertById = async (expert_id) => {
+const fetchExpertById = async (expert_id, isFull = false) => {
+  let select = "first_name last_name gender photo_url";
+  if (isFull) {
+    select += "phone address DoB email username role isRestricted isConfirmed";
+  }
   const expert = await ExpertInfo.findById(expert_id)
-    .populate(
-      "user",
-      "first_name last_name gender phone address photo_url DoB email username role isRestricted"
-    )
+    .populate("user", select)
     .populate({
       path: "certificates",
       populate: {
@@ -46,12 +62,13 @@ const fetchExpertById = async (expert_id) => {
   return expert;
 };
 
-const fetchExpertByUserId = async (user_id) => {
+const fetchExpertByUserId = async (user_id, isFull) => {
+  let select = "first_name last_name gender photo_url";
+  if (isFull) {
+    select += "phone address DoB email username role isRestricted isConfirmed";
+  }
   const expert = await ExpertInfo.findOne({ user: user_id })
-    .populate(
-      "user",
-      "first_name last_name gender phone address photo_url DoB email username role isRestricted"
-    )
+    .populate("user", select)
     .populate({
       path: "certificates",
       populate: {

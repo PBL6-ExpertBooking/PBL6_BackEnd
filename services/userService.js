@@ -79,7 +79,7 @@ const updateUserInfo = async (user_id, update_info) => {
   user.last_name = update_info.last_name || user.last_name;
   user.gender = update_info.gender || user.gender;
   user.phone = update_info.phone || user.phone;
-  user.address = update_info.address || user.address;
+  user.address = JSON.parse(update_info.address) || user.address;
   if (update_info.file) {
     // upload image and retrieve photo_url
     const response = await imageService.uploadImage(update_info.file);

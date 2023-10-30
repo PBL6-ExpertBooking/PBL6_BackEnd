@@ -1,13 +1,22 @@
 export default {
-  post: {
+  put: {
     tags: ["job_request"],
-    operationId: "createJobRequest",
+    operationId: "updateJobRequest",
     security: [
       {
         bearerAuth: [],
       },
     ],
-    parameters: [],
+    parameters: [
+      {
+        name: "job_request_id",
+        in: "path",
+        schema: {
+          type: "string",
+        },
+        require: true,
+      },
+    ],
     requestBody: {
       content: {
         "application/json": {

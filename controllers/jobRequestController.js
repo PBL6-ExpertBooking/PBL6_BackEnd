@@ -3,16 +3,14 @@ import jobRequestService from "../services/jobRequestService.js";
 const createJobRequest = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { major_id, title, descriptions, address, budget_min, budget_max } =
-      req.body;
+    const { major_id, title, descriptions, address, price } = req.body;
     const job_request = await jobRequestService.createJobRequest({
       user_id,
       major_id,
       title,
       descriptions,
       address,
-      budget_min,
-      budget_max,
+      price,
     });
     res.json({ job_request });
   } catch (error) {
@@ -46,8 +44,44 @@ const getJobRequestById = async (req, res, next) => {
   }
 };
 
+const acceptJobRequest = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { job_request_id } = req.params;
+    const job_request = await jobRequestService.acceptJobRequestByExpert({
+      user_id,
+      job_request_id,
+    });
+    res.json({ job_request });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateJobRequest = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { job_request_id } = req.params;
+    const { major_id, title, descriptions, address, price } = req.body;
+    const job_request = await jobRequestService.updateJobRequest({
+      user_id,
+      job_request_id,
+      major_id,
+      title,
+      descriptions,
+      address,
+      price,
+    });
+    res.json({ job_request });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createJobRequest,
   getJobRequestsPagination,
   getJobRequestById,
+  acceptJobRequest,
+  updateJobRequest,
 };

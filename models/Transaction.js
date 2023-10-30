@@ -15,7 +15,6 @@ const transactionSchema = new mongoose.Schema(
       type: String,
       enum: Object.values(transaction_status),
       default: transaction_status.PROCESSING,
-      other_details: String,
     },
   },
   {
