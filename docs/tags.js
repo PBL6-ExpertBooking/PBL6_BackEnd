@@ -18,5 +18,8 @@ export default {
     {
       name: "review",
     },
+    {
+      name: "transaction",
+    },
   ],
 };

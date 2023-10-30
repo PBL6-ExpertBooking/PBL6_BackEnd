@@ -1,4 +1,4 @@
-import { Transaction, User, Booking } from "../models/index.js";
+import { Transaction, User, JobRequest } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
 import { transaction_status, transaction_types } from "../config/constant.js";
@@ -14,7 +14,7 @@ const createTransaction = async ({
   user_id,
   amount,
   transaction_type,
-  booking_id,
+  job_request_id,
   expert_user_id,
 }) => {
   const user = await User.findById(user_id).lean();
@@ -42,7 +42,7 @@ const createTransaction = async ({
   };
 
   if (transaction_type === transaction_types.PAYMENT) {
-    obj.booking = booking_id;
+    obj.job_request = job_request_id;
     obj.expert = expert_user_id;
   }
 
@@ -69,23 +69,20 @@ const createWithdrawal = async ({ user_id, amount }) => {
   return transaction;
 };
 
-const createPayment = async ({ user_id, booking_id, amount }) => {
-  const booking = await Booking.findById(booking_id)
+const createPayment = async ({ user_id, job_request_id, amount }) => {
+  const job_request = await JobRequest.findById(job_request_id)
     .populate([
       {
         path: "expert",
       },
-      {
-        path: "job_request",
-      },
     ])
     .lean();
 
-  if (!booking) {
+  if (!job_request) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Booking not found");
   }
 
-  if (booking.job_request.user.toString() != user_id) {
+  if (job_request.user.toString() != user_id) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid payment");
   }
 
@@ -93,8 +90,8 @@ const createPayment = async ({ user_id, booking_id, amount }) => {
     user_id: user_id,
     amount: amount,
     transaction_type: transaction_types.PAYMENT,
-    booking_id: booking._id,
-    expert_user_id: booking.expert.user.toString(),
+    job_request_id: job_request._id,
+    expert_user_id: expert.user.toString(),
   });
 
   return transaction;
@@ -224,7 +221,7 @@ const generatePaymentUrl = ({
   let tmnCode = process.env.vnp_TmnCode;
   let secretKey = process.env.vnp_HashSecret;
   let vnpUrl = process.env.vnp_Url;
-  let returnUrl = process.env.vnp_ReturnUrl;
+  let returnUrl = process.env.DOMAIN_NAME + process.env.vnp_ReturnUrl;
 
   let locale = language;
   if (locale === null || locale === "") {
