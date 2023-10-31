@@ -20,7 +20,7 @@ const fetchExpertsPagination = async ({
 }) => {
   let select = "first_name last_name gender photo_url";
   if (isFull) {
-    select += "phone address DoB email username role isRestricted isConfirmed";
+    select += " phone address DoB email username role isRestricted isConfirmed";
   }
 
   const pipeline = [
@@ -109,7 +109,7 @@ const fetchExpertsPagination = async ({
 const fetchExpertById = async (expert_id, isFull = false) => {
   let select = "first_name last_name gender photo_url";
   if (isFull) {
-    select += "phone address DoB email username role isRestricted isConfirmed";
+    select += " phone address DoB email username role isRestricted isConfirmed";
   }
   const expert = await ExpertInfo.findById(expert_id)
     .populate("user", select)
@@ -129,7 +129,7 @@ const fetchExpertById = async (expert_id, isFull = false) => {
 const fetchExpertByUserId = async (user_id, isFull) => {
   let select = "first_name last_name gender photo_url";
   if (isFull) {
-    select += "phone address DoB email username role isRestricted isConfirmed";
+    select += " phone address DoB email username role isRestricted isConfirmed";
   }
   const expert = await ExpertInfo.findOne({ user: user_id })
     .populate("user", select)
