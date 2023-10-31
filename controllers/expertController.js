@@ -105,14 +105,14 @@ const getRecommendedJobRequestsForCurrentExpert = async (req, res, next) => {
     const { page, limit, major_id } = req.query;
     const user_id = req.authData.user._id;
     const expert = await expertService.fetchExpertByUserId(user_id);
-    const job_requests =
+    const pagination =
       await expertService.fetchRecommendedJobRequestsByExpertId(
         expert._id,
         page || 1,
         limit || 10,
         major_id
       );
-    res.json({ job_requests });
+    res.json({ pagination });
   } catch (error) {
     next(error);
   }
