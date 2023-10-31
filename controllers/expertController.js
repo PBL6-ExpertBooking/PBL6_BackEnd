@@ -4,13 +4,14 @@ import { roles } from "../config/constant.js";
 
 const getExpertsPagination = async (req, res, next) => {
   try {
-    const { page, limit, search } = req.query;
+    const { page, limit, search, major_id } = req.query;
     const isAdmin = req.authData.user.role === roles.ADMIN;
     const pagination = await expertService.fetchExpertsPagination({
       page: page || 1,
       limit: limit || 10,
       isFull: isAdmin,
       search,
+      major_id,
     });
     res.json({ pagination });
   } catch (error) {

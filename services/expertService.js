@@ -1,5 +1,6 @@
 import httpStatus from "http-status";
 import { ExpertInfo, Certificate, User } from "../models/index.js";
+import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
 
 const fetchExpertsPagination = async ({
@@ -7,6 +8,7 @@ const fetchExpertsPagination = async ({
   limit = 10,
   isFull = false,
   search = null,
+  major_id = null,
 }) => {
   let select = "first_name last_name gender photo_url";
   if (isFull) {
@@ -37,7 +39,7 @@ const fetchExpertsPagination = async ({
     },
   ];
 
-  if (search && search !== "") {
+  if (search) {
     pipeline.push({
       $match: {
         $expr: {
@@ -49,6 +51,38 @@ const fetchExpertsPagination = async ({
         },
       },
     });
+  }
+
+  if (major_id) {
+    pipeline.push(
+      {
+        $lookup: {
+          from: Certificate.collection.name,
+          localField: "certificates",
+          foreignField: "_id",
+          as: "certificates",
+        },
+      },
+      {
+        $unwind: "$certificates",
+      },
+      {
+        $match: {
+          "certificates.major": new mongoose.Types.ObjectId(major_id),
+          "certificates.isVerified": true,
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          user: { $first: "$user" },
+          descriptions: { $first: "$descriptions" },
+          average_rating: { $first: "$average_rating" },
+          rating_count: { $first: "$rating_count" },
+          certificates: { $push: "$certificates" },
+        },
+      }
+    );
   }
 
   const aggregate = ExpertInfo.aggregate(pipeline);

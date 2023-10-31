@@ -31,6 +31,14 @@ export default {
         },
         description: "Search by full name: fisrt_name + ' ' + last_name",
       },
+      {
+        name: "major_id",
+        in: "query",
+        schema: {
+          type: "string",
+        },
+        description: "Filter by major",
+      },
     ],
     responses: {},
   },
