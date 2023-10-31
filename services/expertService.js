@@ -6,39 +6,61 @@ const fetchExpertsPagination = async ({
   page = 1,
   limit = 10,
   isFull = false,
+  search = null,
 }) => {
   let select = "first_name last_name gender photo_url";
   if (isFull) {
     select += "phone address DoB email username role isRestricted isConfirmed";
   }
 
-  // let query = {};
-  // if (search && search !== "") {
-  //   query.$expr = {
-  //     $regexMatch: {
-  //       input: { $concat: ["$user.first_name", " ", "$user.last_name"] },
-  //       regex: /Expert Update/,
-  //       options: "i",
-  //     },
-  //   };
-  // }
-  const pagination = await ExpertInfo.paginate(
-    {},
+  const pipeline = [
     {
-      populate: [
-        {
-          path: "user",
-          select: select,
-        },
-      ],
-      page,
-      limit,
-      lean: true,
-      customLabels: {
-        docs: "experts",
+      $lookup: {
+        from: User.collection.name,
+        localField: "user",
+        foreignField: "_id",
+        pipeline: [
+          {
+            $project: select.split(" ").reduce(
+              (acc, curr) => {
+                return { ...acc, [curr]: 1 };
+              },
+              { _id: 1 }
+            ),
+          },
+        ],
+        as: "user",
       },
-    }
-  );
+    },
+    {
+      $unwind: "$user",
+    },
+  ];
+
+  if (search && search !== "") {
+    pipeline.push({
+      $match: {
+        $expr: {
+          $regexMatch: {
+            input: { $concat: ["$user.first_name", " ", "$user.last_name"] },
+            regex: new RegExp(search),
+            options: "i",
+          },
+        },
+      },
+    });
+  }
+
+  const aggregate = ExpertInfo.aggregate(pipeline);
+
+  const pagination = await ExpertInfo.aggregatePaginate(aggregate, {
+    page,
+    limit,
+    lean: true,
+    customLabels: {
+      docs: "experts",
+    },
+  });
   return pagination;
 };
 
