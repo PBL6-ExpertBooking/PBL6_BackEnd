@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const recommendedExpertsSchema = new mongoose.Schema({
   job_request: {
@@ -17,6 +18,8 @@ const recommendedExpertsSchema = new mongoose.Schema({
     default: [],
   },
 });
+
+recommendedExpertsSchema.plugin(aggregatePaginate);
 
 const RecommendedExperts = mongoose.model(
   "RecommendedExperts",

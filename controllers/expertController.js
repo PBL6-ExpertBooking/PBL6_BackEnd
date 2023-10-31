@@ -100,6 +100,24 @@ const getExpertsHavingUnverifiedCert = async (req, res, next) => {
   }
 };
 
+const getRecommendedJobRequestsForCurrentExpert = async (req, res, next) => {
+  try {
+    const { page, limit, major_id } = req.query;
+    const user_id = req.authData.user._id;
+    const expert = await expertService.fetchExpertByUserId(user_id);
+    const job_requests =
+      await expertService.fetchRecommendedJobRequestsByExpertId(
+        expert._id,
+        page || 1,
+        limit || 10,
+        major_id
+      );
+    res.json({ job_requests });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getExpertsPagination,
   getExpertById,
@@ -109,4 +127,5 @@ export default {
   getVerifiedMajorsByExpertId,
   getReviewsByExpertId,
   getExpertsHavingUnverifiedCert,
+  getRecommendedJobRequestsForCurrentExpert,
 };

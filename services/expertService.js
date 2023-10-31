@@ -1,7 +1,15 @@
 import httpStatus from "http-status";
-import { ExpertInfo, Certificate, User } from "../models/index.js";
+import {
+  ExpertInfo,
+  Certificate,
+  User,
+  RecommendedExperts,
+  JobRequest,
+  Major,
+} from "../models/index.js";
 import mongoose from "mongoose";
 import ApiError from "../utils/ApiError.js";
+import { job_request_status } from "../config/constant.js";
 
 const fetchExpertsPagination = async ({
   page = 1,
@@ -246,6 +254,88 @@ const fetchExpertsHavingUnverifiedCert = async (page = 1, limit = 10) => {
   return pagination;
 };
 
+const fetchRecommendedJobRequestsByExpertId = async (
+  expert_id,
+  page = 1,
+  limit = 10,
+  major_id = null
+) => {
+  const aggregate = RecommendedExperts.aggregate([
+    {
+      $match: {
+        experts: expert_id,
+      },
+    },
+    {
+      $lookup: {
+        from: JobRequest.collection.name,
+        localField: "job_request",
+        foreignField: "_id",
+        as: "job_request",
+        pipeline: [
+          {
+            $match: {
+              status: job_request_status.PENDING,
+              major: major_id
+                ? new mongoose.Types.ObjectId(major_id)
+                : { $exists: true },
+            },
+          },
+          {
+            $lookup: {
+              from: User.collection.name,
+              localField: "user",
+              foreignField: "_id",
+              as: "user",
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    first_name: 1,
+                    last_name: 1,
+                    gender: 1,
+                    phone: 1,
+                    photo_url: 1,
+                    email: 1,
+                  },
+                },
+              ],
+            },
+          },
+          { $unwind: "$user" },
+          {
+            $lookup: {
+              from: Major.collection.name,
+              localField: "major",
+              foreignField: "_id",
+              as: "major",
+            },
+          },
+          { $unwind: "$major" },
+        ],
+      },
+    },
+    {
+      $unwind: "$job_request",
+    },
+  ]);
+  let pagination = await RecommendedExperts.aggregatePaginate(aggregate, {
+    page,
+    limit,
+    lean: true,
+    customLabels: {
+      docs: "job_requests",
+    },
+  });
+  pagination = {
+    ...pagination,
+    job_requests: pagination.job_requests.map(
+      (job_request) => job_request.job_request
+    ),
+  };
+  return pagination;
+};
+
 export default {
   fetchExpertsPagination,
   fetchExpertById,
@@ -254,4 +344,5 @@ export default {
   fetchUnverifiedCertificatesByExpertId,
   fetchVerifiedMajorsByExpertId,
   fetchExpertsHavingUnverifiedCert,
+  fetchRecommendedJobRequestsByExpertId,
 };

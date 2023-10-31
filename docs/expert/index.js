@@ -5,6 +5,7 @@ import getCurrentExpertInfo from "./getCurrentExpertInfo.js";
 import getMajorsByExpertId from "./getMajorsByExpertId.js";
 import getReviewsByExpertId from "./getReviewsByExpertId.js";
 import getUnverifiedExpert from "./getUnverifiedExpert.js";
+import getRecommendedJobRequestsForCurrentExpert from "./getRecommendedJobRequestsForCurrentExpert.js";
 
 export default {
   "/experts": {
@@ -15,6 +16,9 @@ export default {
   },
   "/experts/current": {
     ...getCurrentExpertInfo,
+  },
+  "/experts/current/recommended-job-requests": {
+    ...getRecommendedJobRequestsForCurrentExpert,
   },
   "/experts/{expert_id}": {
     ...getExpertInfoById,
