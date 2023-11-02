@@ -22,7 +22,7 @@ const getExpertsPagination = async (req, res, next) => {
 const getCurrentExpertInfo = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const expert = await expertService.fetchExpertByUserId(user_id);
+    const expert = await expertService.fetchExpertByUserId(user_id, true);
     res.json({ expert });
   } catch (error) {
     next(error);

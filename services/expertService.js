@@ -126,7 +126,7 @@ const fetchExpertById = async (expert_id, isFull = false) => {
   return expert;
 };
 
-const fetchExpertByUserId = async (user_id, isFull) => {
+const fetchExpertByUserId = async (user_id, isFull = false) => {
   let select = "first_name last_name gender photo_url";
   if (isFull) {
     select += " phone address DoB email username role isRestricted isConfirmed";
