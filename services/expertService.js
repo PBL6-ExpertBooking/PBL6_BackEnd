@@ -336,6 +336,18 @@ const fetchRecommendedJobRequestsByExpertId = async (
   return pagination;
 };
 
+const fetchTopExperts = async (num = 5) => {
+  const experts = ExpertInfo.find()
+    .sort({
+      average_rating: -1,
+      rating_count: -1,
+    })
+    .populate("user", "first_name last_name gender photo_url")
+    .limit(num)
+    .lean();
+  return experts;
+};
+
 export default {
   fetchExpertsPagination,
   fetchExpertById,
@@ -345,4 +357,5 @@ export default {
   fetchVerifiedMajorsByExpertId,
   fetchExpertsHavingUnverifiedCert,
   fetchRecommendedJobRequestsByExpertId,
+  fetchTopExperts,
 };

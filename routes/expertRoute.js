@@ -6,6 +6,7 @@ import controller from "../controllers/expertController.js";
 const router = express.Router();
 
 router.get("", auth, controller.getExpertsPagination);
+router.get("/top", controller.getTopExperts);
 router.get(
   "/unverified",
   auth,

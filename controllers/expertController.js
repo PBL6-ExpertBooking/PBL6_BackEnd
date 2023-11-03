@@ -118,6 +118,16 @@ const getRecommendedJobRequestsForCurrentExpert = async (req, res, next) => {
   }
 };
 
+const getTopExperts = async (req, res, next) => {
+  try {
+    const { num } = req.query;
+    const experts = await expertService.fetchTopExperts(num || 5);
+    res.json({ experts });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getExpertsPagination,
   getExpertById,
@@ -128,4 +138,5 @@ export default {
   getReviewsByExpertId,
   getExpertsHavingUnverifiedCert,
   getRecommendedJobRequestsForCurrentExpert,
+  getTopExperts,
 };
