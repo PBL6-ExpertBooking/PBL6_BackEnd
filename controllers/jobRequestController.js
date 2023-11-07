@@ -58,6 +58,20 @@ const acceptJobRequest = async (req, res, next) => {
   }
 };
 
+const cancelJobRequest = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { job_request_id } = req.params;
+    const job_request = await jobRequestService.cancelJobRequestByExpert({
+      user_id,
+      job_request_id,
+    });
+    res.json({ job_request });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const updateJobRequest = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
@@ -83,5 +97,6 @@ export default {
   getJobRequestsPagination,
   getJobRequestById,
   acceptJobRequest,
+  cancelJobRequest,
   updateJobRequest,
 };

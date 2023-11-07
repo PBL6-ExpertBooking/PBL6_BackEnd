@@ -132,6 +132,26 @@ const acceptJobRequestByExpert = async ({ user_id, job_request_id }) => {
   return job_request;
 };
 
+const cancelJobRequestByExpert = async ({ user_id, job_request_id }) => {
+  const expert = await ExpertInfo.findOne({ user: user_id }).lean();
+  if (!expert) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
+  }
+  const job_request = await JobRequest.findById(job_request_id);
+  if (!job_request) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Job request not found");
+  }
+  if (job_request.expert.toString() !== expert._id.toString()) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Can't cancel this job");
+  }
+  if (job_request.status !== job_request_status.PROCESSING) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Can't cancel this job");
+  }
+  job_request.status = job_request_status.CANCELED;
+  await job_request.save();
+  return job_request;
+};
+
 const updateJobRequest = async ({
   user_id,
   job_request_id,
@@ -163,6 +183,37 @@ const updateJobRequest = async ({
   return job_request;
 };
 
+const fetchAcceptedJobRequestsByExpertId = async (
+  expert_id,
+  page = 1,
+  limit = 10,
+  major_id = null
+) => {
+  let query = {
+    expert: expert_id,
+    status: job_request_status.PROCESSING,
+  };
+  if (major_id) query.major = major_id;
+  const pagination = await JobRequest.paginate(query, {
+    populate: [
+      {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+      {
+        path: "major",
+      },
+    ],
+    page,
+    limit,
+    lean: true,
+    customLabels: {
+      docs: "job_requests",
+    },
+  });
+  return pagination;
+};
+
 export default {
   createJobRequest,
   fetchJobRequestsPagination,
@@ -170,4 +221,6 @@ export default {
   fetchJobRequestsPaginationByUserId,
   acceptJobRequestByExpert,
   updateJobRequest,
+  cancelJobRequestByExpert,
+  fetchAcceptedJobRequestsByExpertId,
 };

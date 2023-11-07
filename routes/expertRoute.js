@@ -25,6 +25,12 @@ router.get(
   checkRole([roles.EXPERT]),
   controller.getRecommendedJobRequestsForCurrentExpert
 );
+router.get(
+  "/current/accepted-job-requests",
+  auth,
+  checkRole([roles.EXPERT]),
+  controller.getAcceptedJobRequests
+);
 router.get("/:id", auth, controller.getExpertById);
 router.get(
   "/:expert_id/certificates",

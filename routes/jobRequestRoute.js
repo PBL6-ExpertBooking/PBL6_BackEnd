@@ -20,5 +20,10 @@ router.post(
   checkRole([roles.EXPERT]),
   controller.acceptJobRequest
 );
-
+router.post(
+  "/:job_request_id/cancel",
+  auth,
+  checkRole([roles.EXPERT]),
+  controller.cancelJobRequest
+);
 export default router;

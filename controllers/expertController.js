@@ -1,6 +1,7 @@
 import expertService from "../services/expertService.js";
 import reviewService from "../services/reviewService.js";
 import { roles } from "../config/constant.js";
+import jobRequestService from "../services/jobRequestService.js";
 
 const getExpertsPagination = async (req, res, next) => {
   try {
@@ -128,6 +129,24 @@ const getTopExperts = async (req, res, next) => {
   }
 };
 
+const getAcceptedJobRequests = async (req, res, next) => {
+  try {
+    const { page, limit, major_id } = req.query;
+    const user_id = req.authData.user._id;
+    const expert = await expertService.fetchExpertByUserId(user_id);
+    const pagination =
+      await jobRequestService.fetchAcceptedJobRequestsByExpertId(
+        expert._id,
+        page || 1,
+        limit || 10,
+        major_id
+      );
+    res.json({ pagination });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getExpertsPagination,
   getExpertById,
@@ -139,4 +158,5 @@ export default {
   getExpertsHavingUnverifiedCert,
   getRecommendedJobRequestsForCurrentExpert,
   getTopExperts,
+  getAcceptedJobRequests,
 };
