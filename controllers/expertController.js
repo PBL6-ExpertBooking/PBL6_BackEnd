@@ -65,8 +65,18 @@ const getCertificatesByExpertId = async (req, res, next) => {
 
 const getVerifiedMajorsByExpertId = async (req, res, next) => {
   try {
-    const expert_id = req.params.expert_id;
+    const { expert_id } = req.params;
     const majors = await expertService.fetchVerifiedMajorsByExpertId(expert_id);
+    res.json({ majors });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getCurrentExpertVerifiedMajors = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const majors = await expertService.fetchVerifiedMajorsByUserId(user_id);
     res.json({ majors });
   } catch (error) {
     next(error);
@@ -153,6 +163,7 @@ export default {
   verifyExpertById,
   getCertificatesByExpertId,
   getCurrentExpertInfo,
+  getCurrentExpertVerifiedMajors,
   getVerifiedMajorsByExpertId,
   getReviewsByExpertId,
   getExpertsHavingUnverifiedCert,

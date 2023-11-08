@@ -193,6 +193,35 @@ const fetchVerifiedMajorsByExpertId = async (expert_id) => {
   return majors;
 };
 
+const fetchVerifiedMajorsByUserId = async (user_id) => {
+  const expert = await ExpertInfo.findOne(
+    { user: user_id },
+    {
+      select: "certificates",
+    }
+  ).populate({
+    path: "certificates",
+    populate: {
+      path: "major",
+    },
+    match: { isVerified: true },
+  });
+
+  if (!expert) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
+  }
+
+  const majors = [
+    ...new Map(
+      expert.certificates.map((certificate) => [
+        certificate.major._id,
+        certificate.major,
+      ])
+    ).values(),
+  ];
+  return majors;
+};
+
 const fetchExpertsHavingUnverifiedCert = async (page = 1, limit = 10) => {
   const aggregate = ExpertInfo.aggregate([
     {
@@ -355,6 +384,7 @@ export default {
   fetchExpertByUserId,
   fetchUnverifiedCertificatesByExpertId,
   fetchVerifiedMajorsByExpertId,
+  fetchVerifiedMajorsByUserId,
   fetchExpertsHavingUnverifiedCert,
   fetchRecommendedJobRequestsByExpertId,
   fetchTopExperts,

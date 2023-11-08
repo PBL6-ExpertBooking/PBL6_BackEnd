@@ -1,7 +1,7 @@
 export default {
   get: {
     tags: ["expert"],
-    operationId: "getMajorsByExpertId",
+    operationId: "getMajorByExpertId",
     security: [
       {
         bearerAuth: [],

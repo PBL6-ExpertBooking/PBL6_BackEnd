@@ -66,7 +66,7 @@ const fetchJobRequestById = async (job_request_id) => {
   const jobRequest = await JobRequest.findById(job_request_id).populate([
     {
       path: "user",
-      select: "first_name last_name photo_url",
+      select: "first_name last_name photo_url phone gender email address",
     },
     {
       path: "major",
@@ -75,7 +75,7 @@ const fetchJobRequestById = async (job_request_id) => {
       path: "expert",
       populate: {
         path: "user",
-        select: "first_name last_name gender photo_url phone address DoB email",
+        select: "first_name last_name gender photo_url phone address email",
       },
     },
   ]);
@@ -141,10 +141,10 @@ const cancelJobRequestByExpert = async ({ user_id, job_request_id }) => {
   if (!job_request) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Job request not found");
   }
-  if (job_request.expert.toString() !== expert._id.toString()) {
+  if (job_request.status !== job_request_status.PROCESSING) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Can't cancel this job");
   }
-  if (job_request.status !== job_request_status.PROCESSING) {
+  if (job_request.expert.toString() !== expert._id.toString()) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Can't cancel this job");
   }
   job_request.status = job_request_status.CANCELED;

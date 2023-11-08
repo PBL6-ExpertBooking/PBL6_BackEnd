@@ -2,12 +2,13 @@ import getAllExperts from "./getAllExperts.js";
 import getExpertInfoById from "./getExpertInfoById.js";
 import getCertificates from "./getCertificates.js";
 import getCurrentExpertInfo from "./getCurrentExpertInfo.js";
-import getMajorsByExpertId from "./getMajorsByExpertId.js";
 import getReviewsByExpertId from "./getReviewsByExpertId.js";
 import getUnverifiedExpert from "./getUnverifiedExpert.js";
 import getRecommendedJobRequestsForCurrentExpert from "./getRecommendedJobRequestsForCurrentExpert.js";
 import getTopExperts from "./getTopExperts.js";
 import getAcceptedJobRequests from "./getAcceptedJobRequests.js";
+import getCurrentExpertMajors from "./getCurrentExpertMajors.js";
+import getMajorsByExpertId from "./getMajorsByExpertId.js";
 
 export default {
   "/experts": {
@@ -21,6 +22,9 @@ export default {
   },
   "/experts/current": {
     ...getCurrentExpertInfo,
+  },
+  "/experts/current/majors": {
+    ...getCurrentExpertMajors,
   },
   "/experts/current/recommended-job-requests": {
     ...getRecommendedJobRequestsForCurrentExpert,

@@ -20,6 +20,12 @@ router.get(
   controller.getCurrentExpertInfo
 );
 router.get(
+  "/current/majors",
+  auth,
+  checkRole([roles.EXPERT]),
+  controller.getCurrentExpertVerifiedMajors
+);
+router.get(
   "/current/recommended-job-requests",
   auth,
   checkRole([roles.EXPERT]),
