@@ -157,6 +157,20 @@ const getAcceptedJobRequests = async (req, res, next) => {
   }
 };
 
+const deleteRecommendedJobRequest = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { job_request_id } = req.params;
+    await jobRequestService.deleteRecommendedJobRequest({
+      user_id,
+      job_request_id,
+    });
+    res.json({ message: "Delete successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getExpertsPagination,
   getExpertById,
@@ -170,4 +184,5 @@ export default {
   getRecommendedJobRequestsForCurrentExpert,
   getTopExperts,
   getAcceptedJobRequests,
+  deleteRecommendedJobRequest,
 };

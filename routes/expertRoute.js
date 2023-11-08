@@ -31,6 +31,12 @@ router.get(
   checkRole([roles.EXPERT]),
   controller.getRecommendedJobRequestsForCurrentExpert
 );
+router.delete(
+  "/current/recommended-job-requests/:job_request_id",
+  auth,
+  checkRole([roles.EXPERT]),
+  controller.deleteRecommendedJobRequest
+);
 router.get(
   "/current/accepted-job-requests",
   auth,

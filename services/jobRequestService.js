@@ -1,5 +1,11 @@
 import httpStatus from "http-status";
-import { ExpertInfo, JobRequest, Major, User } from "../models/index.js";
+import {
+  ExpertInfo,
+  JobRequest,
+  Major,
+  User,
+  RecommendedExperts,
+} from "../models/index.js";
 import { job_request_status } from "../config/constant.js";
 import recommendedExpertsService from "./recommendedExpertsService.js";
 import ApiError from "../utils/ApiError.js";
@@ -152,6 +158,17 @@ const cancelJobRequestByExpert = async ({ user_id, job_request_id }) => {
   return job_request;
 };
 
+const deleteRecommendedJobRequest = async ({ user_id, job_request_id }) => {
+  const expert = await ExpertInfo.findOne({ user: user_id }).lean();
+  if (!expert) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
+  }
+  await RecommendedExperts.findOneAndUpdate(
+    { job_request: job_request_id },
+    { $pull: { experts: expert._id } }
+  );
+};
+
 const updateJobRequest = async ({
   user_id,
   job_request_id,
@@ -223,4 +240,5 @@ export default {
   updateJobRequest,
   cancelJobRequestByExpert,
   fetchAcceptedJobRequestsByExpertId,
+  deleteRecommendedJobRequest,
 };

@@ -9,6 +9,7 @@ import getTopExperts from "./getTopExperts.js";
 import getAcceptedJobRequests from "./getAcceptedJobRequests.js";
 import getCurrentExpertMajors from "./getCurrentExpertMajors.js";
 import getMajorsByExpertId from "./getMajorsByExpertId.js";
+import deleteRecommendedJobRequest from "./deleteRecommendedJobRequest.js";
 
 export default {
   "/experts": {
@@ -28,6 +29,9 @@ export default {
   },
   "/experts/current/recommended-job-requests": {
     ...getRecommendedJobRequestsForCurrentExpert,
+  },
+  "/experts/current/recommended-job-requests/{job_request_id}": {
+    ...deleteRecommendedJobRequest,
   },
   "/experts/current/accepted-job-requests": {
     ...getAcceptedJobRequests,
