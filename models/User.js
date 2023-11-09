@@ -10,19 +10,36 @@ const userSchema = new mongoose.Schema(
     gender: Boolean,
     phone: String,
     address: {
-      city: {
-        name: String,
-        code: Number,
+      type: {
+        city: {
+          name: String,
+          code: Number,
+        },
+        district: {
+          name: String,
+          code: Number,
+        },
+        ward: {
+          name: String,
+          code: Number,
+        },
+        other_detail: String,
       },
-      district: {
-        name: String,
-        code: Number,
+      default: {
+        city: {
+          name: "",
+          code: 0,
+        },
+        district: {
+          name: "",
+          code: 0,
+        },
+        ward: {
+          name: "",
+          code: 0,
+        },
+        other_detail: "",
       },
-      ward: {
-        name: String,
-        code: Number,
-      },
-      other_detail: String,
     },
     photo_url: String,
     photo_public_id: String,
