@@ -1,5 +1,6 @@
 import userService from "../services/userService.js";
 import jobRequestService from "../services/jobRequestService.js";
+import transactionService from "../services/transactionService.js";
 
 const getUserById = async (req, res, next) => {
   try {
@@ -148,6 +149,21 @@ const getJobRequestsPaginationByUserId = async (req, res, next) => {
   }
 };
 
+const getCurrentUserTransactions = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { page, limit } = req.query;
+    const transactions = await transactionService.fetchTransactionsByUserId(
+      user_id,
+      page || 1,
+      limit || 10
+    );
+    res.json({ transactions });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
@@ -161,4 +177,5 @@ export default {
   deleteUser,
   getJobRequestsPaginationOfCurrentUser,
   getJobRequestsPaginationByUserId,
+  getCurrentUserTransactions,
 };

@@ -92,6 +92,20 @@ const updateJobRequest = async (req, res, next) => {
   }
 };
 
+const completeJobRequest = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { job_request_id } = req.params;
+    const job_request = await jobRequestService.completeJobRequest({
+      user_id,
+      job_request_id,
+    });
+    res.json({ job_request });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createJobRequest,
   getJobRequestsPagination,
@@ -99,4 +113,5 @@ export default {
   acceptJobRequest,
   cancelJobRequest,
   updateJobRequest,
+  completeJobRequest,
 };

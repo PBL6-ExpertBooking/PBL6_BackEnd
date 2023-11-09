@@ -231,6 +231,28 @@ const fetchAcceptedJobRequestsByExpertId = async (
   return pagination;
 };
 
+const completeJobRequest = async ({ user_id, job_request_id }) => {
+  const job_request = await JobRequest.findById(job_request_id);
+  if (job_request.user.toString() !== user_id.toString()) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You are not the owner");
+  }
+  if (job_request.status === job_request_status.DONE) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "This job request is already done"
+    );
+  }
+  if (job_request.status !== job_request_status.PROCESSING) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Can't complete this job request"
+    );
+  }
+  job_request.status = job_request_status.DONE;
+  await job_request.save();
+  return job_request;
+};
+
 export default {
   createJobRequest,
   fetchJobRequestsPagination,
@@ -241,4 +263,5 @@ export default {
   cancelJobRequestByExpert,
   fetchAcceptedJobRequestsByExpertId,
   deleteRecommendedJobRequest,
+  completeJobRequest,
 };

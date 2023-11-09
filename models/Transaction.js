@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 import { transaction_types, transaction_status } from "../config/constant.js";
 
 const transactionSchema = new mongoose.Schema(
@@ -22,6 +23,8 @@ const transactionSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+transactionSchema.plugin(mongoosePaginate);
 
 const Transaction = mongoose.model("Transaction", transactionSchema);
 

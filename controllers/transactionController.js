@@ -41,13 +41,29 @@ const vnpayIpn = async (req, res, next) => {
   }
 };
 
-const getCurrentUserTransactions = async (req, res, next) => {
+const createPayment = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const transactions = await transactionService.fetchTransactionsByUserId(
-      user_id
-    );
-    res.json({ transactions });
+    const { job_request_id } = req.body;
+    const transaction = await transactionService.createPayment({
+      user_id,
+      job_request_id,
+    });
+    res.json({ transaction });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const executePayment = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { transaction_id } = req.params;
+    const transaction = await transactionService.executePayment({
+      user_id,
+      transaction_id,
+    });
+    res.json({ transaction });
   } catch (error) {
     next(error);
   }
@@ -55,7 +71,8 @@ const getCurrentUserTransactions = async (req, res, next) => {
 
 export default {
   createDeposit,
-  getCurrentUserTransactions,
   vnpayReturn,
   vnpayIpn,
+  createPayment,
+  executePayment,
 };

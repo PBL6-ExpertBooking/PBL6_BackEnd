@@ -11,6 +11,18 @@ router.post(
   checkRole([roles.USER]),
   controller.createDeposit
 );
+router.post(
+  "/payment",
+  auth,
+  checkRole([roles.USER]),
+  controller.createPayment
+);
+router.post(
+  "/payment/:transaction_id/execute",
+  auth,
+  checkRole([roles.USER]),
+  controller.executePayment
+);
 router.get("/vnpay_return", controller.vnpayReturn);
 router.get("/vnpay_ipn", controller.vnpayIpn);
 

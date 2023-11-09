@@ -1,7 +1,11 @@
 import { Transaction, User, JobRequest } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
-import { transaction_status, transaction_types } from "../config/constant.js";
+import {
+  job_request_status,
+  transaction_status,
+  transaction_types,
+} from "../config/constant.js";
 import querystring from "qs";
 import crypto from "crypto";
 import moment from "moment";
@@ -10,13 +14,7 @@ import { startSession } from "mongoose";
 
 dotenv.config();
 
-const createTransaction = async ({
-  user_id,
-  amount,
-  transaction_type,
-  job_request_id,
-  expert_user_id,
-}) => {
+const createDeposit = async ({ user_id, amount }) => {
   const user = await User.findById(user_id).lean();
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
@@ -26,50 +24,41 @@ const createTransaction = async ({
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid amount");
   }
 
-  if (
-    (transaction_type === transaction_types.WITHDRAWAL ||
-      transaction_type === transaction_types.PAYMENT) &&
-    amount < user.balance
-  ) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Insufficient balance");
-  }
-
-  let obj = {
+  const transaction = await Transaction.create({
     user: user_id,
     amount: amount,
-    transaction_type,
-    transaction_status: transaction_status.PROCESSING,
-  };
-
-  if (transaction_type === transaction_types.PAYMENT) {
-    obj.job_request = job_request_id;
-    obj.expert = expert_user_id;
-  }
-
-  const transaction = await Transaction.create(obj);
-
-  return transaction;
-};
-
-const createDeposit = async ({ user_id, amount }) => {
-  const transaction = await createTransaction({
-    user_id,
-    amount,
     transaction_type: transaction_types.DEPOSIT,
+    transaction_status: transaction_status.PROCESSING,
   });
+
   return transaction;
 };
 
 const createWithdrawal = async ({ user_id, amount }) => {
-  const transaction = await createTransaction({
-    user_id,
-    amount,
+  const user = await User.findById(user_id).lean();
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+
+  if (!Number.isInteger(amount) || amount <= 0) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid amount");
+  }
+
+  if (amount < user.balance) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Insufficient balance");
+  }
+
+  const transaction = await Transaction.create({
+    user: user_id,
+    amount: amount,
     transaction_type: transaction_types.WITHDRAWAL,
+    transaction_status: transaction_status.PROCESSING,
   });
+
   return transaction;
 };
 
-const createPayment = async ({ user_id, job_request_id, amount }) => {
+const createPayment = async ({ user_id, job_request_id }) => {
   const job_request = await JobRequest.findById(job_request_id)
     .populate([
       {
@@ -79,50 +68,55 @@ const createPayment = async ({ user_id, job_request_id, amount }) => {
     .lean();
 
   if (!job_request) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Booking not found");
+    throw new ApiError(httpStatus.BAD_REQUEST, "Job request not found");
   }
 
-  if (job_request.user.toString() != user_id) {
+  if (job_request.user.toString() !== user_id.toString()) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid payment");
   }
 
-  const transaction = await createTransaction({
-    user_id: user_id,
-    amount: amount,
+  if (job_request.status !== job_request_status.DONE) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "This job is not done");
+  }
+
+  if (job_request.time_payment) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "This job is already paid");
+  }
+
+  const user = await User.findById(user_id).lean();
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+
+  if (user.balance < job_request.price) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Insufficient balance");
+  }
+
+  const transaction = await Transaction.create({
+    user: user_id,
+    expert: job_request.expert.user.toString(),
+    job_request: job_request_id,
+    amount: job_request.price,
     transaction_type: transaction_types.PAYMENT,
-    job_request_id: job_request._id,
-    expert_user_id: expert.user.toString(),
+    transaction_status: transaction_status.PROCESSING,
   });
 
-  return transaction;
-};
-
-const transactionHandler = async (transaction_id) => {
-  const transaction = await Transaction.findById(transaction_id).lean();
-  if (!transaction) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Transaction not found");
-  }
-  if (transaction.transaction_status === transaction_status.DONE) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Transaction was done");
-  }
-  if (transaction.transaction_status === transaction_status.CANCELED) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Transaction was canceled");
-  }
-
-  switch (transaction.transaction_type) {
-    case transaction_types.DEPOSIT: {
-      await handleSuccessDeposit(transaction);
-      break;
-    }
-    case transaction_types.WITHDRAWAL: {
-      await handleWithdrawal(transaction);
-      break;
-    }
-    case transaction_types.PAYMENT: {
-      await handlePayment(transaction);
-      break;
-    }
-  }
+  return transaction.populate([
+    {
+      path: "user",
+      select: "first_name last_name gender phone address photo_url email",
+    },
+    {
+      path: "expert",
+      select: "first_name last_name gender phone address photo_url email",
+    },
+    {
+      path: "job_request",
+      populate: {
+        path: "major",
+      },
+    },
+  ]);
 };
 
 const handleSuccessDeposit = async (transaction) => {
@@ -156,7 +150,28 @@ const handleWithdrawal = async (transaction) => {
   } catch (error) {}
 };
 
-const handlePayment = async (transaction) => {
+const executePayment = async ({ user_id, transaction_id }) => {
+  const transaction = await Transaction.findById(transaction_id);
+  if (!transaction) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Transaction not found");
+  }
+  if (transaction.user.toString() !== user_id.toString()) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid user");
+  }
+  if (transaction.transaction_status !== transaction_status.PROCESSING) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Can't execute this transaction"
+    );
+  }
+  const job_request = await JobRequest.findById(transaction.job_request);
+  if (!job_request) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Job request not found");
+  }
+  if (job_request.time_payment) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Job request already paid");
+  }
+
   const session = await startSession();
   try {
     // start transaction
@@ -180,7 +195,7 @@ const handlePayment = async (transaction) => {
     }
 
     const expert = await User.findByIdAndUpdate(
-      transaction.user,
+      transaction.expert,
       {
         $inc: { balance: transaction.amount },
       },
@@ -194,17 +209,60 @@ const handlePayment = async (transaction) => {
     }
 
     await session.commitTransaction();
+
+    transaction.transaction_status = transaction_status.DONE;
+    await transaction.save();
+
+    await JobRequest.updateOne(
+      { _id: transaction.job_request },
+      { time_payment: Date.now() }
+    );
+    // cancel all duplicated transactions
+    await Transaction.updateMany(
+      { _id: { $ne: transaction._id }, job_request: transaction.job_request },
+      { transaction_status: transaction_status.CANCELED }
+    );
   } catch (error) {
     await session.abortTransaction();
     throw error;
   } finally {
     session.endSession();
   }
+
+  return transaction;
 };
 
-const fetchTransactionsByUserId = async (user_id) => {
-  const transactions = await Transaction.find({ user: user_id });
-  return transactions;
+const fetchTransactionsByUserId = async (user_id, page = 1, limit = 10) => {
+  const pagination = await Transaction.paginate(
+    {
+      $or: [{ user: user_id }, { epxert: user_id }],
+    },
+    {
+      populate: [
+        {
+          path: "user",
+          select: "first_name last_name gender phone address photo_url email",
+        },
+        {
+          path: "expert",
+          select: "first_name last_name gender phone address photo_url email",
+        },
+        {
+          path: "job_request",
+          populate: {
+            path: "major",
+          },
+        },
+      ],
+      page,
+      limit,
+      lean: true,
+      customLabels: {
+        docs: "transactions",
+      },
+    }
+  );
+  return pagination;
 };
 
 const generatePaymentUrl = ({
@@ -381,9 +439,10 @@ export default {
   createDeposit,
   createWithdrawal,
   createPayment,
-  transactionHandler,
   fetchTransactionsByUserId,
   generatePaymentUrl,
   handleVnpayReturn,
   vnpayIpn,
+  executePayment,
+  handleWithdrawal,
 };

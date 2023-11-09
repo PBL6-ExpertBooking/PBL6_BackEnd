@@ -10,6 +10,7 @@ import updateUserInfoById from "./updateUserInfoById.js";
 import deleteUser from "./deleteUser.js";
 import getCurrentUserJobRequests from "./getCurrentUserJobRequests.js";
 import getJobRequestsByUserId from "./getJobRequestsByUserId.js";
+import getCurrentUserTransactions from "./getCurrentUserTransactions.js";
 
 export default {
   "/users": {
@@ -24,6 +25,9 @@ export default {
   },
   "/users/current/job_requests": {
     ...getCurrentUserJobRequests,
+  },
+  "/users/current/transactions": {
+    ...getCurrentUserTransactions,
   },
   "/users/current/promote-to-expert": {
     ...promoteToExpert,

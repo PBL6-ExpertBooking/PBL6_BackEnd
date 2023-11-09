@@ -37,6 +37,11 @@ router.get(
   auth,
   controller.getJobRequestsPaginationOfCurrentUser
 );
+router.get(
+  "/current/transactions",
+  auth,
+  controller.getCurrentUserTransactions
+);
 router.get("/:id", controller.getUserById);
 router.put(
   "/:id",
