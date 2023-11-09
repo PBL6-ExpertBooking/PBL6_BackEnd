@@ -235,7 +235,7 @@ const executePayment = async ({ user_id, transaction_id }) => {
 const fetchTransactionsByUserId = async (user_id, page = 1, limit = 10) => {
   const pagination = await Transaction.paginate(
     {
-      $or: [{ user: user_id }, { epxert: user_id }],
+      $or: [{ user: user_id }, { expert: user_id }],
     },
     {
       populate: [
