@@ -40,6 +40,47 @@ export default {
           },
         },
       },
+      address: {
+        type: "object",
+        properties: {
+          city: {
+            type: "object",
+            properties: {
+              name: {
+                type: "string",
+              },
+              code: {
+                type: "number",
+              },
+            },
+          },
+          district: {
+            type: "object",
+            properties: {
+              name: {
+                type: "string",
+              },
+              code: {
+                type: "number",
+              },
+            },
+          },
+          ward: {
+            type: "object",
+            properties: {
+              name: {
+                type: "string",
+              },
+              code: {
+                type: "number",
+              },
+            },
+          },
+          other_detail: {
+            type: "string",
+          },
+        },
+      },
     },
   },
 };

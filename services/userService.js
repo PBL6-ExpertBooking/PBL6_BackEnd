@@ -5,6 +5,7 @@ import httpStatus from "http-status";
 import { userMapper } from "./mapper/userMapper.js";
 import imageService from "./imageService.js";
 import { roles } from "../config/constant.js";
+
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -19,7 +20,7 @@ const fetchUserById = async (user_id) => {
 
 const fetchUsersPagination = async (page = 1, limit = 10) => {
   const pagination = await User.paginate(
-    {},
+    { deleted: false },
     {
       select:
         "first_name last_name gender phone address photo_url DoB email username role isRestricted isConfirmed",
@@ -78,7 +79,7 @@ const updateUserInfo = async (user_id, update_info) => {
   user.last_name = update_info.last_name || user.last_name;
   user.gender = update_info.gender || user.gender;
   user.phone = update_info.phone || user.phone;
-  user.address = update_info.address || user.address;
+  user.address = JSON.parse(update_info.address) || user.address;
   if (update_info.file) {
     // upload image and retrieve photo_url
     const response = await imageService.uploadImage(update_info.file);
@@ -173,6 +174,17 @@ const confirmUserById = async (user_id) => {
   return userMapper(user);
 };
 
+const deleteUserById = async (user_id) => {
+  const user = await User.findById(user_id);
+  if (!user) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
+  }
+  if (user.role === roles.ADMIN) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Can't delete an admin");
+  }
+  await user.delete();
+};
+
 export default {
   fetchUserById,
   fetchUsersPagination,
@@ -183,4 +195,5 @@ export default {
   enableUserById,
   disableUserById,
   confirmUserById,
+  deleteUserById,
 };

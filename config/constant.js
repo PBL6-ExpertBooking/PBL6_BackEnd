@@ -9,10 +9,36 @@ const tokenTypes = {
   REFRESH: "refresh",
 };
 
+const job_request_status = {
+  PENDING: "PENDING",
+  PROCESSING: "PROCESSING",
+  CANCELED: "CANCELED",
+  DONE: "DONE",
+};
+
 const booking_status = {
   PROCESSING: "PROCESSING",
   CANCELED: "CANCELED",
   DONE: "DONE",
 };
 
-export { roles, tokenTypes, booking_status };
+const transaction_types = {
+  DEPOSIT: "DEPOSIT",
+  WITHDRAWAL: "WITHDRAWAL",
+  PAYMENT: "PAYMENT",
+};
+
+const transaction_status = {
+  PROCESSING: "PROCESSING",
+  CANCELED: "CANCELED",
+  DONE: "DONE",
+};
+
+export {
+  roles,
+  tokenTypes,
+  booking_status,
+  transaction_status,
+  transaction_types,
+  job_request_status,
+};

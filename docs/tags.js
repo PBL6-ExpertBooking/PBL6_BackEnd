@@ -16,10 +16,10 @@ export default {
       name: "job_request",
     },
     {
-      name: "booking",
+      name: "review",
     },
     {
-      name: "review",
+      name: "transaction",
     },
   ],
 };

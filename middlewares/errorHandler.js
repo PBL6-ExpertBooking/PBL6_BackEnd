@@ -20,9 +20,18 @@ const handler = (err, req, res, next) => {
 const converter = (err, req, res, next) => {
   let convertedError = err;
   if (err instanceof ValidationError) {
+    let errors;
+    if (err.errors) {
+      errors = err.errors.map((error) => {
+        let s = error.substring(error.lastIndexOf(".") + 1).replace("_", " ");
+        return s.charAt(0).toUpperCase() + s.slice(1);
+      });
+    }
+    const message = errors?.join(", ") || "Validations have failed";
+
     convertedError = new ApiError(
       httpStatus.BAD_REQUEST,
-      err?.errors?.join(", ") || "Validations have failed",
+      message,
       "Validation Error"
     );
   } else if (!(err instanceof ApiError)) {

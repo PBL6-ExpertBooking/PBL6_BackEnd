@@ -59,8 +59,21 @@ const generateUsers = async (start, end) => {
       last_name: get_random(last_names),
       gender: get_random([true, false]),
       phone: `0${Math.floor(Math.random() * 900000000) + 100000000}`,
-      address:
-        "K7/7-đường Ngô Sỹ Liên-phường Hòa Khánh Bắc-quận Liên Chiểu-thành phố Đà Nẵng",
+      address: {
+        city: {
+          name: "Tỉnh Hà Giang",
+          code: 2,
+        },
+        district: {
+          name: "Huyện Mèo Vạc",
+          code: 27,
+        },
+        ward: {
+          name: "Xã Sủng Máng",
+          code: 790,
+        },
+        other_detail: "",
+      },
       email: `user${i}@test.com`,
       username: `testuser${i}`,
       encrypted_password: await bcrypt.hash(

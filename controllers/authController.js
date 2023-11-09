@@ -35,6 +35,7 @@ const login = async (req, res, next) => {
       username,
       password,
     });
+    await authService.updateLastLoginTime(user._id);
     const tokens = await tokenService.generateAuthTokens(user);
     res.json({
       user,
@@ -73,6 +74,16 @@ const activate = async (req, res, next) => {
     const token = req.params.token;
     await confirmationUserService.enableUserByConfirmationToken(token);
     res.json({ message: "Activated account" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const { username, email } = req.body;
+    await authService.resetPassword({ username, email });
+    res.json({ message: "Email sent" });
   } catch (error) {
     next(error);
   }
@@ -136,6 +147,7 @@ export default {
   logout,
   refreshToken,
   activate,
+  resetPassword,
   googleUserLogin,
   googleUserVerify,
 };

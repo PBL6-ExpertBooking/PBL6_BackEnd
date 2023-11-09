@@ -1,16 +1,13 @@
 export default {
   get: {
     tags: ["expert"],
-    operationId: "getBookings",
-    parameters: [
+    operationId: "getAcceptedJobRequests",
+    security: [
       {
-        name: "expert_id",
-        in: "path",
-        schema: {
-          type: "string",
-        },
-        require: true,
+        bearerAuth: [],
       },
+    ],
+    parameters: [
       {
         name: "page",
         in: "query",
@@ -24,7 +21,14 @@ export default {
         schema: {
           type: "integer",
         },
-        description: "The number of bookings in one page",
+        description: "The number of job requests in one page",
+      },
+      {
+        name: "major_id",
+        in: "query",
+        schema: {
+          type: "string",
+        },
       },
     ],
     responses: {},

@@ -4,15 +4,24 @@ import dotenv from "dotenv";
 import ejs from "ejs";
 import juice from "juice";
 import fs from "fs";
+import { OAuth2Client } from "google-auth-library";
 
 dotenv.config();
 
+// const transporter = nodemailer.createTransport({
+//   host: "sandbox.smtp.mailtrap.io",
+//   port: 2525,
+//   auth: {
+//     user: "c745e632f73896",
+//     pass: "52bf3b025bdb33",
+//   },
+// });
+
 const transporter = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
+  service: "gmail",
   auth: {
-    user: "c745e632f73896",
-    pass: "52bf3b025bdb33",
+    user: process.env.GOOGLE_MAILER_EMAIL,
+    pass: process.env.GOOGLE_MAILER_PASSWORD,
   },
 });
 

@@ -3,26 +3,60 @@ import { auth, checkRole } from "../middlewares/authorization.js";
 import { roles } from "../config/constant.js";
 import controller from "../controllers/userController.js";
 import upload from "../middlewares/upload.js";
+import trimRequest from "trim-request";
+import validate from "../middlewares/yupValidation.js";
+import schemas from "../validations/userValidations.js";
 
 const router = express.Router();
 
 router.get("", auth, checkRole([roles.ADMIN]), controller.getUsersPagination);
 router.get("/current", auth, controller.getCurrentUserInfo);
-router.put("/current", auth, upload.single("photo"), controller.updateUserInfo);
-router.put("/current/password", auth, controller.changePassword);
+router.put(
+  "/current",
+  auth,
+  upload.single("photo"),
+  trimRequest.all,
+  validate(schemas.updateUserInfoSchema),
+  controller.updateUserInfo
+);
+router.put(
+  "/current/password",
+  auth,
+  trimRequest.all,
+  validate(schemas.changePasswordSchema),
+  controller.changePassword
+);
 router.post(
   "/current/promote-to-expert",
   auth,
   checkRole([roles.USER]),
   controller.promoteToExpert
 );
+router.get(
+  "/current/job_requests",
+  auth,
+  controller.getJobRequestsPaginationOfCurrentUser
+);
+router.get(
+  "/current/transactions",
+  auth,
+  controller.getCurrentUserTransactions
+);
 router.get("/:id", controller.getUserById);
 router.put(
   "/:id",
   auth,
   checkRole([roles.ADMIN]),
+  trimRequest.all,
+  validate(schemas.updateUserInfoSchema),
   upload.single("photo"),
   controller.updateUserInfoById
+);
+router.delete(
+  "/:user_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.deleteUser
 );
 router.put(
   "/:user_id/enable",
@@ -35,6 +69,11 @@ router.put(
   auth,
   checkRole([roles.ADMIN]),
   controller.disableUser
+);
+router.get(
+  "/:user_id/job_requests",
+  auth,
+  controller.getJobRequestsPaginationByUserId
 );
 
 export default router;

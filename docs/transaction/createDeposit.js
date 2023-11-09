@@ -1,7 +1,7 @@
 export default {
   post: {
-    tags: ["booking"],
-    operationId: "createBooking",
+    tags: ["transaction"],
+    operationId: "createDeposit",
     security: [
       {
         bearerAuth: [],
@@ -14,8 +14,8 @@ export default {
           schema: {
             type: "object",
             properties: {
-              job_request_id: {
-                type: "string",
+              amount: {
+                type: "number",
                 require: true,
               },
             },

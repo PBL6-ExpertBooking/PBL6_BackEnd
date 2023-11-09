@@ -25,6 +25,13 @@ router
 router
   .route("/activate/:token")
   .get(trimRequest.all, validate(schemas.activateSchema), controller.activate);
+router
+  .route("/reset-password")
+  .post(
+    trimRequest.all,
+    validate(schemas.resetPasswordSchema),
+    controller.resetPassword
+  );
 router.route("/google").post(controller.googleUserLogin);
 router.route("/google").get(controller.googleUserVerify);
 
