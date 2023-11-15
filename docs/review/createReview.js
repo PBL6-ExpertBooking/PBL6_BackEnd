@@ -14,7 +14,7 @@ export default {
           schema: {
             type: "object",
             properties: {
-              booking_id: {
+              job_request_id: {
                 type: "string",
                 require: true,
               },
