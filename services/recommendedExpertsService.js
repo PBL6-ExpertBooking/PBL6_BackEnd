@@ -31,9 +31,9 @@ const createRecommendedExperts = async (job_request_id) => {
         "certificates.isVerified": true,
       },
     },
-    {
-      $sample: { size: 2 },
-    },
+    // {
+    //   $sample: { size: 2 },
+    // },
   ]).exec();
 
   await RecommendedExperts.create({
