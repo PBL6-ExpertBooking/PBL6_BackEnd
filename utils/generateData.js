@@ -129,7 +129,7 @@ const generateUsers = async (start, end) => {
   console.log(`generated ${end - start + 1} users`);
 };
 
-const generateExperts = async (start, end) => {
+const generateExperts = async (start, end, major_id = null) => {
   const images = await imageService.getImages();
   const majors = await Major.find({});
 
@@ -154,22 +154,38 @@ const generateExperts = async (start, end) => {
     });
 
     const certificates = [];
-    for (let j = 0; j < 3; j++) {
+    if (major_id) {
       const photo = get_random(images);
-      const certificate = await Certificate.create({
-        name: `expert-${i}_cert-${j}`,
-        major: get_random(majors),
-        descriptions: "test cert",
-        photo_url: photo.url,
-        photo_public_id: photo.public_id,
-        isVerified: get_random([true, false]),
-      });
-      certificates.push(certificate);
+      certificates.push(
+        await Certificate.create({
+          name: `expert-${i}_cert-0`,
+          major: new mongoose.Types.ObjectId(major_id),
+          descriptions: "test cert",
+          photo_url: photo.url,
+          photo_public_id: photo.public_id,
+          isVerified: get_random([true, false]),
+        })
+      );
+    } else {
+      for (let j = 0; j < 3; j++) {
+        const photo = get_random(images);
+        const certificate = await Certificate.create({
+          name: `expert-${i}_cert-${j}`,
+          major: get_random(majors),
+          descriptions: "test cert",
+          photo_url: photo.url,
+          photo_public_id: photo.public_id,
+          isVerified: get_random([true, false]),
+        });
+        certificates.push(certificate);
+      }
     }
 
     const expert = await ExpertInfo.create({
       user: user._id,
       descriptions: `test expert no.${i}`,
+      average_rating: Math.random() * 5,
+      rating_count: 1,
       certificates,
     });
     console.log(`generated ${expert}`);
@@ -177,6 +193,6 @@ const generateExperts = async (start, end) => {
   console.log(`generated ${end - start + 1} experts`);
 };
 
-// generateExperts(10, 50);
+await generateExperts(111, 130, "65574433f4354e1f8062acd6");
 
 console.log("done");
