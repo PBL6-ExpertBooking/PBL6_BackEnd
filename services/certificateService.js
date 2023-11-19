@@ -58,7 +58,7 @@ const deleteCertificateById = async (user_id, certificate_id) => {
   // delete certificate from expert's certificates
   expert.certificates.pull(certificate);
   // delete photo
-  await imageService.deleteImageByPublicId(certificate.public_id);
+  await imageService.deleteImageByPublicId(certificate.photo_public_id);
   // delete certificate from database
   await certificate.deleteOne();
   await expert.save();
