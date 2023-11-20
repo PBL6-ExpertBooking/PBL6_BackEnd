@@ -208,7 +208,6 @@ const fetchAcceptedJobRequestsByExpertId = async (
 ) => {
   let query = {
     expert: expert_id,
-    status: job_request_status.PROCESSING,
   };
   if (major_id) query.major = major_id;
   const pagination = await JobRequest.paginate(query, {

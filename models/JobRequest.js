@@ -11,19 +11,36 @@ const jobRequestSchema = new mongoose.Schema(
     title: String,
     descriptions: String,
     address: {
-      city: {
-        name: String,
-        code: Number,
+      type: {
+        city: {
+          name: String,
+          code: Number,
+        },
+        district: {
+          name: String,
+          code: Number,
+        },
+        ward: {
+          name: String,
+          code: Number,
+        },
+        other_detail: String,
       },
-      district: {
-        name: String,
-        code: Number,
+      default: {
+        city: {
+          name: "",
+          code: 0,
+        },
+        district: {
+          name: "",
+          code: 0,
+        },
+        ward: {
+          name: "",
+          code: 0,
+        },
+        other_detail: "",
       },
-      ward: {
-        name: String,
-        code: Number,
-      },
-      other_detail: String,
     },
     price: { type: Number, min: 0, default: 0 },
     status: {

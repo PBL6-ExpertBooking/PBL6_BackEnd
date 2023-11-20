@@ -14,11 +14,18 @@ console.log(
   prettyFormat(
     await recommendedExpertsService.getRandomExpertIds({
       major_id: "65574433f4354e1f8062acd6",
+      percent: 10,
+      min_experts: 5,
     })
   )
 );
 
 // const experts = await ExpertInfo.find({}).lean();
 // console.log(
-//   prettyFormat(recommendedExpertsService.getWeightedRandomExperts(experts))
+//   prettyFormat(
+//     recommendedExpertsService.getWeightedRandomExpertIds(experts, 10)
+//   )
 // );
+
+// import moment from "moment";
+// console.log(moment().utc().startOf("day").toDate());

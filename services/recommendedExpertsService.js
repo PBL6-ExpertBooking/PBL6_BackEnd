@@ -9,6 +9,10 @@ import {
 import ApiError from "../utils/ApiError.js";
 import mongoose from "mongoose";
 import moment from "moment";
+import WeightedList from "js-weighted-list";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const createRecommendedExperts = async (job_request_id) => {
   const job_request = await JobRequest.findById(job_request_id);
@@ -16,38 +20,27 @@ const createRecommendedExperts = async (job_request_id) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "Job request not found");
   }
 
-  const random_experts = await ExpertInfo.aggregate([
-    {
-      $lookup: {
-        from: Certificate.collection.name,
-        localField: "certificates",
-        foreignField: "_id",
-        as: "certificates",
-      },
-    },
-    {
-      $unwind: "$certificates",
-    },
-    {
-      $match: {
-        "certificates.major": job_request.major,
-        "certificates.isVerified": true,
-      },
-    },
-    // {
-    //   $sample: { size: 2 },
-    // },
-  ]).exec();
+  const RECOMMENDED_EXPERT_MIN = parseInt(process.env.RECOMMENDED_EXPERT_MIN);
+  const RECOMMENDED_EXPERT_PERCENT = parseFloat(
+    process.env.RECOMMENDED_EXPERT_PERCENT
+  );
+
+  const random_expertIds = await getRandomExpertIds({
+    major_id: job_request.major_id,
+    city_code: job_request.address.city.code,
+    percent: RECOMMENDED_EXPERT_PERCENT,
+    min_experts: RECOMMENDED_EXPERT_MIN,
+  });
 
   await RecommendedExperts.create({
     job_request: job_request_id,
-    experts: random_experts.map((expert) => expert._id),
+    experts: random_expertIds.map((id) => new mongoose.Types.ObjectId(id)),
   });
 };
 
 const getRandomExpertIds = async ({
   major_id,
-  city_code = null,
+  city_code = 0,
   percent = 100,
   min_experts = null,
 }) => {
@@ -112,22 +105,34 @@ const getRandomExpertIds = async ({
 
   if (min_experts && experts.length <= min_experts) return experts;
 
-  return getWeightedRandomExperts(experts);
+  return getWeightedRandomExpertIds(experts, percent, min_experts);
 };
 
-const getWeightedRandomExperts = (experts) => {
+const getWeightedRandomExpertIds = (experts, percent, min_experts = null) => {
   const normalizedExperts = normalize(experts);
-  const weightedExperts = normalizedExperts.map((expert) => {
-    return {
-      ...expert,
-      weight: calculateExpertWeight(
-        expert.normalized_rating,
-        expert.normalized_days_diff
-      ),
-    };
-  });
+  const weightedExperts = new WeightedList(
+    normalizedExperts.map((expert) => {
+      return [
+        expert._id,
+        calculateExpertWeight(
+          expert.normalized_rating,
+          expert.normalized_days_diff
+        ),
+        {
+          ...expert,
+        },
+      ];
+    })
+  );
 
-  return weightedExperts;
+  let quantity = Math.round((experts.length * percent) / 100);
+  console.log(experts.length);
+  console.log(quantity);
+  if (min_experts) quantity = quantity <= min_experts ? min_experts : quantity;
+
+  const expertIds = weightedExperts.peek(quantity).map((i) => i.key);
+
+  return expertIds;
 };
 
 const normalize = (experts) => {
@@ -169,13 +174,13 @@ const minMaxNormalize = (x, min, max) => {
   return (x - min) / (max - min);
 };
 
-const calculateExpertWeight = (rating, day_diff) => {
-  return 0.7 * rating + 0.3 * day_diff;
+const calculateExpertWeight = (rating, days_diff) => {
+  return 0.7 * rating + 0.3 * days_diff;
 };
 
 export default {
   createRecommendedExperts,
   getRandomExpertIds,
   normalize,
-  getWeightedRandomExperts,
+  getWeightedRandomExpertIds,
 };
