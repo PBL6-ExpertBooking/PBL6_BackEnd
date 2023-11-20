@@ -26,16 +26,21 @@ const createRecommendedExperts = async (job_request_id) => {
   );
 
   const random_expertIds = await getRandomExpertIds({
-    major_id: job_request.major_id,
+    major_id: job_request.major,
     city_code: job_request.address.city.code,
     percent: RECOMMENDED_EXPERT_PERCENT,
     min_experts: RECOMMENDED_EXPERT_MIN,
   });
 
-  await RecommendedExperts.create({
-    job_request: job_request_id,
-    experts: random_expertIds.map((id) => new mongoose.Types.ObjectId(id)),
-  });
+  await RecommendedExperts.findOneAndUpdate(
+    {
+      job_request: job_request_id,
+    },
+    {
+      experts: random_expertIds.map((id) => new mongoose.Types.ObjectId(id)),
+    },
+    { upsert: true }
+  );
 };
 
 const getRandomExpertIds = async ({
@@ -103,7 +108,8 @@ const getRandomExpertIds = async ({
 
   const experts = await ExpertInfo.aggregate(pipeline).exec();
 
-  if (min_experts && experts.length <= min_experts) return experts;
+  if (min_experts && experts.length <= min_experts)
+    return experts.map((i) => i._id);
 
   return getWeightedRandomExpertIds(experts, percent, min_experts);
 };
@@ -126,8 +132,6 @@ const getWeightedRandomExpertIds = (experts, percent, min_experts = null) => {
   );
 
   let quantity = Math.round((experts.length * percent) / 100);
-  console.log(experts.length);
-  console.log(quantity);
   if (min_experts) quantity = quantity <= min_experts ? min_experts : quantity;
 
   const expertIds = weightedExperts.peek(quantity).map((i) => i.key);

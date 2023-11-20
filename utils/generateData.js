@@ -193,6 +193,17 @@ const generateExperts = async (start, end, major_id = null) => {
   console.log(`generated ${end - start + 1} experts`);
 };
 
-await generateExperts(111, 130, "65574433f4354e1f8062acd6");
+const deleteTestExperts = async () => {
+  await Certificate.deleteMany({ descriptions: "test cert" });
+  await ExpertInfo.deleteMany({ descriptions: /^test expert/ });
+  await User.deleteMany({
+    $and: [{ username: /^expert/ }, { username: { $ne: "expert02" } }],
+  });
+};
+
+// await generateExperts(10, 50, "65574433f4354e1f8062acd6");
+// await generateExperts(51, 80);
+
+// await deleteTestExperts();
 
 console.log("done");
