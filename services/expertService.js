@@ -169,28 +169,16 @@ const fetchUnverifiedCertificatesByExpertId = async (expert_id) => {
 
 const fetchVerifiedMajorsByExpertId = async (expert_id) => {
   const expert = await ExpertInfo.findById(expert_id, {
-    select: "certificates",
+    select: "verified_majors",
   }).populate({
-    path: "certificates",
-    populate: {
-      path: "major",
-    },
-    match: { isVerified: true },
+    path: "verified_majors",
   });
 
   if (!expert) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
   }
 
-  const majors = [
-    ...new Map(
-      expert.certificates.map((certificate) => [
-        certificate.major._id,
-        certificate.major,
-      ])
-    ).values(),
-  ];
-  return majors;
+  return expert.verified_majors;
 };
 
 const fetchVerifiedMajorsByUserId = async (user_id) => {
