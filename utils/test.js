@@ -20,11 +20,11 @@ await mongoose.connect(CONNECTION_URL);
 //   )
 // );
 
-await recommendedExpertsService.createRecommendedExperts(
-  "655af535619bfcbf6de2ef48"
-);
+// await recommendedExpertsService.createRecommendedExperts(
+//   "655af535619bfcbf6de2ef48"
+// );
 
-console.log("done");
+// console.log("done");
 
 // const experts = await ExpertInfo.find({}).lean();
 // console.log(
@@ -35,3 +35,10 @@ console.log("done");
 
 // import moment from "moment";
 // console.log(moment().utc().startOf("day").toDate());
+
+// import certificateService from "../services/certificateService.js";
+
+// const experts = await ExpertInfo.find({ certificates: { $ne: [] } }).lean();
+// experts.forEach(async (e) => {
+//   await certificateService.updateVerifiedMajor(e._id);
+// });

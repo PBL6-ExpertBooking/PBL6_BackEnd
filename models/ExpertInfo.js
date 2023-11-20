@@ -10,12 +10,22 @@ const expertInfoSchema = new mongoose.Schema(
       index: true,
       unique: true,
     },
+    verified_majors: {
+      type: [
+        {
+          type: mongoose.Schema.ObjectId,
+          ref: "Major",
+        },
+      ],
+      default: [],
+    },
     descriptions: String,
     certificates: {
       type: [
         {
           type: mongoose.Schema.ObjectId,
           ref: "Certificate",
+          index: true,
         },
       ],
       default: [],

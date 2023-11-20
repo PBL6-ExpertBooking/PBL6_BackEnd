@@ -51,20 +51,11 @@ const getRandomExpertIds = async ({
 }) => {
   const pipeline = [
     {
-      $lookup: {
-        from: Certificate.collection.name,
-        localField: "certificates",
-        foreignField: "_id",
-        as: "certificates",
-      },
-    },
-    {
-      $unwind: "$certificates",
+      $unwind: "$verified_majors",
     },
     {
       $match: {
-        "certificates.major": new mongoose.Types.ObjectId(major_id),
-        "certificates.isVerified": true,
+        verified_majors: new mongoose.Types.ObjectId(major_id),
       },
     },
     {
