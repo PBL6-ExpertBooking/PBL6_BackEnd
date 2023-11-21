@@ -1,4 +1,5 @@
 import jobRequestService from "../services/jobRequestService.js";
+import reviewService from "../services/reviewService.js";
 
 const createJobRequest = async (req, res, next) => {
   try {
@@ -106,6 +107,18 @@ const completeJobRequest = async (req, res, next) => {
   }
 };
 
+const getReviewByJobRequestId = async (req, res, next) => {
+  try {
+    const { job_request_id } = req.params;
+    const review = await reviewService.fetchReviewByJobRequestId(
+      job_request_id
+    );
+    res.json(review);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createJobRequest,
   getJobRequestsPagination,
@@ -114,4 +127,5 @@ export default {
   cancelJobRequest,
   updateJobRequest,
   completeJobRequest,
+  getReviewByJobRequestId,
 };

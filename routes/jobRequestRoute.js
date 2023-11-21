@@ -32,4 +32,5 @@ router.post(
   checkRole([roles.USER]),
   controller.completeJobRequest
 );
+router.get("/:job_request_id/review", auth, controller.getReviewByJobRequestId);
 export default router;

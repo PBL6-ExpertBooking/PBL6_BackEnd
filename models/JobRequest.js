@@ -50,6 +50,7 @@ const jobRequestSchema = new mongoose.Schema(
     },
     time_booking: Date,
     time_payment: Date,
+    is_reviewed: { type: Boolean, default: false },
   },
   {
     collection: "job_request",

@@ -5,6 +5,7 @@ import acceptJobRequest from "./acceptJobRequest.js";
 import updateJobRequest from "./updateJobRequest.js";
 import cancelJobRequest from "./cancelJobRequest.js";
 import completeJobRequest from "./completeJobRequest.js";
+import getReview from "./getReview.js";
 
 export default {
   "/job_requests": {
@@ -14,6 +15,9 @@ export default {
   "/job_requests/{job_request_id}": {
     ...getJobRequestById,
     ...updateJobRequest,
+  },
+  "/job_requests/{job_request_id}/review": {
+    ...getReview,
   },
   "/job_requests/{job_request_id}/accept": {
     ...acceptJobRequest,

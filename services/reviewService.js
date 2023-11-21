@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import { Review, User, ExpertInfo, JobRequest } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 import { job_request_status } from "../config/constant.js";
+import mongoose from "mongoose";
 
 const createReview = async ({ user_id, job_request_id, rating, comment }) => {
   const job_request = await JobRequest.findById(job_request_id).lean();
@@ -39,6 +40,7 @@ const createReview = async ({ user_id, job_request_id, rating, comment }) => {
     rating: rating,
     comment: comment,
   });
+  await JobRequest.updateOne({ _id: job_request._id }, { is_reviewed: true });
   return review;
 };
 
@@ -67,7 +69,29 @@ const fetchReviewsPaginationByExpertId = async (
   return pagination;
 };
 
+const fetchReviewByJobRequestId = async (job_request_id) => {
+  const review = await Review.findOne({
+    job_request: job_request_id,
+  })
+    .populate([
+      {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+      {
+        path: "expert",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      },
+    ])
+    .lean();
+  return review;
+};
+
 export default {
   createReview,
   fetchReviewsPaginationByExpertId,
+  fetchReviewByJobRequestId,
 };
