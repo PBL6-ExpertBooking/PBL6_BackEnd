@@ -52,6 +52,7 @@ const fetchReviewsPaginationByExpertId = async (
   const pagination = await Review.paginate(
     { expert: expert_id },
     {
+      sort: { createdAt: -1 },
       populate: [
         {
           path: "user",

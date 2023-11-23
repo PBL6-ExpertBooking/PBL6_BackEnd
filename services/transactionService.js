@@ -238,6 +238,7 @@ const fetchTransactionsByUserId = async (user_id, page = 1, limit = 10) => {
       $or: [{ user: user_id }, { expert: user_id }],
     },
     {
+      sort: { createdAt: -1 },
       populate: [
         {
           path: "user",
