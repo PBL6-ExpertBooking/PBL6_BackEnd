@@ -132,12 +132,11 @@ const getWeightedRandomExpertIds = (experts, percent, min_experts = null) => {
 
 const normalize = (experts) => {
   const max_rating = 5;
-  const today = moment();
   experts = experts.map((expert) => {
     return {
       ...expert,
       normalized_rating: minMaxNormalize(expert.average_rating, 0, max_rating),
-      days_diff_from_today: today.diff(moment(expert.createdAt), "days"),
+      days_diff_from_today: calculateDaysDiffenrenceVsToday(expert.createdAt),
     };
   });
 
@@ -157,6 +156,14 @@ const normalize = (experts) => {
   });
 
   return experts;
+};
+
+const calculateDaysDiffenrenceVsToday = (date) => {
+  const today = moment();
+  const diff = today.diff(moment(date), "days");
+  const DAYS_DIFFERENCE_CAP = parseInt(process.env.DAYS_DIFFERENCE_CAP);
+
+  return diff > DAYS_DIFFERENCE_CAP ? DAYS_DIFFERENCE_CAP : diff;
 };
 
 const reversedMinMaxNormalize = (x, min, max) => {

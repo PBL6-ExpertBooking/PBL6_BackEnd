@@ -229,7 +229,16 @@ const executePayment = async ({ user_id, transaction_id }) => {
     session.endSession();
   }
 
-  return transaction;
+  return await transaction.populate([
+    {
+      path: "user",
+      select: "balance",
+    },
+    {
+      path: "expert",
+      select: "balance",
+    },
+  ]);
 };
 
 const fetchTransactionsByUserId = async (user_id, page = 1, limit = 10) => {
