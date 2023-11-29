@@ -152,11 +152,13 @@ const getJobRequestsPaginationByUserId = async (req, res, next) => {
 const getCurrentUserTransactions = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { page, limit } = req.query;
+    const { page, limit, date_from, date_to } = req.query;
     const transactions = await transactionService.fetchTransactionsByUserId(
       user_id,
       page || 1,
-      limit || 10
+      limit || 10,
+      date_from,
+      date_to
     );
     res.json({ transactions });
   } catch (error) {

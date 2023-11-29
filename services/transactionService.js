@@ -241,37 +241,52 @@ const executePayment = async ({ user_id, transaction_id }) => {
   ]);
 };
 
-const fetchTransactionsByUserId = async (user_id, page = 1, limit = 10) => {
-  const pagination = await Transaction.paginate(
-    {
-      $or: [{ user: user_id }, { expert: user_id }],
-    },
-    {
-      sort: { createdAt: -1 },
-      populate: [
-        {
-          path: "user",
-          select: "first_name last_name gender phone address photo_url email",
-        },
-        {
-          path: "expert",
-          select: "first_name last_name gender phone address photo_url email",
-        },
-        {
-          path: "job_request",
-          populate: {
-            path: "major",
-          },
-        },
-      ],
-      page,
-      limit,
-      lean: true,
-      customLabels: {
-        docs: "transactions",
-      },
+const fetchTransactionsByUserId = async (
+  user_id,
+  page = 1,
+  limit = 10,
+  date_from = null,
+  date_to = null
+) => {
+  const query = {
+    $or: [{ user: user_id }, { expert: user_id }],
+  };
+
+  if (date_from || date_to) {
+    query.createdAt = {};
+    if (date_from) {
+      query.createdAt.$gte = new Date(date_from);
     }
-  );
+    if (date_to) {
+      query.createdAt.$lte = new Date(date_to);
+    }
+  }
+
+  const pagination = await Transaction.paginate(query, {
+    sort: { createdAt: -1 },
+    populate: [
+      {
+        path: "user",
+        select: "first_name last_name gender phone address photo_url email",
+      },
+      {
+        path: "expert",
+        select: "first_name last_name gender phone address photo_url email",
+      },
+      {
+        path: "job_request",
+        populate: {
+          path: "major",
+        },
+      },
+    ],
+    page,
+    limit,
+    lean: true,
+    customLabels: {
+      docs: "transactions",
+    },
+  });
   return pagination;
 };
 
