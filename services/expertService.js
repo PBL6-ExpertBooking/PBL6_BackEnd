@@ -206,6 +206,27 @@ const fetchExpertsHavingUnverifiedCert = async (page = 1, limit = 10) => {
         localField: "certificates",
         foreignField: "_id",
         as: "certificates",
+        pipeline: [
+          {
+            $lookup: {
+              from: Major.collection.name,
+              localField: "major",
+              foreignField: "_id",
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    name: 1,
+                  },
+                },
+              ],
+              as: "major",
+            },
+          },
+          {
+            $unwind: "$major",
+          },
+        ],
       },
     },
     {
