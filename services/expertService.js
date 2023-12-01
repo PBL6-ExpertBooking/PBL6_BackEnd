@@ -247,6 +247,9 @@ const fetchExpertsHavingUnverifiedCert = async (page = 1, limit = 10) => {
         as: "user",
       },
     },
+    {
+      $unwind: "$user",
+    },
   ]);
   const pagination = await ExpertInfo.aggregatePaginate(aggregate, {
     page,
