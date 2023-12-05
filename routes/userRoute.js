@@ -2,7 +2,7 @@ import express from "express";
 import { auth, checkRole } from "../middlewares/authorization.js";
 import { roles } from "../config/constant.js";
 import controller from "../controllers/userController.js";
-import upload from "../middlewares/upload.js";
+import { uploadImage } from "../middlewares/upload.js";
 import trimRequest from "trim-request";
 import validate from "../middlewares/yupValidation.js";
 import schemas from "../validations/userValidations.js";
@@ -14,7 +14,7 @@ router.get("/current", auth, controller.getCurrentUserInfo);
 router.put(
   "/current",
   auth,
-  upload.single("photo"),
+  uploadImage.single("photo"),
   trimRequest.all,
   validate(schemas.updateUserInfoSchema),
   controller.updateUserInfo
@@ -49,7 +49,7 @@ router.put(
   checkRole([roles.ADMIN]),
   trimRequest.all,
   validate(schemas.updateUserInfoSchema),
-  upload.single("photo"),
+  uploadImage.single("photo"),
   controller.updateUserInfoById
 );
 router.delete(

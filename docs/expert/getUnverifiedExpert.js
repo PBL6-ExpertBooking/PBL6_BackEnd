@@ -9,6 +9,13 @@ export default {
     ],
     parameters: [
       {
+        name: "search",
+        in: "query",
+        schema: {
+          type: "string",
+        },
+      },
+      {
         name: "page",
         in: "query",
         schema: {

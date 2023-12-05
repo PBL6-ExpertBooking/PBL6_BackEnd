@@ -198,8 +198,12 @@ const fetchVerifiedMajorsByUserId = async (user_id) => {
   return expert.verified_majors;
 };
 
-const fetchExpertsHavingUnverifiedCert = async (page = 1, limit = 10) => {
-  const aggregate = ExpertInfo.aggregate([
+const fetchExpertsHavingUnverifiedCert = async (
+  search = null,
+  page = 1,
+  limit = 10
+) => {
+  const pipeline = [
     {
       $lookup: {
         from: Certificate.collection.name,
@@ -271,7 +275,24 @@ const fetchExpertsHavingUnverifiedCert = async (page = 1, limit = 10) => {
     {
       $unwind: "$user",
     },
-  ]);
+  ];
+
+  if (search) {
+    pipeline.push({
+      $match: {
+        $expr: {
+          $regexMatch: {
+            input: { $concat: ["$user.first_name", " ", "$user.last_name"] },
+            regex: new RegExp(search),
+            options: "i",
+          },
+        },
+      },
+    });
+  }
+
+  const aggregate = ExpertInfo.aggregate(pipeline);
+
   const pagination = await ExpertInfo.aggregatePaginate(aggregate, {
     page,
     limit,

@@ -100,8 +100,9 @@ const getReviewsByExpertId = async (req, res, next) => {
 
 const getExpertsHavingUnverifiedCert = async (req, res, next) => {
   try {
-    const { page, limit } = req.query;
+    const { page, limit, search } = req.query;
     const pagination = await expertService.fetchExpertsHavingUnverifiedCert(
+      search,
       page || 1,
       limit || 10
     );
