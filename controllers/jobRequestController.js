@@ -1,5 +1,8 @@
 import jobRequestService from "../services/jobRequestService.js";
 import reviewService from "../services/reviewService.js";
+import recommendedExpertsService from "../services/recommendedExpertsService.js";
+import notificationService from "../services/notificationService.js";
+import pusherService from "../services/pusherService.js";
 
 const createJobRequest = async (req, res, next) => {
   try {
@@ -13,6 +16,15 @@ const createJobRequest = async (req, res, next) => {
       address,
       price,
     });
+
+    (async () => {
+      await recommendedExpertsService.createRecommendedExperts(job_request._id);
+      const notifications = await notificationService.notifyNewJobRequest(
+        job_request._id
+      );
+      pusherService.notifyMultipleUsers(notifications);
+    })();
+
     res.json({ job_request });
   } catch (error) {
     next(error);

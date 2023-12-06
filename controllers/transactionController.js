@@ -1,5 +1,5 @@
 import transactionService from "../services/transactionService.js";
-import pusher from "../utils/pusher.js";
+import pusherService from "../services/pusherService.js";
 
 const createDeposit = async (req, res, next) => {
   try {
@@ -65,13 +65,11 @@ const executePayment = async (req, res, next) => {
       transaction_id,
     });
 
-    pusher.trigger(`user-${transaction.user._id}`, "update_balance", {
-      balance: transaction.user.balance,
-    });
-
-    pusher.trigger(`user-${transaction.expert._id}`, "update_balance", {
-      balance: transaction.expert.balance,
-    });
+    pusherService.updateBalance(transaction.user._id, transaction.user.balance);
+    pusherService.updateBalance(
+      transaction.expert._id,
+      transaction.expert.balance
+    );
 
     res.json({ transaction });
   } catch (error) {

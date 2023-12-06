@@ -36,8 +36,6 @@ const createJobRequest = async ({
     status: job_request_status.PENDING,
   });
 
-  recommendedExpertsService.createRecommendedExperts(jobRequest._id);
-
   return jobRequest;
 };
 

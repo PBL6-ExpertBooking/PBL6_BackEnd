@@ -1,6 +1,7 @@
 import userService from "../services/userService.js";
 import jobRequestService from "../services/jobRequestService.js";
 import transactionService from "../services/transactionService.js";
+import notificationService from "../services/notificationService.js";
 
 const getUserById = async (req, res, next) => {
   try {
@@ -166,6 +167,20 @@ const getCurrentUserTransactions = async (req, res, next) => {
   }
 };
 
+const getCurrentUserNotifications = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { limit } = req.query;
+    const notifications = await notificationService.fetchNotificationsByUserId(
+      user_id,
+      limit
+    );
+    res.json({ notifications });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
@@ -180,4 +195,5 @@ export default {
   getJobRequestsPaginationOfCurrentUser,
   getJobRequestsPaginationByUserId,
   getCurrentUserTransactions,
+  getCurrentUserNotifications,
 };

@@ -42,6 +42,11 @@ router.get(
   auth,
   controller.getCurrentUserTransactions
 );
+router.get(
+  "/current/notifications",
+  auth,
+  controller.getCurrentUserNotifications
+);
 router.get("/:id", controller.getUserById);
 router.put(
   "/:id",

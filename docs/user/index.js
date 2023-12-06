@@ -11,6 +11,7 @@ import deleteUser from "./deleteUser.js";
 import getCurrentUserJobRequests from "./getCurrentUserJobRequests.js";
 import getJobRequestsByUserId from "./getJobRequestsByUserId.js";
 import getCurrentUserTransactions from "./getCurrentUserTransactions.js";
+import getCurrentUserNotifications from "./getCurrentUserNotifications.js";
 
 export default {
   "/users": {
@@ -28,6 +29,9 @@ export default {
   },
   "/users/current/transactions": {
     ...getCurrentUserTransactions,
+  },
+  "/users/current/notifications": {
+    ...getCurrentUserNotifications,
   },
   "/users/current/promote-to-expert": {
     ...promoteToExpert,
