@@ -12,6 +12,7 @@ import getCurrentUserJobRequests from "./getCurrentUserJobRequests.js";
 import getJobRequestsByUserId from "./getJobRequestsByUserId.js";
 import getCurrentUserTransactions from "./getCurrentUserTransactions.js";
 import getCurrentUserNotifications from "./getCurrentUserNotifications.js";
+import updateSeenNotification from "./updateSeenNotification.js";
 
 export default {
   "/users": {
@@ -32,6 +33,9 @@ export default {
   },
   "/users/current/notifications": {
     ...getCurrentUserNotifications,
+  },
+  "/users/current/notifications/{notification_id}/seen": {
+    ...updateSeenNotification,
   },
   "/users/current/promote-to-expert": {
     ...promoteToExpert,

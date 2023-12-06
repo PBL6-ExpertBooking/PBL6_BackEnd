@@ -47,6 +47,11 @@ router.get(
   auth,
   controller.getCurrentUserNotifications
 );
+router.put(
+  "/current/notifications/:notification_id/seen",
+  auth,
+  controller.updateSeenNotification
+);
 router.get("/:id", controller.getUserById);
 router.put(
   "/:id",

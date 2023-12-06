@@ -181,6 +181,20 @@ const getCurrentUserNotifications = async (req, res, next) => {
   }
 };
 
+const updateSeenNotification = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { notification_id } = req.params;
+    const notification = await notificationService.updateSeenNotification(
+      notification_id,
+      user_id
+    );
+    res.json({ notification });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getUserById,
   getUsersPagination,
@@ -196,4 +210,5 @@ export default {
   getJobRequestsPaginationByUserId,
   getCurrentUserTransactions,
   getCurrentUserNotifications,
+  updateSeenNotification,
 };

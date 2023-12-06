@@ -7,6 +7,15 @@ const fetchNotificationsByUserId = async (user_id, limit = 10) => {
   return notifications;
 };
 
+const updateSeenNotification = async (notification_id, user_id) => {
+  const notification = await Notification.findOneAndUpdate(
+    { _id: notification_id, user: user_id },
+    { is_seen: true },
+    { new: true }
+  );
+  return notification;
+};
+
 const notifyNewJobRequest = async (job_request_id) => {
   const recommendedExperts = await RecommendedExperts.findOne({
     job_request: job_request_id,
@@ -32,12 +41,13 @@ const notifyNewJobRequest = async (job_request_id) => {
     };
   });
 
-  await Notification.collection.insertMany(new_notifications);
+  await Notification.insertMany(new_notifications);
 
   return new_notifications;
 };
 
 export default {
   fetchNotificationsByUserId,
+  updateSeenNotification,
   notifyNewJobRequest,
 };
