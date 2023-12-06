@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { notification_types } from "../config/constant.js";
 
 const notificationSchema = new mongoose.Schema(
   {
@@ -7,8 +8,15 @@ const notificationSchema = new mongoose.Schema(
       ref: "User",
       index: true,
     },
-    message: String,
+    type: {
+      type: String,
+      enum: Object.values(notification_types),
+    },
     is_seen: { type: Boolean, default: false },
+    ref: {
+      type: {},
+      default: {},
+    },
   },
   {
     collection: "notification",

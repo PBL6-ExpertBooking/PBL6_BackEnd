@@ -1,4 +1,5 @@
 import { Notification, RecommendedExperts } from "../models/index.js";
+import { notification_types } from "../config/constant.js";
 
 const fetchNotificationsByUserId = async (user_id, limit = 10) => {
   const notifications = await Notification.find({ user: user_id })
@@ -23,7 +24,11 @@ const notifyNewJobRequest = async (job_request_id) => {
     .populate([
       {
         path: "job_request",
-        select: "title",
+        select: "user title descriptions price",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
       },
       {
         path: "experts",
@@ -37,7 +42,10 @@ const notifyNewJobRequest = async (job_request_id) => {
   const new_notifications = experts.map((expert) => {
     return {
       user: expert.user,
-      message: `New job request: ${job_request.title}`,
+      type: notification_types.NEW_JOB_REQUEST,
+      ref: {
+        job_request,
+      },
     };
   });
 

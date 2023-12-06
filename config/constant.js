@@ -34,6 +34,11 @@ const transaction_status = {
   DONE: "DONE",
 };
 
+const notification_types = {
+  NEW_JOB_REQUEST: "NEW_JOB_REQUEST",
+  PAYMENT: "PAYMENT",
+};
+
 export {
   roles,
   tokenTypes,
@@ -41,4 +46,5 @@ export {
   transaction_status,
   transaction_types,
   job_request_status,
+  notification_types,
 };
