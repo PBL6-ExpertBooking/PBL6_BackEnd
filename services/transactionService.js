@@ -11,6 +11,7 @@ import crypto from "crypto";
 import moment from "moment";
 import dotenv from "dotenv";
 import { startSession } from "mongoose";
+import pusherService from "./pusherService.js";
 
 dotenv.config();
 
@@ -126,6 +127,8 @@ const handleSuccessDeposit = async (transaction) => {
   await user.updateOne({
     balance: user.balance + transaction.amount,
   });
+
+  pusherService.updateBalance(user._id, user.balance + transaction.amount);
 };
 
 const handleWithdrawal = async (transaction) => {
