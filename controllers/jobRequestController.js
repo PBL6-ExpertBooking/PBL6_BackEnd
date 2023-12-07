@@ -19,10 +19,7 @@ const createJobRequest = async (req, res, next) => {
 
     (async () => {
       await recommendedExpertsService.createRecommendedExperts(job_request._id);
-      const notifications = await notificationService.notifyNewJobRequest(
-        job_request._id
-      );
-      pusherService.notifyMultipleUsers(notifications);
+      await notificationService.notifyNewJobRequest(job_request._id);
     })();
 
     res.json({ job_request });
@@ -65,6 +62,9 @@ const acceptJobRequest = async (req, res, next) => {
       user_id,
       job_request_id,
     });
+
+    notificationService.notifyJobRequestAccepted(job_request._id);
+
     res.json({ job_request });
   } catch (error) {
     next(error);

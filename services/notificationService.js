@@ -1,5 +1,10 @@
-import { Notification, RecommendedExperts } from "../models/index.js";
+import {
+  JobRequest,
+  Notification,
+  RecommendedExperts,
+} from "../models/index.js";
 import { notification_types } from "../config/constant.js";
+import pusherService from "../services/pusherService.js";
 
 const fetchNotificationsByUserId = async (user_id, limit = 10) => {
   const notifications = await Notification.find({ user: user_id })
@@ -49,13 +54,47 @@ const notifyNewJobRequest = async (job_request_id) => {
     };
   });
 
-  await Notification.insertMany(new_notifications);
+  const notifications = await Notification.insertMany(new_notifications);
 
-  return new_notifications;
+  pusherService.notifyMultipleUsers(notifications);
+
+  return notifications;
+};
+
+const notifyJobRequestAccepted = async (job_request_id) => {
+  const job_request = await JobRequest.findById(job_request_id)
+    .select("user expert title descriptions price")
+    .populate([
+      {
+        path: "user",
+        select: "first_name last_name photo_url",
+      },
+      {
+        path: "expert",
+        select: "user",
+        populate: {
+          path: "user",
+          select: "first_name last_name photo_url",
+        },
+      },
+    ]);
+
+  const notification = await Notification.create({
+    user: job_request.user._id,
+    type: notification_types.JOB_REQUEST_ACCEPTED,
+    ref: {
+      job_request,
+    },
+  });
+
+  pusherService.notify(notification);
+
+  return notification;
 };
 
 export default {
   fetchNotificationsByUserId,
   updateSeenNotification,
   notifyNewJobRequest,
+  notifyJobRequestAccepted,
 };

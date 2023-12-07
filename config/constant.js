@@ -36,6 +36,7 @@ const transaction_status = {
 
 const notification_types = {
   NEW_JOB_REQUEST: "NEW_JOB_REQUEST",
+  JOB_REQUEST_ACCEPTED: "JOB_REQUEST_ACCEPTED",
   PAYMENT: "PAYMENT",
 };
 

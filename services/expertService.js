@@ -368,6 +368,9 @@ const fetchRecommendedJobRequestsByExpertId = async (
     {
       $unwind: "$job_request",
     },
+    {
+      $sort: { createdAt: -1 },
+    },
   ]);
   let pagination = await RecommendedExperts.aggregatePaginate(aggregate, {
     page,
