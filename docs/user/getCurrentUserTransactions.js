@@ -37,6 +37,14 @@ export default {
           type: "string",
         },
       },
+      {
+        name: "transaction_status",
+        in: "query",
+        schema: {
+          type: "string",
+        },
+        description: '["PROCESSING", "CANCELED", "DONE"]',
+      },
     ],
     responses: {},
   },

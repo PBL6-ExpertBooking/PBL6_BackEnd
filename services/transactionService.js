@@ -246,7 +246,8 @@ const fetchTransactionsByUserId = async (
   page = 1,
   limit = 10,
   date_from = null,
-  date_to = null
+  date_to = null,
+  transaction_status = null
 ) => {
   const query = {
     $or: [{ user: user_id }, { expert: user_id }],
@@ -260,6 +261,10 @@ const fetchTransactionsByUserId = async (
     if (date_to) {
       query.createdAt.$lte = new Date(date_to);
     }
+  }
+
+  if (transaction_status) {
+    query.transaction_status = transaction_status;
   }
 
   const pagination = await Transaction.paginate(query, {
