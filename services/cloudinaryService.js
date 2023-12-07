@@ -1,6 +1,6 @@
 import cloudinary from "../config/cloudinaryConfig.js";
 
-const uploadImage = async (file) => {
+const upload = async (file) => {
   const b64 = Buffer.from(file.buffer).toString("base64");
   let dataURI = "data:" + file.mimetype + ";base64," + b64;
   const res = await cloudinary.uploader.upload(dataURI, {
@@ -9,7 +9,7 @@ const uploadImage = async (file) => {
   return { public_id: res.public_id, url: res.secure_url };
 };
 
-const deleteImageByPublicId = async (public_id) => {
+const deleteByPublicId = async (public_id) => {
   await cloudinary.uploader.destroy(public_id);
 };
 
@@ -46,4 +46,4 @@ const getImages = async (next_cursor = null) => {
   return result;
 };
 
-export default { uploadImage, deleteImageByPublicId, getImages };
+export default { upload, deleteByPublicId, getImages };

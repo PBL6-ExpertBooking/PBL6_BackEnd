@@ -2,6 +2,7 @@ import express from "express";
 import { auth, checkRole } from "../middlewares/authorization.js";
 import { roles } from "../config/constant.js";
 import controller from "../controllers/expertController.js";
+import { uploadDocument } from "../middlewares/upload.js";
 
 const router = express.Router();
 
@@ -51,5 +52,37 @@ router.get(
 );
 router.get("/:expert_id/majors", auth, controller.getVerifiedMajorsByExpertId);
 router.get("/:expert_id/reviews", controller.getReviewsByExpertId);
+
+router.post(
+  "/:expert_id/documents",
+  auth,
+  checkRole([roles.ADMIN]),
+  uploadDocument.single(["file"]),
+  controller.createDocument
+);
+router.get(
+  "/:expert_id/documents",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.getDocumentsByExpertId
+);
+router.get(
+  "/:expert_id/documents/:document_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.getDocumentById
+);
+router.put(
+  "/:expert_id/documents/:document_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.updateDocument
+);
+router.delete(
+  "/:expert_id/documents/:document_id",
+  auth,
+  checkRole([roles.ADMIN]),
+  controller.deleteDocument
+);
 
 export default router;

@@ -10,6 +10,11 @@ import getAcceptedJobRequests from "./getAcceptedJobRequests.js";
 import getCurrentExpertMajors from "./getCurrentExpertMajors.js";
 import getMajorsByExpertId from "./getMajorsByExpertId.js";
 import deleteRecommendedJobRequest from "./deleteRecommendedJobRequest.js";
+import createDocument from "./createDocument.js";
+import getDocuments from "./getDocuments.js";
+import getDocumentById from "./getDocumentById.js";
+import updateDocument from "./updateDocument.js";
+import deleteDocument from "./deleteDocument.js";
 
 export default {
   "/experts": {
@@ -47,5 +52,14 @@ export default {
   },
   "/experts/{expert_id}/reviews": {
     ...getReviewsByExpertId,
+  },
+  "/experts/{expert_id}/documents": {
+    ...createDocument,
+    ...getDocuments,
+  },
+  "/experts/{expert_id}/documents/{document_id}": {
+    ...getDocumentById,
+    ...updateDocument,
+    ...deleteDocument,
   },
 };

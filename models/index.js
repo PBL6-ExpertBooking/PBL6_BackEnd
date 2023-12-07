@@ -10,6 +10,7 @@ import Transaction from "./Transaction.js";
 import RecommendedExperts from "./RecommendedExperts.js";
 import JobsCount from "./JobsCount.js";
 import Notification from "./Notification.js";
+import Document from "./Document.js";
 
 export {
   Certificate,
@@ -24,4 +25,5 @@ export {
   RecommendedExperts,
   JobsCount,
   Notification,
+  Document,
 };

@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import { Certificate, ExpertInfo, Major } from "../models/index.js";
-import imageService from "./imageService.js";
+import cloudinaryService from "./cloudinaryService.js";
 import ApiError from "../utils/ApiError.js";
 import mongoose from "mongoose";
 
@@ -21,7 +21,7 @@ const createCertificate = async ({
   }
 
   // upload image
-  const response = await imageService.uploadImage(photo);
+  const response = await cloudinaryService.upload(photo);
 
   const certificate = new Certificate({
     name,
@@ -59,7 +59,7 @@ const deleteCertificateById = async (user_id, certificate_id) => {
   // delete certificate from expert's certificates
   expert.certificates.pull(certificate);
   // delete photo
-  imageService.deleteImageByPublicId(certificate.photo_public_id);
+  cloudinaryService.deleteByPublicId(certificate.photo_public_id);
   // delete certificate from database
   await certificate.deleteOne();
   await expert.save();

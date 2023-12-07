@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import ApiError from "../utils/ApiError.js";
 import httpStatus from "http-status";
 import { userMapper } from "./mapper/userMapper.js";
-import imageService from "./imageService.js";
+import cloudinaryService from "./cloudinaryService.js";
 import { roles } from "../config/constant.js";
 
 import dotenv from "dotenv";
@@ -82,10 +82,10 @@ const updateUserInfo = async (user_id, update_info) => {
   user.address = JSON.parse(update_info.address) || user.address;
   if (update_info.file) {
     // upload image and retrieve photo_url
-    const response = await imageService.uploadImage(update_info.file);
+    const response = await cloudinaryService.upload(update_info.file);
     if (user.photo_public_id) {
       // delete old image async
-      imageService.deleteImageByPublicId(user.photo_public_id);
+      cloudinaryService.deleteByPublicId(user.photo_public_id);
     }
     user.photo_url = response.url;
     user.photo_public_id = response.public_id;
