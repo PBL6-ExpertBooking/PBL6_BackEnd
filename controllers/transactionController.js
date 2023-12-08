@@ -1,5 +1,6 @@
 import transactionService from "../services/transactionService.js";
 import pusherService from "../services/pusherService.js";
+import dotenv from "dotenv";
 
 const createDeposit = async (req, res, next) => {
   try {
@@ -28,7 +29,8 @@ const createDeposit = async (req, res, next) => {
 
 const vnpayReturn = async (req, res, next) => {
   try {
-    res.json(await transactionService.handleVnpayReturn(req));
+    await transactionService.handleVnpayReturn(req);
+    res.redirect(process.env.DEPOSIT_REDIRECT_URL);
   } catch (error) {
     next(error);
   }
