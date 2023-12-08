@@ -131,6 +131,18 @@ const getReviewByJobRequestId = async (req, res, next) => {
   }
 };
 
+const deleteJobRequest = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { job_request_id } = req.params;
+    await jobRequestService.deleteJobRequest({ user_id, job_request_id });
+
+    res.json({ message: "Deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createJobRequest,
   getJobRequestsPagination,
@@ -140,4 +152,5 @@ export default {
   updateJobRequest,
   completeJobRequest,
   getReviewByJobRequestId,
+  deleteJobRequest,
 };

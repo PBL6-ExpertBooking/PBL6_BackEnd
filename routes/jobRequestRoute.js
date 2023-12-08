@@ -14,6 +14,12 @@ router.put(
   checkRole([roles.USER]),
   controller.updateJobRequest
 );
+router.delete(
+  "/:job_request_id",
+  auth,
+  checkRole([roles.USER]),
+  controller.deleteJobRequest
+);
 router.post(
   "/:job_request_id/accept",
   auth,

@@ -77,10 +77,27 @@ const executePayment = async (req, res, next) => {
   }
 };
 
+const getAllTransactions = async (req, res, next) => {
+  try {
+    const { page, limit, date_from, date_to, transaction_status } = req.query;
+    const transactions = await transactionService.fetchAllTransactions(
+      page || 1,
+      limit || 10,
+      date_from,
+      date_to,
+      transaction_status
+    );
+    res.json({ transactions });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   createDeposit,
   vnpayReturn,
   vnpayIpn,
   createPayment,
   executePayment,
+  getAllTransactions,
 };

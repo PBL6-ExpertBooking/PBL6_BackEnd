@@ -107,6 +107,7 @@ const fetchJobRequestsPaginationByUserId = async (
         path: "major",
       },
     ],
+    sort: { createdAt: -1 },
     page,
     limit,
     lean: true,
@@ -250,6 +251,21 @@ const completeJobRequest = async ({ user_id, job_request_id }) => {
   return job_request;
 };
 
+const deleteJobRequest = async ({ user_id, job_request_id }) => {
+  const job_request = await JobRequest.findById(job_request_id);
+  if (job_request.user.toString() !== user_id.toString()) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You are not the owner");
+  }
+  if (job_request.status !== job_request_status.PENDING) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "Can not delete this job request"
+    );
+  }
+
+  await JobRequest.deleteOne({ _id: job_request_id, user: user_id });
+};
+
 export default {
   createJobRequest,
   fetchJobRequestsPagination,
@@ -261,4 +277,5 @@ export default {
   fetchAcceptedJobRequestsByExpertId,
   deleteRecommendedJobRequest,
   completeJobRequest,
+  deleteJobRequest,
 };

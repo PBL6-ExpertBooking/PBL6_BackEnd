@@ -5,6 +5,7 @@ import controller from "../controllers/transactionController.js";
 
 const router = express.Router();
 
+router.get("", auth, checkRole([roles.ADMIN]), controller.getAllTransactions);
 router.post(
   "/deposit",
   auth,

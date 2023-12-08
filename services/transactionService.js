@@ -468,6 +468,57 @@ const sortObject = (obj) => {
   return sorted;
 };
 
+const fetchAllTransactions = async (
+  page = 1,
+  limit = 10,
+  date_from = null,
+  date_to = null,
+  transaction_status = null
+) => {
+  const query = {};
+
+  if (date_from || date_to) {
+    query.createdAt = {};
+    if (date_from) {
+      query.createdAt.$gte = new Date(date_from);
+    }
+    if (date_to) {
+      query.createdAt.$lte = new Date(date_to);
+    }
+  }
+
+  if (transaction_status) {
+    query.transaction_status = transaction_status;
+  }
+
+  const pagination = await Transaction.paginate(query, {
+    sort: { createdAt: -1 },
+    populate: [
+      {
+        path: "user",
+        select: "first_name last_name gender phone address photo_url email",
+      },
+      {
+        path: "expert",
+        select: "first_name last_name gender phone address photo_url email",
+      },
+      {
+        path: "job_request",
+        populate: {
+          path: "major",
+        },
+      },
+    ],
+    page,
+    limit,
+    lean: true,
+    customLabels: {
+      docs: "transactions",
+    },
+  });
+  return pagination;
+};
+
 export default {
   createDeposit,
   createWithdrawal,
@@ -478,4 +529,5 @@ export default {
   vnpayIpn,
   executePayment,
   handleWithdrawal,
+  fetchAllTransactions,
 };
