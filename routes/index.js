@@ -7,6 +7,7 @@ import certificateRoute from "./certificateRoute.js";
 import jobRequestRoute from "./jobRequestRoute.js";
 import reviewRoute from "./reviewRoute.js";
 import transactionRoute from "./transactionRoute.js";
+import reportRoute from "./reportRoute.js";
 
 const router = express.Router();
 
@@ -18,5 +19,6 @@ router.use("/certificates", certificateRoute);
 router.use("/job_requests", jobRequestRoute);
 router.use("/reviews", reviewRoute);
 router.use("/transactions", transactionRoute);
+router.use("/reports", reportRoute);
 
 export default router;

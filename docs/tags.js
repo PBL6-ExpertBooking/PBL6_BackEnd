@@ -21,5 +21,8 @@ export default {
     {
       name: "transaction",
     },
+    {
+      name: "report",
+    },
   ],
 };
