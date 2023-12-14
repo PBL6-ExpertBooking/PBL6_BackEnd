@@ -9,6 +9,31 @@ const getStatisticsForAdmin = async (req, res, next) => {
     }
 };
 
+const getTotalIncome = async (req, res, next) => {
+    try {
+        const { start_date, end_date, by } = req.query;
+        const stats = await statisticsService.getIncomeForExpert({start_date, end_date, by});
+        res.json({ stats });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+const getExpertIncome = async (req, res, next) => {
+    try {
+        const user_id = req.authData.user._id;
+        const { start_date, end_date, by } = req.query;
+        const stats = await statisticsService.getIncomeForExpert({expert_id: user_id, start_date, end_date, by});
+        res.json({ stats });
+
+    } catch (error) {
+        next(error);
+    }
+}
+
 export default {
     getStatisticsForAdmin,
+    getTotalIncome,
+    getExpertIncome
 }

@@ -40,6 +40,12 @@ const notification_types = {
   PAYMENT: "PAYMENT",
 };
 
+const by_time = {
+  day: "DAY",
+  month: "MONTH",
+  year: "YEAR",
+}
+
 export {
   roles,
   tokenTypes,
@@ -48,4 +54,5 @@ export {
   transaction_types,
   job_request_status,
   notification_types,
+  by_time
 };

@@ -1,4 +1,4 @@
-import { job_request_status, roles, transaction_status, transaction_types } from "../config/constant.js"
+import { by_time, job_request_status, roles, transaction_status, transaction_types } from "../config/constant.js"
 import { JobRequest, Major, Review, Transaction, User } from "../models/index.js"
 
 const getStatisticsForAdmin = async () => {
@@ -66,6 +66,123 @@ const getTotalDepositAmount = async () => {
     return result[0].amount;
 }
 
+const getIncomeForExpert = async ({ expert_id = null, start_date = null, end_date = null, by = by_time.day }) => {
+    const match = {
+        transaction_type: transaction_types.PAYMENT,
+        transaction_status: transaction_status.DONE,
+    };
+    if (expert_id) {
+        match.expert = expert_id;
+    }
+
+    if (start_date || end_date) {
+        match.createdAt = {};
+        if (start_date) {
+            match.createdAt.$gte = new Date(start_date);
+        }
+        if (end_date) {
+            match.createdAt.$lt = new Date(end_date);
+        }
+    }
+
+    const proj1 = {
+        $project: {
+            _id: 0,
+            createdAt: 1,
+            amount: 1,
+            month: {
+                $month: "$createdAt",
+            },
+            day: {
+                $dayOfMonth: "$createdAt",
+            },
+            h: {
+                $hour: "$createdAt"
+            },
+            m: {
+                $minute: "$createdAt"
+            },
+            s: {
+                $second: "$createdAt"
+            },
+            ml: {
+                $millisecond: "$createdAt"
+            }
+        }
+    };
+
+    const part_to_subtract = [
+        "$ml",
+        {
+            $multiply: [
+                "$s",
+                1000
+            ]
+        },
+        {
+            $multiply: [
+                "$m",
+                60,
+                1000
+            ]
+        },
+        {
+            $multiply: [
+                "$h",
+                60,
+                60,
+                1000
+            ]
+        }
+    ];
+
+    if (by === by_time.month) {
+        part_to_subtract.push(
+            {
+                $multiply: [
+                    "$day",
+                    60,
+                    60,
+                    1000,
+                    24
+                ]
+            }
+        )
+    }
+
+
+    const proj2 = {
+        $project: {
+            _id: 0,
+            amount: 1,
+            createdAt: {
+                $subtract: [
+                    "$createdAt",
+                    {
+                        $add: part_to_subtract
+                    }
+                ]
+            }
+        }
+    };
+
+    const group = {
+        $group: {
+            _id: "$createdAt",
+            amount: {
+                $sum: "$amount",
+            }
+        }
+    };
+
+    const result = await Transaction.aggregate([
+        { $match: match }, proj1, proj2, group, { $sort: { _id: 1 } }
+    ]).exec();
+
+    return result;
+}
+
 export default {
     getStatisticsForAdmin,
+    getIncomeForExpert
 }
