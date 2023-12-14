@@ -12,6 +12,7 @@ import JobsCount from "./JobsCount.js";
 import Notification from "./Notification.js";
 import Document from "./Document.js";
 import Report from "./Report.js";
+import WithdrawalRequest from "./WithdrawalRequest.js";
 
 export {
   Certificate,
@@ -28,4 +29,5 @@ export {
   Notification,
   Document,
   Report,
+  WithdrawalRequest
 };
