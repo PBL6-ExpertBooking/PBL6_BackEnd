@@ -24,5 +24,8 @@ export default {
     {
       name: "report",
     },
+    {
+      name: "statistics"
+    }
   ],
 };

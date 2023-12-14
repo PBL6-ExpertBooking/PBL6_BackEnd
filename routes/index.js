@@ -8,6 +8,7 @@ import jobRequestRoute from "./jobRequestRoute.js";
 import reviewRoute from "./reviewRoute.js";
 import transactionRoute from "./transactionRoute.js";
 import reportRoute from "./reportRoute.js";
+import statisticsRoute from "./statisticsRoute.js";
 
 const router = express.Router();
 
@@ -20,5 +21,6 @@ router.use("/job_requests", jobRequestRoute);
 router.use("/reviews", reviewRoute);
 router.use("/transactions", transactionRoute);
 router.use("/reports", reportRoute);
+router.use("/statistics", statisticsRoute);
 
 export default router;
