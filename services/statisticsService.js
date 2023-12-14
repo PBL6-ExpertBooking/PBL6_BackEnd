@@ -202,7 +202,7 @@ const getIncomeForExpert = async ({
 
   if (by === by_time.month) {
     part_to_subtract.push({
-      $multiply: ["$day", 60, 60, 1000, 24],
+      $multiply: [{ $subtract: ["$day", 1] }, 60, 60, 1000, 24],
     });
   }
 
