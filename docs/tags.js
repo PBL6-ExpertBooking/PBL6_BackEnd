@@ -26,6 +26,9 @@ export default {
     },
     {
       name: "statistics"
+    },
+    {
+      name: "withdrawal-request"
     }
   ],
 };

@@ -15,6 +15,7 @@ import getDocuments from "./getDocuments.js";
 import getDocumentById from "./getDocumentById.js";
 import updateDocument from "./updateDocument.js";
 import deleteDocument from "./deleteDocument.js";
+import getWithdrawalRequests from "./getWithdrawalRequests.js";
 
 export default {
   "/experts": {
@@ -40,6 +41,10 @@ export default {
   },
   "/experts/current/accepted-job-requests": {
     ...getAcceptedJobRequests,
+  },
+  "/experts/current/withdrawal-requests":
+  {
+    ...getWithdrawalRequests,
   },
   "/experts/{expert_id}": {
     ...getExpertInfoById,

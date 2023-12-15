@@ -9,6 +9,7 @@ import reviewRoute from "./reviewRoute.js";
 import transactionRoute from "./transactionRoute.js";
 import reportRoute from "./reportRoute.js";
 import statisticsRoute from "./statisticsRoute.js";
+import withdrawalRequestRoute from "./withdrawalRequestRoute.js";
 
 const router = express.Router();
 
@@ -22,5 +23,6 @@ router.use("/reviews", reviewRoute);
 router.use("/transactions", transactionRoute);
 router.use("/reports", reportRoute);
 router.use("/statistics", statisticsRoute);
+router.use("/withdrawal-requests", withdrawalRequestRoute);
 
 export default router;

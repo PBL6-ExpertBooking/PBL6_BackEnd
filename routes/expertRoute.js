@@ -44,6 +44,12 @@ router.get(
   checkRole([roles.EXPERT]),
   controller.getAcceptedJobRequests
 );
+router.get(
+  "/current/withdrawal-requests",
+  auth,
+  checkRole([roles.EXPERT]),
+  controller.getWithdrawalRequests
+);
 router.get("/:id", auth, controller.getExpertById);
 router.get(
   "/:expert_id/certificates",

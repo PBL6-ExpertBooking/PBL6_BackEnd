@@ -3,6 +3,7 @@ import reviewService from "../services/reviewService.js";
 import { roles } from "../config/constant.js";
 import jobRequestService from "../services/jobRequestService.js";
 import documentService from "../services/documentService.js";
+import withdrawalService from "../services/withdrawalService.js";
 
 const getExpertsPagination = async (req, res, next) => {
   try {
@@ -244,6 +245,17 @@ const deleteDocument = async (req, res, next) => {
   }
 };
 
+const getWithdrawalRequests = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { page, limit } = req.query;
+    const withdrawal_requests = await withdrawalService.fetchWithdrawalRequests({ user_id, page, limit });
+    res.json({ withdrawal_requests });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   getExpertsPagination,
   getExpertById,
@@ -263,4 +275,5 @@ export default {
   getDocumentsByExpertId,
   updateDocument,
   deleteDocument,
+  getWithdrawalRequests
 };

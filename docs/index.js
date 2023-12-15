@@ -12,6 +12,7 @@ import review from "./review/index.js";
 import transaction from "./transaction/index.js";
 import report from "./report/index.js";
 import statistics from "./statistics/index.js";
+import withdrawalRequest from "./withdrawalRequest/index.js";
 
 export default {
   ...basicInfo,
@@ -28,6 +29,7 @@ export default {
     ...review,
     ...transaction,
     ...report,
-    ...statistics
+    ...statistics,
+    ...withdrawalRequest
   },
 };

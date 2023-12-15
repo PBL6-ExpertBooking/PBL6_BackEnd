@@ -35,30 +35,6 @@ const createDeposit = async ({ user_id, amount }) => {
   return transaction;
 };
 
-const createWithdrawal = async ({ user_id, amount }) => {
-  const user = await User.findById(user_id).lean();
-  if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
-  }
-
-  if (!Number.isInteger(amount) || amount <= 0) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid amount");
-  }
-
-  if (amount < user.balance) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Insufficient balance");
-  }
-
-  const transaction = await Transaction.create({
-    user: user_id,
-    amount: amount,
-    transaction_type: transaction_types.WITHDRAWAL,
-    transaction_status: transaction_status.PROCESSING,
-  });
-
-  return transaction;
-};
-
 const createPayment = async ({ user_id, job_request_id }) => {
   const job_request = await JobRequest.findById(job_request_id)
     .populate([
@@ -129,28 +105,6 @@ const handleSuccessDeposit = async (transaction) => {
   });
 
   pusherService.updateBalance(user._id, user.balance + transaction.amount);
-};
-
-const handleWithdrawal = async (transaction) => {
-  const user = await User.findById(transaction.user);
-  if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
-  }
-  if (transaction.amount < user.balance) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Insufficient balance");
-  }
-  try {
-    // call bank handler
-    await user.updateOne({
-      balance: user.balance - transaction.amount,
-    });
-    await Transaction.updateOne(
-      { _id: transaction._id },
-      {
-        transaction_status: transaction_status.DONE,
-      }
-    );
-  } catch (error) {}
 };
 
 const executePayment = async ({ user_id, transaction_id }) => {
@@ -521,13 +475,11 @@ const fetchAllTransactions = async (
 
 export default {
   createDeposit,
-  createWithdrawal,
   createPayment,
   fetchTransactionsByUserId,
   generatePaymentUrl,
   handleVnpayReturn,
   vnpayIpn,
   executePayment,
-  handleWithdrawal,
   fetchAllTransactions,
 };
