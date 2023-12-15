@@ -161,69 +161,33 @@ const getIncomeForExpert = async ({
     }
   }
 
-  const proj1 = {
-    $project: {
-      _id: 0,
-      createdAt: 1,
-      amount: 1,
-      month: {
-        $month: "$createdAt",
-      },
-      day: {
-        $dayOfMonth: "$createdAt",
-      },
-      h: {
-        $hour: "$createdAt",
-      },
-      m: {
-        $minute: "$createdAt",
-      },
-      s: {
-        $second: "$createdAt",
-      },
-      ml: {
-        $millisecond: "$createdAt",
-      },
-    },
-  };
+  const date_parts = {};
 
-  const part_to_subtract = [
-    "$ml",
-    {
-      $multiply: ["$s", 1000],
-    },
-    {
-      $multiply: ["$m", 60, 1000],
-    },
-    {
-      $multiply: ["$h", 60, 60, 1000],
-    },
-  ];
-
-  if (by === by_time.month) {
-    part_to_subtract.push({
-      $multiply: [{ $subtract: ["$day", 1] }, 60, 60, 1000, 24],
-    });
+  if (by === by_time.year || by === by_time.month || by === by_time.day) {
+    date_parts.year = { $year: "$createdAt" };
   }
 
-  const proj2 = {
+  if (by === by_time.month || by === by_time.day) {
+    date_parts.month = { $month: "$createdAt" };
+  }
+
+  if (by === by_time.day) {
+    date_parts.day = { $dayOfMonth: "$createdAt" };
+  }
+
+  const proj = {
     $project: {
       _id: 0,
       amount: 1,
-      createdAt: {
-        $subtract: [
-          "$createdAt",
-          {
-            $add: part_to_subtract,
-          },
-        ],
-      },
-    },
+      date: {
+        $dateFromParts: date_parts,
+      }
+    }
   };
 
   const group = {
     $group: {
-      _id: "$createdAt",
+      _id: "$date",
       amount: {
         $sum: "$amount",
       },
@@ -232,8 +196,7 @@ const getIncomeForExpert = async ({
 
   const result = await Transaction.aggregate([
     { $match: match },
-    proj1,
-    proj2,
+    proj,
     group,
     { $sort: { _id: 1 } },
   ]).exec();

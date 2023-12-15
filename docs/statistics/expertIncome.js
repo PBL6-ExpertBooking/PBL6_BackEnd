@@ -30,7 +30,7 @@ export default {
                 type: "string",
             },
             require: false,
-            description: '["DAY", "MONTH"]'
+            description: '["DAY", "MONTH", "YEAR"]'
         },],
         responses: {},
     },
