@@ -9,6 +9,10 @@ import {
 import { job_request_status } from "../config/constant.js";
 import recommendedExpertsService from "./recommendedExpertsService.js";
 import ApiError from "../utils/ApiError.js";
+import moment from "moment";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const createJobRequest = async ({
   user_id,
@@ -123,6 +127,11 @@ const acceptJobRequestByExpert = async ({ user_id, job_request_id }) => {
   if (!expert) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
   }
+
+  if(await countExpertJobsToday(expert._id) > parseInt(process.env.MAX_JOB_PER_EXPERT_PER_DAY)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You can't accept more job today");
+  }
+
   const job_request = await JobRequest.findById(job_request_id);
   if (!job_request) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Job request not found");
@@ -210,6 +219,7 @@ const fetchAcceptedJobRequestsByExpertId = async (
   };
   if (major_id) query.major = major_id;
   const pagination = await JobRequest.paginate(query, {
+    sort: {createdAt: -1},
     populate: [
       {
         path: "user",
@@ -265,6 +275,20 @@ const deleteJobRequest = async ({ user_id, job_request_id }) => {
 
   await JobRequest.deleteOne({ _id: job_request_id, user: user_id });
 };
+
+const countExpertJobsToday = async (expert_id) => {
+  const startOfToday = moment().utc().startOf("day").toDate();
+  const endOfToday = moment().utc().endOf("day").toDate();
+
+  const count = await JobRequest.count({
+    expert: expert_id,
+    time_booking: {$gte: startOfToday, $lte: endOfToday},
+  });
+
+  console.log(count)
+
+  return count;
+}
 
 export default {
   createJobRequest,

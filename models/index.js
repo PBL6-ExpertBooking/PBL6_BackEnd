@@ -8,7 +8,6 @@ import Review from "./Review.js";
 import User from "./User.js";
 import Transaction from "./Transaction.js";
 import RecommendedExperts from "./RecommendedExperts.js";
-import JobsCount from "./JobsCount.js";
 import Notification from "./Notification.js";
 import Document from "./Document.js";
 import Report from "./Report.js";
@@ -25,7 +24,6 @@ export {
   User,
   Transaction,
   RecommendedExperts,
-  JobsCount,
   Notification,
   Document,
   Report,
