@@ -2,7 +2,6 @@ import jobRequestService from "../services/jobRequestService.js";
 import reviewService from "../services/reviewService.js";
 import recommendedExpertsService from "../services/recommendedExpertsService.js";
 import notificationService from "../services/notificationService.js";
-import pusherService from "../services/pusherService.js";
 
 const createJobRequest = async (req, res, next) => {
   try {

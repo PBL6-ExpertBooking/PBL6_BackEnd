@@ -12,6 +12,7 @@ import Notification from "./Notification.js";
 import Document from "./Document.js";
 import Report from "./Report.js";
 import WithdrawalRequest from "./WithdrawalRequest.js";
+import BankAccount from "./BankAccount.js";
 
 export {
   Certificate,
@@ -27,5 +28,6 @@ export {
   Notification,
   Document,
   Report,
-  WithdrawalRequest
+  WithdrawalRequest,
+  BankAccount,
 };

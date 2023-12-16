@@ -50,6 +50,18 @@ router.get(
   checkRole([roles.EXPERT]),
   controller.getWithdrawalRequests
 );
+router.get(
+  "/current/bank-account",
+  auth,
+  checkRole([roles.EXPERT]),
+  controller.getCurrentExpertBankAccount
+);
+router.put(
+  "/current/bank-account",
+  auth,
+  checkRole([roles.EXPERT]),
+  controller.updateCurrentExpertBankAccount
+);
 router.get("/:id", auth, controller.getExpertById);
 router.get(
   "/:expert_id/certificates",

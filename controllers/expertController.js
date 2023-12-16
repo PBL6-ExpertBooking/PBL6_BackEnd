@@ -4,6 +4,7 @@ import { roles } from "../config/constant.js";
 import jobRequestService from "../services/jobRequestService.js";
 import documentService from "../services/documentService.js";
 import withdrawalService from "../services/withdrawalService.js";
+import bankAccountService from "../services/bankAccountService.js";
 
 const getExpertsPagination = async (req, res, next) => {
   try {
@@ -249,12 +250,42 @@ const getWithdrawalRequests = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
     const { page, limit } = req.query;
-    const withdrawal_requests = await withdrawalService.fetchWithdrawalRequests({ user_id, page, limit });
+    const withdrawal_requests = await withdrawalService.fetchWithdrawalRequests(
+      { user_id, page, limit }
+    );
     res.json({ withdrawal_requests });
   } catch (error) {
     next(error);
   }
-}
+};
+
+const getCurrentExpertBankAccount = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const bank_account = await bankAccountService.getBankAccountByUserId(
+      user_id
+    );
+    res.json({ bank_account });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateCurrentExpertBankAccount = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { number, owner_name, bank_name } = req.body;
+    const bank_account = await bankAccountService.updateBankAccount({
+      user_id,
+      number,
+      owner_name,
+      bank_name,
+    });
+    res.json({ bank_account });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export default {
   getExpertsPagination,
@@ -275,5 +306,7 @@ export default {
   getDocumentsByExpertId,
   updateDocument,
   deleteDocument,
-  getWithdrawalRequests
+  getWithdrawalRequests,
+  getCurrentExpertBankAccount,
+  updateCurrentExpertBankAccount,
 };

@@ -16,6 +16,8 @@ import getDocumentById from "./getDocumentById.js";
 import updateDocument from "./updateDocument.js";
 import deleteDocument from "./deleteDocument.js";
 import getWithdrawalRequests from "./getWithdrawalRequests.js";
+import getBankAccount from "./getBankAccount.js";
+import updateBankAccount from "./updateBankAccount.js";
 
 export default {
   "/experts": {
@@ -42,9 +44,12 @@ export default {
   "/experts/current/accepted-job-requests": {
     ...getAcceptedJobRequests,
   },
-  "/experts/current/withdrawal-requests":
-  {
+  "/experts/current/withdrawal-requests": {
     ...getWithdrawalRequests,
+  },
+  "/experts/current/bank-account": {
+    ...getBankAccount,
+    ...updateBankAccount,
   },
   "/experts/{expert_id}": {
     ...getExpertInfoById,
