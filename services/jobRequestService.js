@@ -22,13 +22,25 @@ const createJobRequest = async ({
   address,
   price,
 }) => {
-  if (!(await User.findById(user_id))) {
+  const user = await User.findById(user_id).lean();
+  if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
   }
   if (!(await Major.findById(major_id))) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Major not found");
   }
   // TODO: check user's balance
+  const remain_balance =
+    user.balance -
+    (await getTotalPriceOfAvailableJobsByUserId(user_id)) -
+    price;
+
+  if (remain_balance < 0) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      `Insufficent balance. Need more: ${-remain_balance}`
+    );
+  }
 
   const jobRequest = await JobRequest.create({
     user: user_id,
@@ -41,6 +53,37 @@ const createJobRequest = async ({
   });
 
   return jobRequest;
+};
+
+const getTotalPriceOfAvailableJobsByUserId = async (user_id) => {
+  const result = await JobRequest.aggregate([
+    {
+      $project: {
+        user: 1,
+        price: 1,
+        status: 1,
+      },
+    },
+    {
+      $match: {
+        user: user_id,
+        $or: [
+          { status: job_request_status.PENDING },
+          { status: job_request_status.PROCESSING },
+        ],
+      },
+    },
+    {
+      $group: {
+        _id: 0,
+        price: {
+          $sum: "$price",
+        },
+      },
+    },
+  ]).exec();
+
+  return result[0] ? result[0].price : 0;
 };
 
 const fetchJobRequestsPagination = async (
@@ -128,8 +171,14 @@ const acceptJobRequestByExpert = async ({ user_id, job_request_id }) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
   }
 
-  if(await countExpertJobsToday(expert._id) > parseInt(process.env.MAX_JOB_PER_EXPERT_PER_DAY)) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "You can't accept more job today");
+  if (
+    (await countExpertJobsToday(expert._id)) >
+    parseInt(process.env.MAX_JOB_PER_EXPERT_PER_DAY)
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      "You can't accept more job today"
+    );
   }
 
   const job_request = await JobRequest.findById(job_request_id);
@@ -219,7 +268,7 @@ const fetchAcceptedJobRequestsByExpertId = async (
   };
   if (major_id) query.major = major_id;
   const pagination = await JobRequest.paginate(query, {
-    sort: {createdAt: -1},
+    sort: { createdAt: -1 },
     populate: [
       {
         path: "user",
@@ -282,13 +331,13 @@ const countExpertJobsToday = async (expert_id) => {
 
   const count = await JobRequest.count({
     expert: expert_id,
-    time_booking: {$gte: startOfToday, $lte: endOfToday},
+    time_booking: { $gte: startOfToday, $lte: endOfToday },
   });
 
-  console.log(count)
+  console.log(count);
 
   return count;
-}
+};
 
 export default {
   createJobRequest,

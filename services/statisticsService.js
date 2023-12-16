@@ -134,7 +134,7 @@ const getTotalDepositAmount = async () => {
     },
   ]).exec();
 
-  return result[0].amount;
+  return result[0] ? result[0].amount : 0;
 };
 
 const getIncomeForExpert = async ({
@@ -181,8 +181,8 @@ const getIncomeForExpert = async ({
       amount: 1,
       date: {
         $dateFromParts: date_parts,
-      }
-    }
+      },
+    },
   };
 
   const group = {
