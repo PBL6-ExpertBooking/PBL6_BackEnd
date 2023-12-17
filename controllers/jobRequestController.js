@@ -78,6 +78,9 @@ const cancelJobRequest = async (req, res, next) => {
       user_id,
       job_request_id,
     });
+
+    notificationService.notifyJobRequestCanceled(job_request._id);
+
     res.json({ job_request });
   } catch (error) {
     next(error);

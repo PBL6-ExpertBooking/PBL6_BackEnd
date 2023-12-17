@@ -37,6 +37,7 @@ const transaction_status = {
 const notification_types = {
   NEW_JOB_REQUEST: "NEW_JOB_REQUEST",
   JOB_REQUEST_ACCEPTED: "JOB_REQUEST_ACCEPTED",
+  JOB_REQUEST_CANCELED: "JOB_REQUEST_CANCELED",
   PAYMENT: "PAYMENT",
 };
 
@@ -44,7 +45,7 @@ const by_time = {
   day: "DAY",
   month: "MONTH",
   year: "YEAR",
-}
+};
 
 export {
   roles,
@@ -54,5 +55,5 @@ export {
   transaction_types,
   job_request_status,
   notification_types,
-  by_time
+  by_time,
 };

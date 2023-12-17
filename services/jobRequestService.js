@@ -334,8 +334,6 @@ const countExpertJobsToday = async (expert_id) => {
     time_booking: { $gte: startOfToday, $lte: endOfToday },
   });
 
-  console.log(count);
-
   return count;
 };
 

@@ -1,6 +1,7 @@
 import transactionService from "../services/transactionService.js";
 import pusherService from "../services/pusherService.js";
 import dotenv from "dotenv";
+import notificationService from "../services/notificationService.js";
 
 const createDeposit = async (req, res, next) => {
   try {
@@ -67,6 +68,7 @@ const executePayment = async (req, res, next) => {
       transaction_id,
     });
 
+    notificationService.notifyPayment(transaction_id);
     pusherService.updateBalance(transaction.user._id, transaction.user.balance);
     pusherService.updateBalance(
       transaction.expert._id,
