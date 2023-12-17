@@ -2,6 +2,7 @@ import jobRequestService from "../services/jobRequestService.js";
 import reviewService from "../services/reviewService.js";
 import recommendedExpertsService from "../services/recommendedExpertsService.js";
 import notificationService from "../services/notificationService.js";
+import pusherService from "../services/pusherService.js";
 
 const createJobRequest = async (req, res, next) => {
   try {
@@ -121,6 +122,29 @@ const completeJobRequest = async (req, res, next) => {
   }
 };
 
+const completeJobRequestAndPayment = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { job_request_id } = req.params;
+    const { job_request, transaction } =
+      await jobRequestService.completeJobRequestAndPayment({
+        user_id,
+        job_request_id,
+      });
+
+    notificationService.notifyPayment(transaction._id);
+    pusherService.updateBalance(transaction.user._id, transaction.user.balance);
+    pusherService.updateBalance(
+      transaction.expert._id,
+      transaction.expert.balance
+    );
+
+    res.json({ job_request, transaction });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getReviewByJobRequestId = async (req, res, next) => {
   try {
     const { job_request_id } = req.params;
@@ -153,6 +177,7 @@ export default {
   cancelJobRequest,
   updateJobRequest,
   completeJobRequest,
+  completeJobRequestAndPayment,
   getReviewByJobRequestId,
   deleteJobRequest,
 };

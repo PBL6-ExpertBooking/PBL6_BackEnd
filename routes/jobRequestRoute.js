@@ -38,5 +38,11 @@ router.post(
   checkRole([roles.USER]),
   controller.completeJobRequest
 );
+router.post(
+  "/:job_request_id/complete-and-payment",
+  auth,
+  checkRole([roles.USER]),
+  controller.completeJobRequestAndPayment
+);
 router.get("/:job_request_id/review", auth, controller.getReviewByJobRequestId);
 export default router;

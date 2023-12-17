@@ -7,6 +7,7 @@ import cancelJobRequest from "./cancelJobRequest.js";
 import completeJobRequest from "./completeJobRequest.js";
 import getReview from "./getReview.js";
 import deleteJobRequest from "./deleteJobRequest.js";
+import completeAndPayment from "./completeAndPayment.js";
 
 export default {
   "/job_requests": {
@@ -29,5 +30,8 @@ export default {
   },
   "/job_requests/{job_request_id}/complete": {
     ...completeJobRequest,
+  },
+  "/job_requests/{job_request_id}/complete-and-payment": {
+    ...completeAndPayment,
   },
 };

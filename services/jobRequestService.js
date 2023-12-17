@@ -11,6 +11,7 @@ import recommendedExpertsService from "./recommendedExpertsService.js";
 import ApiError from "../utils/ApiError.js";
 import moment from "moment";
 import dotenv from "dotenv";
+import transactionService from "./transactionService.js";
 
 dotenv.config();
 
@@ -70,6 +71,12 @@ const getTotalPriceOfAvailableJobsByUserId = async (user_id) => {
         $or: [
           { status: job_request_status.PENDING },
           { status: job_request_status.PROCESSING },
+          {
+            $and: [
+              { status: job_request_status.DONE },
+              { time_payment: { $exists: false } },
+            ],
+          },
         ],
       },
     },
@@ -310,6 +317,23 @@ const completeJobRequest = async ({ user_id, job_request_id }) => {
   return job_request;
 };
 
+const completeJobRequestAndPayment = async ({ user_id, job_request_id }) => {
+  try {
+    const job_request = await completeJobRequest({ user_id, job_request_id });
+    let transaction = await transactionService.createPayment({
+      user_id,
+      job_request_id,
+    });
+    transaction = await transactionService.executePayment({
+      user_id,
+      transaction_id: transaction._id,
+    });
+    return { job_request, transaction };
+  } catch (error) {
+    throw error;
+  }
+};
+
 const deleteJobRequest = async ({ user_id, job_request_id }) => {
   const job_request = await JobRequest.findById(job_request_id);
   if (job_request.user.toString() !== user_id.toString()) {
@@ -348,5 +372,6 @@ export default {
   fetchAcceptedJobRequestsByExpertId,
   deleteRecommendedJobRequest,
   completeJobRequest,
+  completeJobRequestAndPayment,
   deleteJobRequest,
 };
