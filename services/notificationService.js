@@ -78,7 +78,7 @@ const notifyJobRequestAccepted = async (job_request_id) => {
           select: "first_name last_name photo_url",
         },
       },
-    ]);
+    ]).lean();
 
   const notification = await Notification.create({
     user: job_request.user._id,
@@ -109,7 +109,7 @@ const notifyJobRequestCanceled = async (job_request_id) => {
           select: "first_name last_name photo_url",
         },
       },
-    ]);
+    ]).lean();
 
   const notification = await Notification.create({
     user: job_request.user._id,
@@ -140,7 +140,7 @@ const notifyPayment = async (transaction_id) => {
         path: "job_request",
         select: "title",
       },
-    ]);
+    ]).lean();
 
   const notification = await Notification.create({
     user: transaction.expert._id,
