@@ -91,6 +91,7 @@ const handleGoogleUser = async (google_user) => {
         $push: { providers: "google" },
       });
     }
+    updateLastLoginTime(user._id)
     return userMapper(user);
   }
   const newUser = await User.create({
@@ -98,6 +99,7 @@ const handleGoogleUser = async (google_user) => {
     last_name: google_user.family_name,
     photo_url: google_user.picture,
     email: google_user.email,
+    isConfirmed: true,
     isRestricted: false,
     providers: ["google"],
   });
