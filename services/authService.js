@@ -87,7 +87,9 @@ const handleGoogleUser = async (google_user) => {
     if (!user.providers || !user.providers.includes("google")) {
       // TODO: handle old user with new google auth
 
-      throw new ApiError(httpStatus.BAD_REQUEST, "Your email already exists");
+      await User.findByIdAndUpdate(user._id, {
+        $push: { providers: "google" },
+      });
     }
     return userMapper(user);
   }
