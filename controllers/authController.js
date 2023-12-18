@@ -100,7 +100,7 @@ const verifyGoogleToken = async (token) => {
   try {
     const ticket = await oAuth2Client.verifyIdToken({
       idToken: token,
-      audience: process.env.CLIENT_ID,
+      audience: [process.env.CLIENT_ID, process.env.CLIENT_ID_ANDROID],
     });
     return { payload: ticket.getPayload() };
   } catch (error) {
