@@ -96,6 +96,7 @@ const fetchExpertsPagination = async ({
   const aggregate = ExpertInfo.aggregate(pipeline);
 
   const pagination = await ExpertInfo.aggregatePaginate(aggregate, {
+    sort: { _id: 1 },
     page,
     limit,
     lean: true,
@@ -294,7 +295,7 @@ const fetchExpertsHavingUnverifiedCert = async (
   const aggregate = ExpertInfo.aggregate(pipeline);
 
   const pagination = await ExpertInfo.aggregatePaginate(aggregate, {
-    sort: { average_rating: -1 },
+    sort: { _id: 1 },
     page,
     limit,
     lean: true,
@@ -374,6 +375,7 @@ const fetchRecommendedJobRequestsByExpertId = async (
     },
   ]);
   let pagination = await RecommendedExperts.aggregatePaginate(aggregate, {
+    sort: { _id: 1 },
     page,
     limit,
     lean: true,
