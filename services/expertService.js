@@ -294,6 +294,7 @@ const fetchExpertsHavingUnverifiedCert = async (
   const aggregate = ExpertInfo.aggregate(pipeline);
 
   const pagination = await ExpertInfo.aggregatePaginate(aggregate, {
+    sort: { average_rating: -1 },
     page,
     limit,
     lean: true,
