@@ -103,11 +103,9 @@ const updateJobRequest = async (req, res, next) => {
       price,
     });
 
-    (async () => {
-      await recommendedExpertsService.createRecommendedExperts(job_request._id);
-      await notificationService.notifyNewJobRequest(job_request._id);
-    })();
-
+    await recommendedExpertsService.createRecommendedExperts(job_request._id);
+    await notificationService.notifyNewJobRequest(job_request._id);
+ 
     res.json({ job_request });
   } catch (error) {
     next(error);
