@@ -284,7 +284,7 @@ const fetchAcceptedJobRequestsByExpertId = async (
     populate: [
       {
         path: "user",
-        select: "first_name last_name photo_url",
+        select: "first_name last_name photo_url email phone",
       },
       {
         path: "major",
