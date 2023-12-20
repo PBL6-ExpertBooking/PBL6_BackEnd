@@ -195,6 +195,11 @@ const acceptJobRequestByExpert = async ({ user_id, job_request_id }) => {
   if (job_request.status !== job_request_status.PENDING) {
     throw new ApiError(httpStatus.BAD_REQUEST, "This job is not available");
   }
+  const recommended_experts = await RecommendedExperts.findOne({job_request: job_request_id});
+  if(!recommended_experts || recommended_experts.experts.includes(expert._id)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You can't accept this job");
+  }
+
   job_request.expert = expert._id;
   job_request.status = job_request_status.PROCESSING;
   job_request.time_booking = new Date();
