@@ -196,7 +196,7 @@ const acceptJobRequestByExpert = async ({ user_id, job_request_id }) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "This job is not available");
   }
   const recommended_experts = await RecommendedExperts.findOne({job_request: job_request_id});
-  if(!recommended_experts || recommended_experts.experts.includes(expert._id)) {
+  if(!recommended_experts || !recommended_experts.experts.map(e => e.toString()).includes(expert._id.toString())) {
     throw new ApiError(httpStatus.BAD_REQUEST, "You can't accept this job");
   }
 
