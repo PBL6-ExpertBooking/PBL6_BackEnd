@@ -23,6 +23,7 @@ const createWithdrawalRequest = async ({ user_id, amount, bank_account }) => {
         amount: amount,
         transaction_type: transaction_types.WITHDRAWAL,
         transaction_status: transaction_status.PROCESSING,
+        fee: amount * +process.env.WITHDRAW_FEE_PERCENT / 100
     })
 
     const request = await WithdrawalRequest.create({
@@ -119,7 +120,6 @@ const fulfillWithdrawalRequest = async (withdrawal_request_id) => {
         await session.commitTransaction();
 
         transaction.transaction_status = transaction_status.DONE;
-        transaction.fee = transaction.amount * +process.env.WITHDRAW_FEE_PERCENT / 100;
         await transaction.save();
 
     } catch (error) {
