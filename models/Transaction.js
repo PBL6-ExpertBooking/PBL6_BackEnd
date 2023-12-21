@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 import { transaction_types, transaction_status } from "../config/constant.js";
+import { number } from "yup";
 
 const transactionSchema = new mongoose.Schema(
   {
@@ -17,6 +18,7 @@ const transactionSchema = new mongoose.Schema(
       enum: Object.values(transaction_status),
       default: transaction_status.PROCESSING,
     },
+    fee: { type: Number, default: 0 },
   },
   {
     collection: "transactions",

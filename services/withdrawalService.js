@@ -3,6 +3,9 @@ import { User, WithdrawalRequest, Transaction } from "../models/index.js";
 import ApiError from "../utils/ApiError.js";
 import { transaction_status, transaction_types } from "../config/constant.js";
 import { startSession } from "mongoose";
+import dotenv from "dotenv";
+
+dotenv.config()
 
 const createWithdrawalRequest = async ({ user_id, amount, bank_account }) => {
     const user = User.findById(user_id)
@@ -116,6 +119,7 @@ const fulfillWithdrawalRequest = async (withdrawal_request_id) => {
         await session.commitTransaction();
 
         transaction.transaction_status = transaction_status.DONE;
+        transaction.fee = transaction.amount * +process.env.WITHDRAW_FEE_PERCENT / 100;
         await transaction.save();
 
     } catch (error) {
