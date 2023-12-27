@@ -94,6 +94,13 @@ const handleGoogleUser = async (google_user) => {
     updateLastLoginTime(user._id)
     return userMapper(user);
   }
+
+  const password = crypto.randomBytes(4).toString("hex");
+  const encrypted_password = await bcrypt.hash(
+    password,
+    parseInt(process.env.BCRYPT_SALT)
+  );
+
   const newUser = await User.create({
     first_name: google_user.given_name,
     last_name: google_user.family_name,
@@ -102,6 +109,8 @@ const handleGoogleUser = async (google_user) => {
     isConfirmed: true,
     isRestricted: false,
     providers: ["google"],
+    username: google_user.email,
+    encrypted_password
   });
   return userMapper(newUser);
 };
