@@ -61,6 +61,12 @@
             text-decoration: none;
             color: gray;
         }
+
+        .text-start {
+            font-size: 14px;
+            text-align: left
+        }
+
     </style>
 </head>
 
@@ -68,13 +74,22 @@
     <div class="email--background">
         <div class="email--container">
             <img src="https://res.cloudinary.com/dtvua8nr8/image/upload/v1702278021/fbhqjiuopgq3bfl4h032.jpg" />
-
+    
             <div class="email--inner-container">
                 <p>
                     Cảm ơn bạn đã đăng ký tham gia cùng chúng tôi.
                 </p>
-                <li> username: <%= username %> </li>
-                <li> password: <%= password %> </li>
+                Dưới đây là thông tin đăng nhập của bạn:
+                
+                <ul>
+                    <li>
+                    <div class="text-start"> Username: <%= username %> </div>
+                    </li>
+                    
+                    <li>
+                    <div class="text-start"> Password: <%= password %> </div>
+                    </li>
+                </ul>
             </div>
         </div>
         <div class="footer-junk">
@@ -84,3 +99,4 @@
 </body>
 
 </html>
+
