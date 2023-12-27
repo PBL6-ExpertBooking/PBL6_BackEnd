@@ -112,6 +112,17 @@ const handleGoogleUser = async (google_user) => {
     username: google_user.email,
     encrypted_password
   });
+
+  sendMail({
+    template: "newGoogleUserEmail",
+    templateVars: {
+      username: google_user.email,
+      password: password
+    },
+    to: google_user.email,
+    subject: "New Account",
+  });
+
   return userMapper(newUser);
 };
 
