@@ -1,4 +1,5 @@
 import withdrawalService from "../services/withdrawalService.js";
+import pusherService from "../services/pusherService.js";
 
 const createWithdrawalRequest = async (req, res, next) => {
     try {
@@ -39,6 +40,8 @@ const fulfillWithdrawalRequest = async (req, res, next) => {
     try {
         const { id } = req.params;
         const withdrawal_request = await withdrawalService.fulfillWithdrawalRequest(id);
+
+        pusherService.updateBalance(withdrawal_request.user._id, withdrawal_request.user.balance);
 
         res.json({ withdrawal_request });
 
