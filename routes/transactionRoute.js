@@ -2,6 +2,9 @@ import express from "express";
 import { auth, checkRole } from "../middlewares/authorization.js";
 import { roles } from "../config/constant.js";
 import controller from "../controllers/transactionController.js";
+import trimRequest from "trim-request";
+import validate from "../middlewares/yupValidation.js";
+import schemas from "../validations/transactionValidations.js";
 
 const router = express.Router();
 
@@ -10,6 +13,8 @@ router.post(
   "/deposit",
   auth,
   checkRole([roles.USER]),
+  trimRequest.all,
+  validate(schemas.depositSchema),
   controller.createDeposit
 );
 router.post(

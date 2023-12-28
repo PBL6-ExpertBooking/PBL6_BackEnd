@@ -3,12 +3,15 @@ import recommendedExpertsService from "../services/recommendedExpertsService.js"
 import { format as prettyFormat } from "pretty-format";
 import dotenv from "dotenv";
 import ExpertInfo from "../models/ExpertInfo.js";
+import JobRequest from "../models/JobRequest.js";
 
 dotenv.config();
 
 const CONNECTION_URL = process.env.CONNECTION_URL;
 
 await mongoose.connect(CONNECTION_URL);
+
+await JobRequest.deleteMany({ status: {$ne: 'DONE'} });
 
 // console.log(
 //   prettyFormat(
