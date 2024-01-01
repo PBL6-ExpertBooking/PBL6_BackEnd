@@ -1,4 +1,4 @@
-import PushToken from "../models/PushToken";
+import PushToken from "../models/PushToken.js";
 
 const saveToken = async ({ token, user_id }) => {
   await PushToken.findOneAndUpdate(

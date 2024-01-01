@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { roles } from "../config/constant";
 
 const pushTokenSchema = new mongoose.Schema(
   {

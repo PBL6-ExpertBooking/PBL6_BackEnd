@@ -1,4 +1,4 @@
-import pushTokenService from "../services/pushTokenService";
+import pushTokenService from "../services/pushTokenService.js";
 import { Expo } from "expo-server-sdk";
 
 const expo = new Expo();

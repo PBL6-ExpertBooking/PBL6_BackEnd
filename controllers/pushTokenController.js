@@ -1,4 +1,4 @@
-import pushTokenService from "../services/pushTokenService";
+import pushTokenService from "../services/pushTokenService.js";
 
 const saveToken = (req, res, next) => {
   try {
