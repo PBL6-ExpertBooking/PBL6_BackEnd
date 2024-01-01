@@ -10,6 +10,7 @@ import transactionRoute from "./transactionRoute.js";
 import reportRoute from "./reportRoute.js";
 import statisticsRoute from "./statisticsRoute.js";
 import withdrawalRequestRoute from "./withdrawalRequestRoute.js";
+import pushTokenRoute from "./pushTokenRoute.js";
 
 const router = express.Router();
 
@@ -24,5 +25,6 @@ router.use("/transactions", transactionRoute);
 router.use("/reports", reportRoute);
 router.use("/statistics", statisticsRoute);
 router.use("/withdrawal-requests", withdrawalRequestRoute);
+router.use("/push-token", pushTokenRoute)
 
 export default router;
