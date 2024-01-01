@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import { roles } from '../config/constant';
+import mongoose from "mongoose";
+import { roles } from "../config/constant";
 
 const pushTokenSchema = new mongoose.Schema(
   {
@@ -7,18 +7,18 @@ const pushTokenSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
-    role: {
-      type: String,
-      enum: Object.values(roles),
-      default: roles.USER,
+    user: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+      index: true,
     },
   },
   {
-    collection: 'push_token',
+    collection: "push_token",
     timestamps: true,
-  },
+  }
 );
 
-const PushToken = mongoose.model('PushToken', pushTokenSchema);
+const PushToken = mongoose.model("PushToken", pushTokenSchema);
 
 export default PushToken;

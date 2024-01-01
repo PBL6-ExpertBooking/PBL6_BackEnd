@@ -1,15 +1,14 @@
-import pushTokenService from '../services/pushTokenService';
-
-const { Expo } = require('expo-server-sdk');
+import pushTokenService from "../services/pushTokenService";
+import { Expo } from "expo-server-sdk";
 
 const expo = new Expo();
 
-export async function sendPushNotifications({ title, body, role }) {
+export async function sendPushNotifications({ title, body, user_ids }) {
   try {
-    const tokens = pushTokenService.getTokens({ role });
+    const tokens = await pushTokenService.getTokensByUserIds({ user_ids });
     const messages = tokens.map((token) => ({
       to: token,
-      sound: 'default',
+      sound: "default",
       title,
       body,
     }));

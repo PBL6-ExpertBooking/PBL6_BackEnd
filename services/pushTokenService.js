@@ -1,17 +1,21 @@
-import { roles } from '../config/constant';
+import PushToken from "../models/PushToken";
 
-const saveToken = ({ token, role }) => {
-  //lưu push-token vào db. có tạo model cho push token r
+const saveToken = async ({ token, user_id }) => {
+  await PushToken.findOneAndUpdate(
+    { token },
+    { user: user_id },
+    {
+      upsert: true,
+    }
+  );
 };
 
-const getTokens = ({ role }) => {
-  //lấy token theo role muốn gửi thông báo
-  return [
-    { token: 'ExponentPushToken[xbrQ21DZQCgvFtZkj2vkNj]', role: roles.USER },
-  ];
+const getTokensByUserIds = async ({ user_ids }) => {
+  const pushTokens = await PushToken.find({ user: { $in: user_ids } });
+  return pushTokens;
 };
 
 export default {
   saveToken,
-  getTokens,
+  getTokensByUserIds,
 };
