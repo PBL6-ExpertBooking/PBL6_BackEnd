@@ -4,6 +4,7 @@ import { format as prettyFormat } from "pretty-format";
 import dotenv from "dotenv";
 import ExpertInfo from "../models/ExpertInfo.js";
 import JobRequest from "../models/JobRequest.js";
+import pushTokenService from "../services/pushTokenService.js";
 
 dotenv.config();
 
@@ -11,7 +12,25 @@ const CONNECTION_URL = process.env.CONNECTION_URL;
 
 await mongoose.connect(CONNECTION_URL);
 
-await JobRequest.deleteMany({ status: {$ne: 'DONE'} });
+const tokens = await pushTokenService.getTokensByUserIds({
+    user_ids: ["652fac2c2e03d8c6639e1026"],
+  })
+console.log(
+  tokens
+);
+
+import { Expo } from "expo-server-sdk";
+
+const expo = new Expo();
+
+const messages = tokens.map((token) => ({
+    to: token.token,
+    sound: "default",
+    title: 'title',
+    body: 'body',
+  }));
+expo.sendPushNotificationsAsync(messages);
+console.log('DONE');
 
 // console.log(
 //   prettyFormat(
