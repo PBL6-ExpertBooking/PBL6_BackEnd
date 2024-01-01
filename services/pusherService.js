@@ -21,7 +21,9 @@ const notifyMultipleUsers = async (notifications) => {
 
   for (const notification of notifications) {
     user_ids.push(notification.user);
-    notify(notification);
+    pusher.trigger(`user-${notification.user}`, "notification", {
+      notification,
+    });
   }
 
   await pushNotification(notifications[0].type, user_ids);
