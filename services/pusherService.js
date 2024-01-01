@@ -13,16 +13,7 @@ const notify = async (notification) => {
     notification,
   });
 
-  const params = { title: "", body: "", user_ids: [notification.user] };
-
-  switch (notification.type) {
-    case notification_types.NEW_JOB_REQUEST:
-      params.title = "...";
-      params.body = "...";
-      break;
-  }
-
-  await sendPushNotifications(params);
+  await pushNotification(notification.type, [notification.user])
 };
 
 const notifyMultipleUsers = async (notifications) => {
@@ -33,9 +24,13 @@ const notifyMultipleUsers = async (notifications) => {
     notify(notification);
   }
 
+  await pushNotification(notifications[0].type, user_ids);
+};
+
+const pushNotification = async (notification_type, user_ids) => {
   const params = { title: "", body: "", user_ids };
 
-  switch (notifications[0].type) {
+  switch (notification_type) {
     case notification_types.NEW_JOB_REQUEST:
       params.title = "...";
       params.body = "...";
@@ -43,7 +38,7 @@ const notifyMultipleUsers = async (notifications) => {
   }
 
   await sendPushNotifications(params);
-};
+}
 
 export default {
   updateBalance,
