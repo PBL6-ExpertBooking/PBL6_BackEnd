@@ -17,6 +17,8 @@ const notify = async (notification) => {
 };
 
 const notifyMultipleUsers = async (notifications) => {
+  if(notifications.length === 0) return;
+  
   const user_ids = [];
 
   for (const notification of notifications) {
