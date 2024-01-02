@@ -13,7 +13,7 @@ const notify = async (notification) => {
     notification,
   });
 
-  await pushNotification(notification.type, [notification.user])
+  await pushNotification(notification.type, notification.ref, [notification.user])
 };
 
 const notifyMultipleUsers = async (notifications) => {
@@ -26,16 +26,28 @@ const notifyMultipleUsers = async (notifications) => {
     });
   }
 
-  await pushNotification(notifications[0].type, user_ids);
+  await pushNotification(notifications[0].type, notifications[0].ref, user_ids);
 };
 
-const pushNotification = async (notification_type, user_ids) => {
+const pushNotification = async (notification_type, ref, user_ids) => {
   const params = { title: "", body: "", user_ids };
 
   switch (notification_type) {
     case notification_types.NEW_JOB_REQUEST:
-      params.title = "...";
-      params.body = "...";
+      params.title = "New job";
+      params.body = `${ref.job_request?.title ?? ''}`;
+      break;
+    case notification_types.JOB_REQUEST_ACCEPTED:
+      params.title = "Job accepted";
+      params.body = `"${ref.job_request?.title ?? ''}" has been accepted by ${ref.job_request?.expert?.user?.first_name ?? 'expert'}`;
+      break;
+    case notification_types.JOB_REQUEST_CANCELED:
+      params.title = "Job canceled";
+      params.body = `"${ref.job_request?.title ?? ''}" has been canceled`;
+      break;
+    case notification_types.PAYMENT:
+      params.title = "Payment";
+      params.body = `+${ref.transaction?.amount?.replace(/\d(?=(\d{3})+\.)/g, '$&,') ?? 0}₫ for "${ref.transaction?.job_request?.title ?? ''}"`;
       break;
   }
 
