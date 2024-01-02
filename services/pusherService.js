@@ -47,7 +47,7 @@ const pushNotification = async (notification_type, ref, user_ids) => {
       break;
     case notification_types.PAYMENT:
       params.title = "Payment";
-      params.body = `+${ref.transaction?.amount?.replace(/\d(?=(\d{3})+$)/g, '$&,') ?? 0}₫ for "${ref.transaction?.job_request?.title ?? ''}"`;
+      params.body = `+${ref.transaction?.amount?.toString().replace(/\d(?=(\d{3})+$)/g, '$&,') ?? 0}₫ for "${ref.transaction?.job_request?.title ?? ''}"`;
       break;
   }
 
