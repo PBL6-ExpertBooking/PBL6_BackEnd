@@ -13,6 +13,7 @@ const recommendedExpertsSchema = new mongoose.Schema({
       {
         type: mongoose.Schema.ObjectId,
         ref: "ExpertInfo",
+        index: true,
       },
     ],
     default: [],

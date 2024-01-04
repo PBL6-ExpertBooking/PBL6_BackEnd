@@ -87,18 +87,42 @@ const handleGoogleUser = async (google_user) => {
     if (!user.providers || !user.providers.includes("google")) {
       // TODO: handle old user with new google auth
 
-      throw new ApiError(httpStatus.BAD_REQUEST, "Your email already exists");
+      await User.findByIdAndUpdate(user._id, {
+        $push: { providers: "google" },
+      });
     }
+    updateLastLoginTime(user._id)
     return userMapper(user);
   }
+
+  const password = crypto.randomBytes(4).toString("hex");
+  const encrypted_password = await bcrypt.hash(
+    password,
+    parseInt(process.env.BCRYPT_SALT)
+  );
+
   const newUser = await User.create({
     first_name: google_user.given_name,
     last_name: google_user.family_name,
     photo_url: google_user.picture,
     email: google_user.email,
+    isConfirmed: true,
     isRestricted: false,
     providers: ["google"],
+    username: google_user.email,
+    encrypted_password
   });
+
+  sendMail({
+    template: "newGoogleUserEmail",
+    templateVars: {
+      username: google_user.email,
+      password: password
+    },
+    to: google_user.email,
+    subject: "New Account",
+  });
+
   return userMapper(newUser);
 };
 

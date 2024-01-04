@@ -10,12 +10,22 @@ const expertInfoSchema = new mongoose.Schema(
       index: true,
       unique: true,
     },
+    verified_majors: {
+      type: [
+        {
+          type: mongoose.Schema.ObjectId,
+          ref: "Major",
+        },
+      ],
+      default: [],
+    },
     descriptions: String,
     certificates: {
       type: [
         {
           type: mongoose.Schema.ObjectId,
           ref: "Certificate",
+          index: true,
         },
       ],
       default: [],
@@ -23,7 +33,10 @@ const expertInfoSchema = new mongoose.Schema(
     average_rating: { type: Number, min: 0, max: 5, default: 0 },
     rating_count: { type: Number, default: 0 },
   },
-  { collection: "expert_info" }
+  {
+    collection: "expert_info",
+    timestamps: true,
+  }
 );
 
 expertInfoSchema.plugin(mongoosePaginate);

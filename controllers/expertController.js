@@ -2,6 +2,9 @@ import expertService from "../services/expertService.js";
 import reviewService from "../services/reviewService.js";
 import { roles } from "../config/constant.js";
 import jobRequestService from "../services/jobRequestService.js";
+import documentService from "../services/documentService.js";
+import withdrawalService from "../services/withdrawalService.js";
+import bankAccountService from "../services/bankAccountService.js";
 
 const getExpertsPagination = async (req, res, next) => {
   try {
@@ -100,8 +103,9 @@ const getReviewsByExpertId = async (req, res, next) => {
 
 const getExpertsHavingUnverifiedCert = async (req, res, next) => {
   try {
-    const { page, limit } = req.query;
+    const { page, limit, search } = req.query;
     const pagination = await expertService.fetchExpertsHavingUnverifiedCert(
+      search,
       page || 1,
       limit || 10
     );
@@ -171,6 +175,118 @@ const deleteRecommendedJobRequest = async (req, res, next) => {
   }
 };
 
+const createDocument = async (req, res, next) => {
+  try {
+    const { expert_id } = req.params;
+    const { name, description } = req.body;
+    const file = req.file;
+    const document = await documentService.createDocument({
+      expert_id,
+      name,
+      description,
+      file,
+    });
+
+    res.json({ document });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getDocumentById = async (req, res, next) => {
+  try {
+    const { expert_id, document_id } = req.params;
+    const document = await documentService.fetchDocumentById(
+      expert_id,
+      document_id
+    );
+
+    res.json({ document });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getDocumentsByExpertId = async (req, res, next) => {
+  try {
+    const { expert_id } = req.params;
+    const documents = await documentService.fetchDocumentsByExpertId(expert_id);
+
+    res.json({ documents });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateDocument = async (req, res, next) => {
+  try {
+    const { expert_id, document_id } = req.params;
+    const { name, description } = req.body;
+    const document = await documentService.updateDocument({
+      expert_id,
+      document_id,
+      name,
+      description,
+    });
+
+    res.json({ document });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteDocument = async (req, res, next) => {
+  try {
+    const { expert_id, document_id } = req.params;
+    await documentService.deleteDocumentById(document_id, expert_id);
+
+    res.json({ message: "Deleted" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getWithdrawalRequests = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { page, limit } = req.query;
+    const withdrawal_requests = await withdrawalService.fetchWithdrawalRequests(
+      { user_id, page, limit }
+    );
+    res.json({ withdrawal_requests });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getCurrentExpertBankAccount = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const bank_account = await bankAccountService.getBankAccountByUserId(
+      user_id
+    );
+    res.json({ bank_account });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateCurrentExpertBankAccount = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { number, owner_name, bank_name } = req.body;
+    const bank_account = await bankAccountService.updateBankAccount({
+      user_id,
+      number,
+      owner_name,
+      bank_name,
+    });
+    res.json({ bank_account });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getExpertsPagination,
   getExpertById,
@@ -185,4 +301,12 @@ export default {
   getTopExperts,
   getAcceptedJobRequests,
   deleteRecommendedJobRequest,
+  createDocument,
+  getDocumentById,
+  getDocumentsByExpertId,
+  updateDocument,
+  deleteDocument,
+  getWithdrawalRequests,
+  getCurrentExpertBankAccount,
+  updateCurrentExpertBankAccount,
 };

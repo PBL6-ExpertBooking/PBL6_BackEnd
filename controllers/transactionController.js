@@ -1,4 +1,7 @@
 import transactionService from "../services/transactionService.js";
+import pusherService from "../services/pusherService.js";
+import dotenv from "dotenv";
+import notificationService from "../services/notificationService.js";
 
 const createDeposit = async (req, res, next) => {
   try {
@@ -27,7 +30,8 @@ const createDeposit = async (req, res, next) => {
 
 const vnpayReturn = async (req, res, next) => {
   try {
-    res.json(await transactionService.handleVnpayReturn(req));
+    await transactionService.handleVnpayReturn(req);
+    res.redirect(process.env.DEPOSIT_REDIRECT_URL);
   } catch (error) {
     next(error);
   }
@@ -63,7 +67,31 @@ const executePayment = async (req, res, next) => {
       user_id,
       transaction_id,
     });
+
+    notificationService.notifyPayment(transaction_id);
+    pusherService.updateBalance(transaction.user._id, transaction.user.balance);
+    pusherService.updateBalance(
+      transaction.expert._id,
+      transaction.expert.balance
+    );
+
     res.json({ transaction });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllTransactions = async (req, res, next) => {
+  try {
+    const { page, limit, date_from, date_to, transaction_status } = req.query;
+    const transactions = await transactionService.fetchAllTransactions(
+      page || 1,
+      limit || 10,
+      date_from,
+      date_to,
+      transaction_status
+    );
+    res.json({ transactions });
   } catch (error) {
     next(error);
   }
@@ -75,4 +103,5 @@ export default {
   vnpayIpn,
   createPayment,
   executePayment,
+  getAllTransactions,
 };

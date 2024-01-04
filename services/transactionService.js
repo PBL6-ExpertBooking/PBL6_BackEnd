@@ -11,6 +11,7 @@ import crypto from "crypto";
 import moment from "moment";
 import dotenv from "dotenv";
 import { startSession } from "mongoose";
+import pusherService from "./pusherService.js";
 
 dotenv.config();
 
@@ -28,30 +29,6 @@ const createDeposit = async ({ user_id, amount }) => {
     user: user_id,
     amount: amount,
     transaction_type: transaction_types.DEPOSIT,
-    transaction_status: transaction_status.PROCESSING,
-  });
-
-  return transaction;
-};
-
-const createWithdrawal = async ({ user_id, amount }) => {
-  const user = await User.findById(user_id).lean();
-  if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
-  }
-
-  if (!Number.isInteger(amount) || amount <= 0) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid amount");
-  }
-
-  if (amount < user.balance) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Insufficient balance");
-  }
-
-  const transaction = await Transaction.create({
-    user: user_id,
-    amount: amount,
-    transaction_type: transaction_types.WITHDRAWAL,
     transaction_status: transaction_status.PROCESSING,
   });
 
@@ -126,28 +103,8 @@ const handleSuccessDeposit = async (transaction) => {
   await user.updateOne({
     balance: user.balance + transaction.amount,
   });
-};
 
-const handleWithdrawal = async (transaction) => {
-  const user = await User.findById(transaction.user);
-  if (!user) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "User not found");
-  }
-  if (transaction.amount < user.balance) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Insufficient balance");
-  }
-  try {
-    // call bank handler
-    await user.updateOne({
-      balance: user.balance - transaction.amount,
-    });
-    await Transaction.updateOne(
-      { _id: transaction._id },
-      {
-        transaction_status: transaction_status.DONE,
-      }
-    );
-  } catch (error) {}
+  pusherService.updateBalance(user._id, user.balance + transaction.amount);
 };
 
 const executePayment = async ({ user_id, transaction_id }) => {
@@ -229,39 +186,69 @@ const executePayment = async ({ user_id, transaction_id }) => {
     session.endSession();
   }
 
-  return transaction;
-};
-
-const fetchTransactionsByUserId = async (user_id, page = 1, limit = 10) => {
-  const pagination = await Transaction.paginate(
+  return await transaction.populate([
     {
-      $or: [{ user: user_id }, { expert: user_id }],
+      path: "user",
+      select: "balance",
     },
     {
-      populate: [
-        {
-          path: "user",
-          select: "first_name last_name gender phone address photo_url email",
-        },
-        {
-          path: "expert",
-          select: "first_name last_name gender phone address photo_url email",
-        },
-        {
-          path: "job_request",
-          populate: {
-            path: "major",
-          },
-        },
-      ],
-      page,
-      limit,
-      lean: true,
-      customLabels: {
-        docs: "transactions",
-      },
+      path: "expert",
+      select: "balance",
+    },
+  ]);
+};
+
+const fetchTransactionsByUserId = async (
+  user_id,
+  page = 1,
+  limit = 10,
+  date_from = null,
+  date_to = null,
+  transaction_status = null
+) => {
+  const query = {
+    $or: [{ user: user_id }, { expert: user_id }],
+  };
+
+  if (date_from || date_to) {
+    query.createdAt = {};
+    if (date_from) {
+      query.createdAt.$gte = new Date(date_from);
     }
-  );
+    if (date_to) {
+      query.createdAt.$lte = new Date(date_to);
+    }
+  }
+
+  if (transaction_status) {
+    query.transaction_status = transaction_status;
+  }
+
+  const pagination = await Transaction.paginate(query, {
+    sort: { createdAt: -1 },
+    populate: [
+      {
+        path: "user",
+        select: "first_name last_name gender phone address photo_url email",
+      },
+      {
+        path: "expert",
+        select: "first_name last_name gender phone address photo_url email",
+      },
+      {
+        path: "job_request",
+        populate: {
+          path: "major",
+        },
+      },
+    ],
+    page,
+    limit,
+    lean: true,
+    customLabels: {
+      docs: "transactions",
+    },
+  });
   return pagination;
 };
 
@@ -435,14 +422,64 @@ const sortObject = (obj) => {
   return sorted;
 };
 
+const fetchAllTransactions = async (
+  page = 1,
+  limit = 10,
+  date_from = null,
+  date_to = null,
+  transaction_status = null
+) => {
+  const query = {};
+
+  if (date_from || date_to) {
+    query.createdAt = {};
+    if (date_from) {
+      query.createdAt.$gte = new Date(date_from);
+    }
+    if (date_to) {
+      query.createdAt.$lte = new Date(date_to);
+    }
+  }
+
+  if (transaction_status) {
+    query.transaction_status = transaction_status;
+  }
+
+  const pagination = await Transaction.paginate(query, {
+    sort: { createdAt: -1 },
+    populate: [
+      {
+        path: "user",
+        select: "first_name last_name gender phone address photo_url email",
+      },
+      {
+        path: "expert",
+        select: "first_name last_name gender phone address photo_url email",
+      },
+      {
+        path: "job_request",
+        populate: {
+          path: "major",
+        },
+      },
+    ],
+    page,
+    limit,
+    lean: true,
+    customLabels: {
+      docs: "transactions",
+    },
+  });
+  return pagination;
+};
+
 export default {
   createDeposit,
-  createWithdrawal,
   createPayment,
   fetchTransactionsByUserId,
   generatePaymentUrl,
   handleVnpayReturn,
   vnpayIpn,
   executePayment,
-  handleWithdrawal,
+  fetchAllTransactions,
 };

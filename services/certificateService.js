@@ -1,7 +1,8 @@
 import httpStatus from "http-status";
 import { Certificate, ExpertInfo, Major } from "../models/index.js";
-import imageService from "./imageService.js";
+import cloudinaryService from "./cloudinaryService.js";
 import ApiError from "../utils/ApiError.js";
+import mongoose from "mongoose";
 
 const createCertificate = async ({
   user_id,
@@ -20,7 +21,7 @@ const createCertificate = async ({
   }
 
   // upload image
-  const response = await imageService.uploadImage(photo);
+  const response = await cloudinaryService.upload(photo);
 
   const certificate = new Certificate({
     name,
@@ -58,10 +59,11 @@ const deleteCertificateById = async (user_id, certificate_id) => {
   // delete certificate from expert's certificates
   expert.certificates.pull(certificate);
   // delete photo
-  await imageService.deleteImageByPublicId(certificate.public_id);
+  cloudinaryService.deleteByPublicId(certificate.photo_public_id);
   // delete certificate from database
   await certificate.deleteOne();
   await expert.save();
+  await updateVerifiedMajor(expert._id);
 };
 
 const verifyCertificateById = async (certificate_id) => {
@@ -75,11 +77,41 @@ const verifyCertificateById = async (certificate_id) => {
   if (!certificate) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Certificate not found");
   }
+  const expert = await ExpertInfo.findOne({
+    certificates: certificate._id,
+  }).lean();
+
+  await updateVerifiedMajor(expert._id).catch((error) => {
+    throw error;
+  });
   return certificate;
+};
+
+const updateVerifiedMajor = async (expert_id) => {
+  const expert = await ExpertInfo.findById(expert_id, {
+    select: "certificates",
+  }).populate({
+    path: "certificates",
+    populate: {
+      path: "major",
+    },
+    match: { isVerified: true },
+  });
+
+  if (!expert) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
+  }
+
+  const majors = [
+    ...new Set(expert.certificates.map((certificate) => certificate.major._id)),
+  ];
+
+  await expert.updateOne({ verified_majors: majors });
 };
 
 export default {
   createCertificate,
   deleteCertificateById,
   verifyCertificateById,
+  updateVerifiedMajor,
 };

@@ -21,5 +21,14 @@ export default {
     {
       name: "transaction",
     },
+    {
+      name: "report",
+    },
+    {
+      name: "statistics"
+    },
+    {
+      name: "withdrawal-request"
+    }
   ],
 };

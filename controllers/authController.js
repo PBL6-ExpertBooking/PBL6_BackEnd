@@ -91,52 +91,38 @@ const resetPassword = async (req, res, next) => {
 
 // Google auth
 
-const redirectUrl = `${process.env.DOMAIN_NAME}/v1/auth/google`;
-let redirectUrlAfterVerify = "";
 const oAuth2Client = new OAuth2Client(
   process.env.CLIENT_ID,
   process.env.CLIENT_SECRET,
-  redirectUrl
 );
 
-const googleUserLogin = async (req, res, next) => {
+const verifyGoogleToken = async (token) => {
   try {
-    redirectUrlAfterVerify = req.body.redirectUrl;
-    const authorizeUrl = oAuth2Client.generateAuthUrl({
-      access_type: "offline",
-      scope: "https://www.googleapis.com/auth/userinfo.profile email openid",
-      prompt: "consent",
+    const ticket = await oAuth2Client.verifyIdToken({
+      idToken: token,
+      audience: [process.env.CLIENT_ID, process.env.CLIENT_ID_ANDROID],
     });
-    res.json({ url: authorizeUrl });
+    return { payload: ticket.getPayload() };
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 
-async function getUserData(access_token) {
-  const response = await axios.get(
-    `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`
-  );
-  return await response.data;
-}
-
-const googleUserVerify = async (req, res, next) => {
+const googleLogin = async (req, res, next) => {
   try {
-    const code = req.query.code;
-    const r = await oAuth2Client.getToken(code);
-    const google_user = await getUserData(r.tokens.access_token);
-    const user = await authService.handleGoogleUser(google_user);
-    const tokens = await tokenService.generateAuthTokens(user);
+    if (req.body.credential) {
+      const verificationResponse = await verifyGoogleToken(req.body.credential);
+      if (verificationResponse.error) {
+        throw verificationResponse.error;
+      }
 
-    // store authData in cookie
-    res.cookie("authData", JSON.stringify({ user, tokens }), { maxAge: 60000 });
-    if (redirectUrlAfterVerify) {
-      res.redirect(303, redirectUrlAfterVerify);
-    } else {
+      const profile = verificationResponse?.payload;
+      const user = await authService.handleGoogleUser(profile);
+      const tokens = await tokenService.generateAuthTokens(user);
+
       res.json({ user, tokens });
     }
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -148,6 +134,5 @@ export default {
   refreshToken,
   activate,
   resetPassword,
-  googleUserLogin,
-  googleUserVerify,
+  googleLogin
 };

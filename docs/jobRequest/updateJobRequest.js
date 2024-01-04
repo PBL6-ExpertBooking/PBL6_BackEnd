@@ -48,9 +48,7 @@ export default {
       },
     },
     responses: {
-      200: {
-        description: "register successfully",
-      },
+      200: {},
     },
   },
 };

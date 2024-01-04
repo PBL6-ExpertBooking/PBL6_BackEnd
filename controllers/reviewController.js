@@ -3,10 +3,10 @@ import reviewService from "../services/reviewService.js";
 const createReview = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { booking_id, rating, comment } = req.body;
+    const { job_request_id, rating, comment } = req.body;
     const review = await reviewService.createReview({
       user_id,
-      booking_id,
+      job_request_id,
       rating,
       comment,
     });

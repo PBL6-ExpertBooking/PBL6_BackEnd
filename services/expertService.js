@@ -96,6 +96,7 @@ const fetchExpertsPagination = async ({
   const aggregate = ExpertInfo.aggregate(pipeline);
 
   const pagination = await ExpertInfo.aggregatePaginate(aggregate, {
+    sort: { _id: 1 },
     page,
     limit,
     lean: true,
@@ -169,67 +170,68 @@ const fetchUnverifiedCertificatesByExpertId = async (expert_id) => {
 
 const fetchVerifiedMajorsByExpertId = async (expert_id) => {
   const expert = await ExpertInfo.findById(expert_id, {
-    select: "certificates",
+    select: "verified_majors",
   }).populate({
-    path: "certificates",
-    populate: {
-      path: "major",
-    },
-    match: { isVerified: true },
+    path: "verified_majors",
   });
 
   if (!expert) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
   }
 
-  const majors = [
-    ...new Map(
-      expert.certificates.map((certificate) => [
-        certificate.major._id,
-        certificate.major,
-      ])
-    ).values(),
-  ];
-  return majors;
+  return expert.verified_majors;
 };
 
 const fetchVerifiedMajorsByUserId = async (user_id) => {
   const expert = await ExpertInfo.findOne(
     { user: user_id },
     {
-      select: "certificates",
+      select: "verified_majors",
     }
   ).populate({
-    path: "certificates",
-    populate: {
-      path: "major",
-    },
-    match: { isVerified: true },
+    path: "verified_majors",
   });
 
   if (!expert) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Expert not found");
   }
 
-  const majors = [
-    ...new Map(
-      expert.certificates.map((certificate) => [
-        certificate.major._id,
-        certificate.major,
-      ])
-    ).values(),
-  ];
-  return majors;
+  return expert.verified_majors;
 };
 
-const fetchExpertsHavingUnverifiedCert = async (page = 1, limit = 10) => {
-  const aggregate = ExpertInfo.aggregate([
+const fetchExpertsHavingUnverifiedCert = async (
+  search = null,
+  page = 1,
+  limit = 10
+) => {
+  const pipeline = [
     {
       $lookup: {
         from: Certificate.collection.name,
         localField: "certificates",
         foreignField: "_id",
         as: "certificates",
+        pipeline: [
+          {
+            $lookup: {
+              from: Major.collection.name,
+              localField: "major",
+              foreignField: "_id",
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    name: 1,
+                  },
+                },
+              ],
+              as: "major",
+            },
+          },
+          {
+            $unwind: "$major",
+          },
+        ],
       },
     },
     {
@@ -271,8 +273,29 @@ const fetchExpertsHavingUnverifiedCert = async (page = 1, limit = 10) => {
         as: "user",
       },
     },
-  ]);
+    {
+      $unwind: "$user",
+    },
+  ];
+
+  if (search) {
+    pipeline.push({
+      $match: {
+        $expr: {
+          $regexMatch: {
+            input: { $concat: ["$user.first_name", " ", "$user.last_name"] },
+            regex: new RegExp(search),
+            options: "i",
+          },
+        },
+      },
+    });
+  }
+
+  const aggregate = ExpertInfo.aggregate(pipeline);
+
   const pagination = await ExpertInfo.aggregatePaginate(aggregate, {
+    sort: { _id: 1 },
     page,
     limit,
     lean: true,
@@ -347,8 +370,12 @@ const fetchRecommendedJobRequestsByExpertId = async (
     {
       $unwind: "$job_request",
     },
+    {
+      $sort: { createdAt: -1 },
+    },
   ]);
   let pagination = await RecommendedExperts.aggregatePaginate(aggregate, {
+    sort: { _id: 1 },
     page,
     limit,
     lean: true,

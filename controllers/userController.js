@@ -1,6 +1,7 @@
 import userService from "../services/userService.js";
 import jobRequestService from "../services/jobRequestService.js";
 import transactionService from "../services/transactionService.js";
+import notificationService from "../services/notificationService.js";
 
 const getUserById = async (req, res, next) => {
   try {
@@ -152,13 +153,44 @@ const getJobRequestsPaginationByUserId = async (req, res, next) => {
 const getCurrentUserTransactions = async (req, res, next) => {
   try {
     const user_id = req.authData.user._id;
-    const { page, limit } = req.query;
+    const { page, limit, date_from, date_to, transaction_status } = req.query;
     const transactions = await transactionService.fetchTransactionsByUserId(
       user_id,
       page || 1,
-      limit || 10
+      limit || 10,
+      date_from,
+      date_to,
+      transaction_status
     );
     res.json({ transactions });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getCurrentUserNotifications = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { limit } = req.query;
+    const notifications = await notificationService.fetchNotificationsByUserId(
+      user_id,
+      limit
+    );
+    res.json({ notifications });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateSeenNotification = async (req, res, next) => {
+  try {
+    const user_id = req.authData.user._id;
+    const { notification_id } = req.params;
+    const notification = await notificationService.updateSeenNotification(
+      notification_id,
+      user_id
+    );
+    res.json({ notification });
   } catch (error) {
     next(error);
   }
@@ -178,4 +210,6 @@ export default {
   getJobRequestsPaginationOfCurrentUser,
   getJobRequestsPaginationByUserId,
   getCurrentUserTransactions,
+  getCurrentUserNotifications,
+  updateSeenNotification,
 };

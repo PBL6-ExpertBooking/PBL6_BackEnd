@@ -32,7 +32,6 @@ router
     validate(schemas.resetPasswordSchema),
     controller.resetPassword
   );
-router.route("/google").post(controller.googleUserLogin);
-router.route("/google").get(controller.googleUserVerify);
+router.route("/google").post(controller.googleLogin);
 
 export default router;
